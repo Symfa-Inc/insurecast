@@ -55,4 +55,4 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["insurecast"]
+known-first-party = ["insurecast", "ml"]
