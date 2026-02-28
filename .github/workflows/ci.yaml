@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main
+  push:
+    branches:
+    - main
+
+env:
+  GREEN: '\033[0;32m'
+  NO_COLOR: '\033[0m'
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    name: "Backend: Lint & Type Check"
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Setup uv
+      uses: astral-sh/setup-uv@v5
+      with:
+        enable-cache: true
+
+    - name: Install dependencies
+      run: uv sync --dev
+
+    - name: Run all pre-commit hooks
+      run: |
+        uv run pre-commit run --all-files --verbose
+        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
+
+  frontend:
+    runs-on: ubuntu-latest
+    name: "Frontend: Lint, Format & Build"
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: latest
+        run_install: false
+
+    - name: Get pnpm store directory
+      id: pnpm-cache
+      shell: bash
+      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Cache pnpm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+        restore-keys: ${{ runner.os }}-pnpm-
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Lint
+      run: pnpm lint
+
+    - name: Check formatting
+      run: pnpm check
+
+    - name: Build
+      run: |
+        pnpm build
+        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
+
+  docker:
+    runs-on: ubuntu-latest
+    name: "Docker: Build Images"
+    needs: [linting, frontend]
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build backend image
+      run: docker build -t insurecast-backend ./backend
+
+    - name: Build frontend image
+      run: |
+        docker build -t insurecast-frontend ./frontend
+        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
