@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ env:
 jobs:
   linting:
     runs-on: ubuntu-latest
-    name: Lint testing
+    name: "Backend: Lint & Type Check"
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
 
   frontend:
     runs-on: ubuntu-latest
-    name: Frontend checks
+    name: "Frontend: Lint, Format & Build"
     defaults:
       run:
         working-directory: frontend
@@ -88,7 +88,7 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
-    name: Docker build
+    name: "Docker: Build Images"
     needs: [linting, frontend]
     steps:
     - name: Checkout code
