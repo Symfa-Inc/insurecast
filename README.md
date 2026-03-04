@@ -26,9 +26,16 @@ insurecast/
 # Install dependencies
 uv sync --dev
 
+# Generate/refresh demo artifacts from OSHA public data
+uv run python backend/scripts/ingest_osha_sir.py
+
 # Run development server
 uv run uvicorn insurecast.main:app --reload
 ```
+
+The backend reads `backend/data/demo/monthly_claims.csv` and
+`backend/data/demo/severity_params.csv` as the historical source for dashboard
+APIs.
 
 ### Frontend
 
