@@ -55,7 +55,7 @@ class DemoDataRepository:
     def _load(self) -> None:
         self.claims_by_key: dict[tuple[str, str, str, str], float] = {}
         self.claim_history: dict[SegmentKey, list[tuple[date, float]]] = {}
-        segment_sets = {"states": set(), "industries": set(), "claim_types": set()}
+        segment_sets = {"states": set(), "industries": set(), "claim_types": set()}  # type: ignore
 
         with self.monthly_claims_path.open("r", encoding="utf-8", newline="") as file:
             for row in csv.DictReader(file):
@@ -66,8 +66,14 @@ class DemoDataRepository:
                 count = float(row["claims_count_actual"])
                 key = (month, state, industry, claim_type)
                 self.claims_by_key[key] = count
-                segment = SegmentKey(state=state, industry=industry, claim_type=claim_type)
-                self.claim_history.setdefault(segment, []).append((parse_month(month), count))
+                segment = SegmentKey(
+                    state=state,
+                    industry=industry,
+                    claim_type=claim_type,
+                )
+                self.claim_history.setdefault(segment, []).append(
+                    (parse_month(month), count),
+                )
                 segment_sets["states"].add(state)
                 segment_sets["industries"].add(industry)
                 segment_sets["claim_types"].add(claim_type)
@@ -89,7 +95,9 @@ class DemoDataRepository:
                 )
                 self.severity_by_segment[segment] = float(row["base_avg_cost"])
 
-        all_months = [parse_month(month) for month, _, _, _ in self.claims_by_key.keys()]
+        all_months = [
+            parse_month(month) for month, _, _, _ in self.claims_by_key.keys()
+        ]
         self.actual_start = min(all_months)
         self.actual_end = max(all_months)
         self.forecast_end = date(max(2026, self.actual_end.year + 1), 12, 1)
@@ -116,7 +124,9 @@ class DemoDataRepository:
 
         latest_month = history[-1][0]
         latest_value = history[-1][1]
-        same_month_values = [value for value_month, value in history if value_month.month == month.month]
+        same_month_values = [
+            value for value_month, value in history if value_month.month == month.month
+        ]
         seasonal_base = mean(same_month_values) if same_month_values else latest_value
 
         if len(history) >= 24:
@@ -126,7 +136,9 @@ class DemoDataRepository:
         else:
             trend_ratio = 1.0
 
-        steps = (month.year - latest_month.year) * 12 + (month.month - latest_month.month)
+        steps = (month.year - latest_month.year) * 12 + (
+            month.month - latest_month.month
+        )
         growth = trend_ratio ** (steps / 12) if steps > 0 else 1.0
         return round(max(0.0, seasonal_base * growth), 2)
 

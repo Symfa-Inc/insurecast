@@ -3,9 +3,8 @@ from fastapi.testclient import TestClient
 from insurecast.main import app
 
 
-
 def test_health_check_returns_healthy() -> None:
     client = TestClient(app)
-    response = client.get('/health')
+    response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {'status': 'healthy'}
+    assert response.json() == {"status": "healthy"}

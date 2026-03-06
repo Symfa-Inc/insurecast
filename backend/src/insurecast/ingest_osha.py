@@ -1,19 +1,15 @@
 from __future__ import annotations
 
 import csv
-from collections import defaultdict
-from datetime import datetime
-from io import BytesIO
-from io import StringIO
-from pathlib import Path
 import re
 import urllib.request
 import zipfile
+from collections import defaultdict
+from datetime import datetime
+from io import BytesIO, StringIO
+from pathlib import Path
 
-
-OSHA_SIR_ZIP_URL = (
-    "https://obis.osha.gov/severeinjury/xml/severeinjury.csv"
-)
+OSHA_SIR_ZIP_URL = "https://obis.osha.gov/severeinjury/xml/severeinjury.csv"
 
 NAICS_TO_INDUSTRY = {
     "11": "Manufacturing",
@@ -86,7 +82,9 @@ STATE_TO_CODE = {
 
 
 def _first_present(row: dict[str, str], names: list[str]) -> str:
-    normalized = {key.strip().lower(): (value or "").strip() for key, value in row.items()}
+    normalized = {
+        key.strip().lower(): (value or "").strip() for key, value in row.items()
+    }
     for name in names:
         value = normalized.get(name)
         if value:
@@ -172,7 +170,11 @@ def _normalized_event_type(row: dict[str, str]) -> str:
     if hospitalized and hospitalized not in {"0", "0.0", "0.00"}:
         return "Hospitalization"
     combined = " ".join(
-        [row.get("event_type", ""), row.get("event_title", ""), row.get("narrative", "")]
+        [
+            row.get("event_type", ""),
+            row.get("event_title", ""),
+            row.get("narrative", ""),
+        ],
     ).strip()
     return combined
 
@@ -199,12 +201,14 @@ def aggregate_monthly_claims(rows: list[dict[str, str]]) -> list[dict[str, str |
                 "industry": industry,
                 "claim_type": claim_type,
                 "claims_count_actual": counts[(month, state, industry, claim_type)],
-            }
+            },
         )
-    return result
+    return result  # type: ignore
 
 
-def build_severity_params(claims_rows: list[dict[str, str | int]]) -> list[dict[str, str | float]]:
+def build_severity_params(
+    claims_rows: list[dict[str, str | int]],
+) -> list[dict[str, str | float]]:
     segment_keys = {
         (
             str(row["state"]),
@@ -235,7 +239,7 @@ def build_severity_params(claims_rows: list[dict[str, str | int]]) -> list[dict[
                 "param_1": 8.55,
                 "param_2": 0.72,
                 "base_avg_cost": round(cost, 2),
-            }
+            },
         )
     return rows
 
@@ -262,7 +266,11 @@ def download_osha_rows(url: str = OSHA_SIR_ZIP_URL) -> list[dict[str, str]]:
     return [dict(row) for row in reader]
 
 
-def write_csv(path: Path, rows: list[dict[str, str | float | int]], fieldnames: list[str]) -> None:
+def write_csv(
+    path: Path,
+    rows: list[dict[str, str | float | int]],
+    fieldnames: list[str],
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as output:
         writer = csv.DictWriter(output, fieldnames=fieldnames)

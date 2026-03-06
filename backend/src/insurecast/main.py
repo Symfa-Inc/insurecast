@@ -68,7 +68,9 @@ def build_cost_row(month: date, segment: SegmentKey) -> dict[str, Any]:
     severity = repo.avg_severity(month, segment)
     actual_claims = repo.actual_claims(month, segment)
     forecast_claims = repo.forecast_claims(month, segment)
-    paid_actual = round(actual_claims * severity, 2) if actual_claims is not None else None
+    paid_actual = (
+        round(actual_claims * severity, 2) if actual_claims is not None else None
+    )
     paid_forecast = round(forecast_claims * severity, 2)
     ci_low, ci_high = paid_ci(paid_forecast)
     return {
@@ -142,7 +144,9 @@ async def get_model_metadata() -> dict[str, Any]:
 
 
 @app.post("/api/v1/scenario/recalculate")
-async def recalculate_scenario(payload: ScenarioRequest) -> dict[str, list[dict[str, Any]]]:
+async def recalculate_scenario(
+    payload: ScenarioRequest,
+) -> dict[str, list[dict[str, Any]]]:
     segment = SegmentKey(
         state=payload.state,
         industry=payload.industry,
@@ -175,7 +179,7 @@ async def recalculate_scenario(payload: ScenarioRequest) -> dict[str, list[dict[
                 "paid_ci_low": paid_low,
                 "paid_ci_high": paid_high,
                 "avg_cost_per_claim": severity,
-            }
+            },
         )
 
     return {"series": series}

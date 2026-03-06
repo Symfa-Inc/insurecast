@@ -41,7 +41,7 @@ def test_aggregate_monthly_claims_maps_osha_native_fields() -> None:
             "Primary NAICS": "236220",
             "Hospitalized": "1.00",
             "Amputation": "0.00",
-        }
+        },
     ]
 
     claims = aggregate_monthly_claims(rows)
