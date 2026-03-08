@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #dbe5f1;
-  --ink: #253448;
+  --background: #f0f4ff;
+  --background-warm: #faf8fc;
+  --ink: #1e1b4b;
+  --ink-muted: #4c4a6a;
+  --card-bg: #ffffff;
+  --card-border: rgba(99, 102, 241, 0.15);
+  --card-shadow: 0 1px 3px rgba(99, 102, 241, 0.06);
+  --focus-ring: 0 0 0 2px rgba(99, 102, 241, 0.4);
 }
 
 @theme inline {
@@ -13,9 +19,18 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, var(--background) 0%, var(--background-warm) 100%);
   color: var(--ink);
   font-family: var(--font-sans), "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+/* Consistent focus styles for inputs */
+input:focus,
+select:focus,
+button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .funnel-row {
