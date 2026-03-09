@@ -6,7 +6,7 @@ client = TestClient(app)
 
 
 def test_segments_endpoint_returns_dimensions() -> None:
-    response = client.get("/api/v1/segments")
+    response = client.get("/segments")
     assert response.status_code == 200
     payload = response.json()
     assert set(payload.keys()) == {"states", "industries", "claim_types"}
@@ -16,7 +16,7 @@ def test_segments_endpoint_returns_dimensions() -> None:
 
 
 def test_segments_are_loaded_from_ingested_csv() -> None:
-    response = client.get("/api/v1/segments")
+    response = client.get("/segments")
     assert response.status_code == 200
     payload = response.json()
     assert "AL" in payload["states"]
@@ -24,7 +24,7 @@ def test_segments_are_loaded_from_ingested_csv() -> None:
 
 def test_claims_series_endpoint_returns_points() -> None:
     response = client.get(
-        "/api/v1/series/claims",
+        "/series/claims",
         params={
             "from": "2023-01",
             "to": "2026-12",
@@ -45,7 +45,7 @@ def test_claims_series_endpoint_returns_points() -> None:
 
 def test_costs_series_endpoint_returns_points() -> None:
     response = client.get(
-        "/api/v1/series/costs",
+        "/series/costs",
         params={
             "from": "2023-01",
             "to": "2026-12",
@@ -65,7 +65,7 @@ def test_costs_series_endpoint_returns_points() -> None:
 
 
 def test_metadata_endpoint_returns_metrics() -> None:
-    response = client.get("/api/v1/model/metadata")
+    response = client.get("/model/metadata")
     assert response.status_code == 200
     payload = response.json()
     assert payload["model_name"] == "SARIMAX"
@@ -76,7 +76,7 @@ def test_metadata_endpoint_returns_metrics() -> None:
 
 def test_scenario_recalculate_changes_values() -> None:
     response = client.post(
-        "/api/v1/scenario/recalculate",
+        "/scenario/recalculate",
         json={
             "state": "CA",
             "industry": "Construction",

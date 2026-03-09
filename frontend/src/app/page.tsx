@@ -91,74 +91,85 @@ export default function Home() {
   }, [segments, seriesParams]);
 
   const displayedCosts = scenarioCosts ?? costs;
-  const latestActualClaimIndex = claims.reduce(
-    (lastIndex, point, index) => (point.claims_count_actual !== null ? index : lastIndex),
-    -1,
-  );
-  const fallbackForecastStart = Math.max(0, claims.length - 3);
-  const effectiveCurrentEnd = latestActualClaimIndex >= 0 ? latestActualClaimIndex : fallbackForecastStart - 1;
-  const effectiveForecastStart = Math.max(0, effectiveCurrentEnd);
-  const effectiveForecastEnd = Math.min(claims.length - 1, effectiveForecastStart + 2);
-  const chartWindowStart = Math.max(0, effectiveCurrentEnd - 8);
-  const chartWindowEnd = effectiveForecastEnd;
+  const forecastMonths = Math.max(1, parseInt(forecastPeriod, 10) || 3);
+  const forecastStartIndex = Math.max(0, claims.length - forecastMonths);
 
   const claimsChartData = useMemo<ForecastChartPoint[]>(
     () =>
-      claims.slice(chartWindowStart, chartWindowEnd + 1).map((point, offset) => {
-        const index = chartWindowStart + offset;
-        const isForecast = index >= effectiveForecastStart && index <= effectiveForecastEnd;
-        const currentValue =
-          index <= effectiveCurrentEnd
+      claims.map((point, index) => {
+        const isForecast = index >= forecastStartIndex;
+        const currentData =
+          index < forecastStartIndex
             ? (point.claims_count_actual ?? point.claims_count_forecast)
             : null;
+        const forecast = isForecast ? point.claims_count_forecast : null;
+        const lineValue = currentData ?? forecast;
+
+        let forecastCiLow: number | null = null;
+        let forecastCiRange: number | null = null;
+        if (isForecast && lineValue != null) {
+          const baseRange = point.claims_ci_high - point.claims_ci_low;
+          const forecastIndex = index - forecastStartIndex;
+          const widenFactor = 1 + 0.2 * forecastIndex;
+          const halfSpread = (baseRange / 2) * widenFactor;
+          forecastCiLow = lineValue - halfSpread;
+          forecastCiRange = 2 * halfSpread;
+        }
+
         return {
           month: monthToLabel(point.month),
-          currentData: currentValue,
-          forecast: isForecast ? point.claims_count_forecast : null,
-          forecastCiLow: isForecast ? point.claims_ci_low : null,
-          forecastCiRange: isForecast ? point.claims_ci_high - point.claims_ci_low : null,
+          currentData: index < forecastStartIndex ? currentData : null,
+          forecast: isForecast ? forecast : null,
+          lineValue,
+          forecastCiLow,
+          forecastCiRange,
         };
       }),
-    [
-      chartWindowEnd,
-      chartWindowStart,
-      claims,
-      effectiveCurrentEnd,
-      effectiveForecastEnd,
-      effectiveForecastStart,
-    ],
+    [claims, forecastStartIndex],
   );
 
-  const costsChartData = useMemo<ForecastChartPoint[]>(
+  const MAX_SAFE_COST = 1e6;
+
+  const avgCostChartData = useMemo<ForecastChartPoint[]>(
     () =>
-      displayedCosts.slice(chartWindowStart, chartWindowEnd + 1).map((point, offset) => {
-        const index = chartWindowStart + offset;
-        const isForecast = index >= effectiveForecastStart && index <= effectiveForecastEnd;
-        const currentValue =
-          index <= effectiveCurrentEnd
-            ? (point.paid_amount_actual ?? point.paid_amount_forecast)
-            : null;
+      displayedCosts.map((point, index) => {
+        const isForecast = index >= forecastStartIndex;
+        const claimPoint = claims[index];
+        const claimsCount = claimPoint?.claims_count_forecast ?? 0;
+        const rawAvg = claimsCount > 0 ? point.avg_cost_per_claim : 0;
+        const avgCost =
+          typeof rawAvg === "number" && isFinite(rawAvg) && rawAvg >= 0 && rawAvg < MAX_SAFE_COST
+            ? rawAvg
+            : 0;
+        const currentData = index < forecastStartIndex ? avgCost : null;
+        const forecast = isForecast ? avgCost : null;
+        const lineValue = currentData ?? forecast;
+
+        let forecastCiLow: number | null = null;
+        let forecastCiRange: number | null = null;
+        if (isForecast && lineValue != null && lineValue > 0 && lineValue < MAX_SAFE_COST) {
+          const halfSpread = lineValue * 0.1;
+          const forecastIndex = index - forecastStartIndex;
+          const widenFactor = 1 + 0.1 * forecastIndex;
+          const scaledHalfSpread = halfSpread * widenFactor;
+          forecastCiLow = Math.max(0, lineValue - scaledHalfSpread);
+          forecastCiRange = 2 * scaledHalfSpread;
+        }
+
         return {
           month: monthToLabel(point.month),
-          currentData: currentValue,
-          forecast: isForecast ? point.paid_amount_forecast : null,
-          forecastCiLow: isForecast ? point.paid_ci_low : null,
-          forecastCiRange: isForecast ? point.paid_ci_high - point.paid_ci_low : null,
+          currentData: index < forecastStartIndex ? currentData : null,
+          forecast: isForecast ? forecast : null,
+          lineValue,
+          forecastCiLow,
+          forecastCiRange,
         };
       }),
-    [
-      chartWindowEnd,
-      chartWindowStart,
-      displayedCosts,
-      effectiveCurrentEnd,
-      effectiveForecastEnd,
-      effectiveForecastStart,
-    ],
+    [claims, displayedCosts, forecastStartIndex],
   );
 
   const monthlyRows = useMemo<MonthlyRow[]>(() => {
-    return displayedCosts
-      .map((costPoint) => {
+    const rows = displayedCosts.map((costPoint) => {
         const claimPoint = claims.find((entry) => entry.month === costPoint.month);
         if (!claimPoint) {
           return null;
@@ -170,9 +181,8 @@ export default function Home() {
           avgCost: costPoint.avg_cost_per_claim,
         };
       })
-      .filter((row): row is MonthlyRow => row !== null)
-      .slice(-8)
-      .reverse();
+      .filter((row): row is MonthlyRow => row !== null);
+    return [...rows].reverse();
   }, [claims, displayedCosts]);
 
   async function applyScenario() {
@@ -182,14 +192,23 @@ export default function Home() {
         severity_inflation_pct: severityInflation,
         frequency_shock_pct: frequencyShock,
       });
-      const mappedScenarioCosts: CostsPoint[] = scenarioSeries.map((point) => ({
-        month: point.month,
-        paid_amount_actual: null,
-        paid_amount_forecast: point.paid_amount_forecast,
-        avg_cost_per_claim: point.avg_cost_per_claim,
-        paid_ci_low: point.paid_ci_low,
-        paid_ci_high: point.paid_ci_high,
-      }));
+      const mappedScenarioCosts: CostsPoint[] = scenarioSeries.map((point) => {
+        const safeAvg =
+          typeof point.avg_cost_per_claim === "number" &&
+          isFinite(point.avg_cost_per_claim) &&
+          point.avg_cost_per_claim >= 0 &&
+          point.avg_cost_per_claim < 1e6
+            ? point.avg_cost_per_claim
+            : 0;
+        return {
+          month: point.month,
+          paid_amount_actual: null,
+          paid_amount_forecast: point.paid_amount_forecast,
+          avg_cost_per_claim: safeAvg,
+          paid_ci_low: point.paid_ci_low,
+          paid_ci_high: point.paid_ci_high,
+        };
+      });
       setScenarioCosts(mappedScenarioCosts);
       setError(null);
     } catch {
@@ -228,15 +247,17 @@ export default function Home() {
       <section className="grid gap-4 xl:grid-cols-2">
         <ForecastChart
           title="Amount of Claims per Month"
-          description="Last 12 months: current line, forecast points, and confidence band."
+          description="Historical data plus forecast for the selected period."
           data={claimsChartData}
           valueFormatter={formatNumber}
         />
         <ForecastChart
-          title="Paid Amount for Claims per Month"
-          description="Last 12 months: current line, forecast points, and confidence band."
-          data={costsChartData}
+          title="Average Cost per Claim per Month"
+          description="Historical data plus forecast for the selected period."
+          data={avgCostChartData}
           valueFormatter={formatCurrency}
+          skipZeroFloor
+          allowDataOverflow
         />
       </section>
 

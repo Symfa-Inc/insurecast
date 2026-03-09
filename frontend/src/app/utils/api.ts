@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000",
+  baseURL: "http://localhost:8000",
 });
 
 export type SegmentsResponse = {
@@ -56,7 +56,7 @@ export type ScenarioPoint = {
 };
 
 export async function getSegments(): Promise<SegmentsResponse> {
-  const { data } = await api.get<SegmentsResponse>("/api/v1/segments");
+  const { data } = await api.get<SegmentsResponse>("/segments");
   return data;
 }
 
@@ -68,7 +68,7 @@ export async function getClaimsSeries(params: {
   claim_type: string;
 }): Promise<ClaimsPoint[]> {
   const { data } = await api.get<ApiSeriesResponse<ClaimsPoint>>(
-    "/api/v1/series/claims",
+    "/series/claims",
     { params },
   );
   return data.series;
@@ -82,14 +82,14 @@ export async function getCostsSeries(params: {
   claim_type: string;
 }): Promise<CostsPoint[]> {
   const { data } = await api.get<ApiSeriesResponse<CostsPoint>>(
-    "/api/v1/series/costs",
+    "/series/costs",
     { params },
   );
   return data.series;
 }
 
 export async function getModelMetadata(): Promise<MetadataResponse> {
-  const { data } = await api.get<MetadataResponse>("/api/v1/model/metadata");
+  const { data } = await api.get<MetadataResponse>("/model/metadata");
   return data;
 }
 
@@ -97,7 +97,7 @@ export async function recalculateScenario(
   payload: ScenarioRequest,
 ): Promise<ScenarioPoint[]> {
   const { data } = await api.post<ApiSeriesResponse<ScenarioPoint>>(
-    "/api/v1/scenario/recalculate",
+    "/scenario/recalculate",
     payload,
   );
   return data.series;

@@ -30,12 +30,6 @@ app.add_middleware(
 )
 
 
-@app.get("/health")
-async def health_check():
-    """Health check endpoint."""
-    return {"status": "healthy"}
-
-
 class ScenarioRequest(BaseModel):
     state: str
     industry: str
@@ -86,12 +80,12 @@ def build_cost_row(month: date, segment: SegmentKey) -> dict[str, Any]:
     }
 
 
-@app.get("/api/v1/segments")
+@app.get("/segments")
 async def get_segments() -> dict[str, list[str]]:
     return repo.get_segments()
 
 
-@app.get("/api/v1/series/claims")
+@app.get("/series/claims")
 async def get_claims_series(
     from_: str = Query(..., alias="from"),
     to: str = Query(...),
@@ -106,7 +100,7 @@ async def get_claims_series(
     return {"series": series}
 
 
-@app.get("/api/v1/series/costs")
+@app.get("/series/costs")
 async def get_costs_series(
     from_: str = Query(..., alias="from"),
     to: str = Query(...),
@@ -121,7 +115,7 @@ async def get_costs_series(
     return {"series": series}
 
 
-@app.get("/api/v1/model/metadata")
+@app.get("/model/metadata")
 async def get_model_metadata() -> dict[str, Any]:
     return {
         "run_id": "demo-sarimax-001",
@@ -143,7 +137,7 @@ async def get_model_metadata() -> dict[str, Any]:
     }
 
 
-@app.post("/api/v1/scenario/recalculate")
+@app.post("/scenario/recalculate")
 async def recalculate_scenario(
     payload: ScenarioRequest,
 ) -> dict[str, list[dict[str, Any]]]:

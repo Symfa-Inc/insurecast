@@ -48,29 +48,34 @@ class DemoDataRepository:
     def __init__(self, data_dir: Path | None = None) -> None:
         backend_dir = Path(__file__).resolve().parents[2]
         self.data_dir = data_dir or backend_dir / "data" / "demo"
-        self.monthly_claims_path = self.data_dir / "monthly_claims.csv"
-        self.severity_path = self.data_dir / "severity_params.csv"
+        self.merged_path = self.data_dir / "merged_claims_with_severity.csv"
         self._load()
 
     def _load(self) -> None:
         self.claims_by_key: dict[tuple[str, str, str, str], float] = {}
         self.claim_history: dict[SegmentKey, list[tuple[date, float]]] = {}
+        self.severity_by_segment: dict[SegmentKey, float] = {}
         segment_sets = {"states": set(), "industries": set(), "claim_types": set()}  # type: ignore
 
-        with self.monthly_claims_path.open("r", encoding="utf-8", newline="") as file:
+        with self.merged_path.open("r", encoding="utf-8", newline="") as file:
             for row in csv.DictReader(file):
                 month = row["month"]
                 state = row["state"]
                 industry = row["industry"]
                 claim_type = row["claim_type"]
                 count = float(row["claims_count_actual"])
+                base_avg_cost = float(row["base_avg_cost"])
+
                 key = (month, state, industry, claim_type)
                 self.claims_by_key[key] = count
+
                 segment = SegmentKey(
                     state=state,
                     industry=industry,
                     claim_type=claim_type,
                 )
+                if segment not in self.severity_by_segment:
+                    self.severity_by_segment[segment] = base_avg_cost
                 self.claim_history.setdefault(segment, []).append(
                     (parse_month(month), count),
                 )
@@ -84,16 +89,6 @@ class DemoDataRepository:
         self.states = sorted(segment_sets["states"])
         self.industries = sorted(segment_sets["industries"])
         self.claim_types = sorted(segment_sets["claim_types"])
-
-        self.severity_by_segment: dict[SegmentKey, float] = {}
-        with self.severity_path.open("r", encoding="utf-8", newline="") as file:
-            for row in csv.DictReader(file):
-                segment = SegmentKey(
-                    state=row["state"],
-                    industry=row["industry"],
-                    claim_type=row["claim_type"],
-                )
-                self.severity_by_segment[segment] = float(row["base_avg_cost"])
 
         all_months = [
             parse_month(month) for month, _, _, _ in self.claims_by_key.keys()

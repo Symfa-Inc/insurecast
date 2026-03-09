@@ -34,5 +34,21 @@ Output files:
 - `backend/data/demo/monthly_claims.csv`
 - `backend/data/demo/severity_params.csv`
 
-The API in `insurecast.main` reads these CSV artifacts directly at startup and
-uses them as the historical source for claims/cost forecasting endpoints.
+To create the merged table used by the API:
+
+```bash
+uv run python scripts/merge_claims_and_severity.py
+```
+
+This produces `backend/data/demo/merged_claims_with_severity.csv`, which the API
+reads at startup as the single source for claims and average cost per claim.
+
+To fill missing (month, segment) rows with synthetic data for Jan 2015–Dec 2025,
+so every segment has complete coverage:
+
+```bash
+uv run python scripts/fill_missing_with_synthetic.py
+```
+
+Synthetic claim counts are sampled from the same distribution as observed data
+per segment (state, industry, claim type).
