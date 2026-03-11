@@ -187,11 +187,22 @@ export function ForecastChart({
             />
             <Line
               type="monotone"
-              dataKey="lineValue"
-              name="Fitted & forecast"
+              dataKey="currentData"
+              name="Historical"
               stroke="#2563eb"
               strokeWidth={2.5}
               dot={false}
+              connectNulls
+            />
+            <Line
+              type="monotone"
+              dataKey="forecast"
+              name="Forecast"
+              stroke="#2563eb"
+              strokeWidth={2.5}
+              strokeDasharray="5 5"
+              dot={false}
+              connectNulls
             />
           </ComposedChart>
         </ResponsiveContainer>

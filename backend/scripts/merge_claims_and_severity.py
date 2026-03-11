@@ -37,9 +37,13 @@ def main() -> None:
         "base_avg_cost",
     ]
 
-    with MONTHLY_CLAIMS.open(newline="") as infile, OUTPUT_PATH.open(
-        "w", newline=""
-    ) as outfile:
+    with (
+        MONTHLY_CLAIMS.open(newline="") as infile,
+        OUTPUT_PATH.open(
+            "w",
+            newline="",
+        ) as outfile,
+    ):
         reader = csv.DictReader(infile)
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         writer.writeheader()

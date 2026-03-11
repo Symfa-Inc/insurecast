@@ -58,7 +58,9 @@ def main() -> None:
 
     for seg, vals in claims_by_segment.items():
         mean_val = sum(vals) / len(vals)
-        variance = sum((x - mean_val) ** 2 for x in vals) / len(vals) if len(vals) > 1 else 0
+        variance = (
+            sum((x - mean_val) ** 2 for x in vals) / len(vals) if len(vals) > 1 else 0
+        )
         std_val = variance**0.5
         segment_stats[seg] = (mean_val, max(std_val, 0.5))
         industry_claim_stats[(seg[1], seg[2])].extend(vals)
@@ -66,7 +68,9 @@ def main() -> None:
 
     global_mean = sum(all_claims) / len(all_claims) if all_claims else 5.0
     global_var = (
-        sum((x - global_mean) ** 2 for x in all_claims) / len(all_claims) if all_claims else 1
+        sum((x - global_mean) ** 2 for x in all_claims) / len(all_claims)
+        if all_claims
+        else 1
     )
     global_std = max(global_var**0.5, 0.5)
 
@@ -109,17 +113,19 @@ def main() -> None:
             else:
                 mean_val, std_val = get_segment_params(seg)
                 claims_val = sample_claims(mean_val, std_val)
-                rows.append({
-                    "month": month_str,
-                    "state": state,
-                    "industry": industry,
-                    "claim_type": claim_type,
-                    "claims_count_actual": str(claims_val),
-                    "distribution": meta["distribution"],
-                    "param_1": meta["param_1"],
-                    "param_2": meta["param_2"],
-                    "base_avg_cost": meta["base_avg_cost"],
-                })
+                rows.append(
+                    {
+                        "month": month_str,
+                        "state": state,
+                        "industry": industry,
+                        "claim_type": claim_type,
+                        "claims_count_actual": str(claims_val),
+                        "distribution": meta["distribution"],
+                        "param_1": meta["param_1"],
+                        "param_2": meta["param_2"],
+                        "base_avg_cost": meta["base_avg_cost"],
+                    },
+                )
 
     # Sort by month, state, industry, claim_type
     rows.sort(key=lambda r: (r["month"], r["state"], r["industry"], r["claim_type"]))
@@ -133,7 +139,9 @@ def main() -> None:
     new_count = len(rows)
     filled = new_count - original_count
     print(f"Wrote {OUTPUT_PATH}")
-    print(f"Original rows: {original_count}, Total rows: {new_count}, Synthetic filled: {filled}")
+    print(
+        f"Original rows: {original_count}, Total rows: {new_count}, Synthetic filled: {filled}",
+    )
 
 
 if __name__ == "__main__":

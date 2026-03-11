@@ -105,21 +105,22 @@ export default function Home() {
         const forecast = isForecast ? point.claims_count_forecast : null;
         const lineValue = currentData ?? forecast;
 
+        const isLastHistorical = index === forecastStartIndex - 1;
+        const hasForecastCi = isForecast || isLastHistorical;
         let forecastCiLow: number | null = null;
         let forecastCiRange: number | null = null;
-        if (isForecast && lineValue != null) {
+        if (hasForecastCi && lineValue != null) {
           const baseRange = point.claims_ci_high - point.claims_ci_low;
-          const forecastIndex = index - forecastStartIndex;
-          const widenFactor = 1 + 0.2 * forecastIndex;
+          const forecastIndex = isLastHistorical ? -1 : index - forecastStartIndex;
+          const widenFactor = 1 + 0.2 * Math.max(0, forecastIndex);
           const halfSpread = (baseRange / 2) * widenFactor;
           forecastCiLow = lineValue - halfSpread;
           forecastCiRange = 2 * halfSpread;
         }
-
         return {
           month: monthToLabel(point.month),
           currentData: index < forecastStartIndex ? currentData : null,
-          forecast: isForecast ? forecast : null,
+          forecast: isForecast ? forecast : isLastHistorical ? currentData : null,
           lineValue,
           forecastCiLow,
           forecastCiRange,
@@ -145,21 +146,22 @@ export default function Home() {
         const forecast = isForecast ? avgCost : null;
         const lineValue = currentData ?? forecast;
 
+        const isLastHistorical = index === forecastStartIndex - 1;
+        const hasForecastCi = isForecast || isLastHistorical;
         let forecastCiLow: number | null = null;
         let forecastCiRange: number | null = null;
-        if (isForecast && lineValue != null && lineValue > 0 && lineValue < MAX_SAFE_COST) {
+        if (hasForecastCi && lineValue != null && lineValue > 0 && lineValue < MAX_SAFE_COST) {
           const halfSpread = lineValue * 0.1;
-          const forecastIndex = index - forecastStartIndex;
-          const widenFactor = 1 + 0.1 * forecastIndex;
+          const forecastIndex = isLastHistorical ? -1 : index - forecastStartIndex;
+          const widenFactor = 1 + 0.1 * Math.max(0, forecastIndex);
           const scaledHalfSpread = halfSpread * widenFactor;
           forecastCiLow = Math.max(0, lineValue - scaledHalfSpread);
           forecastCiRange = 2 * scaledHalfSpread;
         }
-
         return {
           month: monthToLabel(point.month),
           currentData: index < forecastStartIndex ? currentData : null,
-          forecast: isForecast ? forecast : null,
+          forecast: isForecast ? forecast : isLastHistorical ? currentData : null,
           lineValue,
           forecastCiLow,
           forecastCiRange,
