@@ -6,7 +6,6 @@ type ScenarioPanelProps = {
   frequencyShock: number;
   setFrequencyShock: (value: number) => void;
   onApplyScenario: () => void;
-  loading: boolean;
   error: string | null;
 };
 
@@ -16,7 +15,6 @@ export function ScenarioPanel({
   frequencyShock,
   setFrequencyShock,
   onApplyScenario,
-  loading,
   error,
 }: ScenarioPanelProps) {
   return (
@@ -53,7 +51,6 @@ export function ScenarioPanel({
         </button>
       </div>
 
-      {loading && <p className="mt-3 rounded-lg bg-indigo-100/80 px-3 py-2 text-sm text-indigo-800">Loading dashboard data...</p>}
       {error && <p className="mt-3 rounded-lg bg-rose-100 px-3 py-2 text-sm text-rose-800">{error}</p>}
     </section>
   );

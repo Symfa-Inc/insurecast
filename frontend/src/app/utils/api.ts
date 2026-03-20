@@ -29,6 +29,9 @@ export type CostsPoint = {
 
 export type MetadataResponse = {
   model_name: string;
+  actual_start?: string;
+  actual_end?: string;
+  forecast_end?: string;
   mae: number;
   rmse: number;
   mape: number;

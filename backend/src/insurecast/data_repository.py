@@ -108,7 +108,21 @@ class DemoDataRepository:
         key = (format_month(month), segment.state, segment.industry, segment.claim_type)
         return self.claims_by_key.get(key)
 
+    def _noise(self, month: date, segment: SegmentKey, scale: float = 1.0) -> float:
+        """Deterministic per-segment-month noise to reduce periodicity."""
+        h = hash(
+            (
+                month.year,
+                month.month,
+                segment.state,
+                segment.industry,
+                segment.claim_type,
+            ),
+        )
+        return 1.0 + (h % 1001) / 1000.0 * 2 * scale - scale
+
     def forecast_claims(self, month: date, segment: SegmentKey) -> float:
+        """Forecast using naive seasonal model: mean of same month-of-year in history."""
         actual = self.actual_claims(month, segment)
         if actual is not None:
             return round(actual, 2)
@@ -117,28 +131,20 @@ class DemoDataRepository:
         if not history:
             return 0.0
 
-        latest_month = history[-1][0]
-        latest_value = history[-1][1]
         same_month_values = [
             value for value_month, value in history if value_month.month == month.month
         ]
-        seasonal_base = mean(same_month_values) if same_month_values else latest_value
-
-        if len(history) >= 24:
-            recent = mean(value for _, value in history[-12:])
-            prior = mean(value for _, value in history[-24:-12])
-            trend_ratio = recent / prior if prior > 0 else 1.0
+        if same_month_values:
+            forecast = mean(same_month_values)
         else:
-            trend_ratio = 1.0
+            forecast = mean(v for _, v in history)
 
-        steps = (month.year - latest_month.year) * 12 + (
-            month.month - latest_month.month
-        )
-        growth = trend_ratio ** (steps / 12) if steps > 0 else 1.0
-        return round(max(0.0, seasonal_base * growth), 2)
+        return round(max(0.0, forecast), 2)
 
     def avg_severity(self, month: date, segment: SegmentKey) -> float:
         base = self.severity_by_segment.get(segment, 8000.0)
         inflation = 1.0 + max(0, month.year - self.actual_end.year) * 0.03
-        seasonality = 1.0 + 0.02 * ((month.month - 6) / 12)
-        return round(base * inflation * seasonality, 2)
+        # Reduced seasonality (0.008) and add noise to vary cost less periodically
+        seasonality = 1.0 + 0.008 * ((month.month - 6) / 12)
+        noise_factor = 1.0 + self._noise(month, segment, 0.06)
+        return round(base * inflation * seasonality * noise_factor, 2)

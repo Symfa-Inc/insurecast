@@ -148,6 +148,12 @@ export function ForecastChart({
           initialDimension={{ width: 400, height: 256 }}
         >
           <ComposedChart data={sanitizedData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="forecastCiGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#c7d2fe" stopOpacity={0.5} />
+                <stop offset="100%" stopColor="#a5b4fc" stopOpacity={0.25} />
+              </linearGradient>
+            </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#c7b8f0" strokeOpacity={0.6} />
             <XAxis
               dataKey="month"
@@ -181,8 +187,7 @@ export function ForecastChart({
               dataKey="forecastCiRange"
               stackId="band"
               stroke="none"
-              fill="#93c5fd"
-              fillOpacity={0.4}
+              fill="url(#forecastCiGradient)"
               name="Forecast CI"
             />
             <Line
@@ -191,6 +196,8 @@ export function ForecastChart({
               name="Historical"
               stroke="#2563eb"
               strokeWidth={2.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
               dot={false}
               connectNulls
             />
@@ -200,7 +207,9 @@ export function ForecastChart({
               name="Forecast"
               stroke="#2563eb"
               strokeWidth={2.5}
-              strokeDasharray="5 5"
+              strokeDasharray="8 4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
               dot={false}
               connectNulls
             />

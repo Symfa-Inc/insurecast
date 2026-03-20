@@ -120,6 +120,9 @@ async def get_model_metadata() -> dict[str, Any]:
     return {
         "run_id": "demo-sarimax-001",
         "trained_at": "2026-03-04",
+        "actual_start": repo.actual_start.strftime("%Y-%m"),
+        "actual_end": repo.actual_end.strftime("%Y-%m"),
+        "forecast_end": repo.forecast_end.strftime("%Y-%m"),
         "train_window": (
             f"{repo.actual_start.strftime('%Y-%m')}..{repo.actual_end.strftime('%Y-%m')}"
         ),
