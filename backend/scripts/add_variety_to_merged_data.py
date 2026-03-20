@@ -56,8 +56,8 @@ def main() -> None:
 
     print(f"Wrote {OUTPUT_PATH} ({len(rows)} rows)")
     print(
-        f"Claims scaled ~{CLAIMS_SCALE}x with ±{int(CLAIMS_NOISE*100)}% noise; "
-        f"costs ×{COST_BASELINE_MULT} with ±{int(COST_NOISE*100)}% noise"
+        f"Claims scaled ~{CLAIMS_SCALE}x with ±{int(CLAIMS_NOISE * 100)}% noise; "
+        f"costs ×{COST_BASELINE_MULT} with ±{int(COST_NOISE * 100)}% noise",
     )
 
 

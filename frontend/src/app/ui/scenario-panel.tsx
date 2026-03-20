@@ -19,7 +19,9 @@ export function ScenarioPanel({
 }: ScenarioPanelProps) {
   return (
     <section className="rounded-2xl border border-indigo-200/50 bg-white p-5 shadow-sm ring-1 ring-indigo-100/50">
-      <div className="grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-700/80">Scenario</p>
+      <p className="mt-0.5 text-xs text-indigo-600/70">Adjust severity and frequency, then apply</p>
+      <div className="mt-3 flex flex-col gap-3">
         <label className="text-sm font-semibold text-indigo-900/80">
           Severity Inflation: {severityInflation}%
           <input
@@ -45,9 +47,9 @@ export function ScenarioPanel({
         <button
           type="button"
           onClick={() => void onApplyScenario()}
-          className="h-11 rounded-xl bg-indigo-600 px-6 text-sm font-semibold text-white shadow-md hover:bg-indigo-700 transition-all duration-200 hover:shadow-lg"
+          className="h-11 w-full rounded-xl bg-indigo-600 px-4 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-indigo-700 hover:shadow-lg"
         >
-          Apply Scenario
+          Apply scenario
         </button>
       </div>
 

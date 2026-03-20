@@ -16,6 +16,9 @@ type DashboardHeaderProps = {
   setForecastPeriod: (value: string) => void;
 };
 
+const controlClass =
+  "mt-1.5 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 shadow-sm transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600";
+
 export function DashboardHeader({
   segments,
   stateValue,
@@ -30,17 +33,17 @@ export function DashboardHeader({
   setForecastPeriod,
 }: DashboardHeaderProps) {
   return (
-    <section className="rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-teal-600 p-6 text-white shadow-xl shadow-indigo-200/30">
-      <p className="text-3xl font-bold tracking-tight md:text-4xl">Insurecast forecasting dashboard</p>
-      <p className="mt-2 text-sm text-white/90">Claims and paid amount trends by segment</p>
+    <section className="rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-teal-600 p-5 text-white shadow-lg shadow-indigo-200/30">
+      <p className="text-lg font-bold tracking-tight">Parameters</p>
+      <p className="mt-1 text-xs text-white/85">Segment and forecast window</p>
 
-      <div className="mt-6 flex flex-wrap gap-4">
-        <label className="flex min-w-0 flex-1 flex-col text-sm font-semibold text-white/95 sm:min-w-[140px]">
+      <div className="mt-4 flex flex-col gap-3">
+        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
           State
           <select
             value={stateValue}
             onChange={(e) => setStateValue(e.target.value)}
-            className="mt-1.5 min-w-0 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600"
+            className={controlClass}
           >
             {(segments?.states ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -49,12 +52,12 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="flex min-w-0 flex-1 flex-col text-sm font-semibold text-white/95 sm:min-w-[140px]">
+        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
           Industry
           <select
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
-            className="mt-1.5 min-w-0 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600"
+            className={controlClass}
           >
             {(segments?.industries ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -63,12 +66,12 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="flex min-w-0 flex-1 flex-col text-sm font-semibold text-white/95 sm:min-w-[140px]">
-          Claim Type
+        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+          Claim type
           <select
             value={claimType}
             onChange={(e) => setClaimType(e.target.value)}
-            className="mt-1.5 min-w-0 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600"
+            className={controlClass}
           >
             {(segments?.claim_types ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -77,21 +80,21 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="flex min-w-0 flex-1 flex-col text-sm font-semibold text-white/95 sm:min-w-[140px]">
+        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
           From
           <input
             type="month"
             value={fromMonth}
             onChange={(e) => setFromMonth(e.target.value)}
-            className="mt-1.5 min-w-0 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600"
+            className={controlClass}
           />
         </label>
-        <label className="flex min-w-0 flex-1 flex-col text-sm font-semibold text-white/95 sm:min-w-[140px]">
-          Forecast Period
+        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+          Forecast period
           <select
             value={forecastPeriod}
             onChange={(e) => setForecastPeriod(e.target.value)}
-            className="mt-1.5 min-w-0 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600"
+            className={controlClass}
           >
             <option value="1">1 month</option>
             <option value="3">3 months</option>

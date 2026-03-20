@@ -14,8 +14,7 @@ import {
 } from "./utils/api";
 import { addMonths, compareMonths, formatCurrency, formatNumber, monthToLabel } from "./utils/format";
 import { DashboardHeader } from "./ui/dashboard-header";
-import { ForecastChart, type ForecastChartPoint } from "./ui/forecast-chart";
-import { ModelMetadata } from "./ui/model-metadata";
+import { chartHasDisplayableData, ForecastChart, type ForecastChartPoint } from "./ui/forecast-chart";
 import { MonthlyTable, type MonthlyRow } from "./ui/monthly-table";
 import { ScenarioPanel } from "./ui/scenario-panel";
 
@@ -134,17 +133,24 @@ export default function Home() {
         const forecast = isForecast ? point.claims_count_forecast : null;
         const lineValue = currentData ?? forecast;
 
-        const hasForecastCi = isForecast || isLastHistorical;
+        const hasForecastCi = isForecast;
         let forecastCiLow: number | null = null;
         let forecastCiRange: number | null = null;
         if (hasForecastCi && lineValue != null) {
-          const baseRange = point.claims_ci_high - point.claims_ci_low;
-          const forecastIndex = isLastHistorical ? -1 : index - lastHistoricalIndex - 1;
-          const widenFactor = 1 + 0.2 * Math.max(0, forecastIndex);
+          let baseRange = point.claims_ci_high - point.claims_ci_low;
+          if (!Number.isFinite(baseRange) || baseRange <= 0) {
+            baseRange = Math.max(Math.abs(lineValue) * 0.24, 0.75);
+          }
+          const forecastIndex = Math.max(0, index - lastHistoricalIndex - 1);
+          const widenFactor = 1 + 0.2 * forecastIndex;
           const halfSpread = (baseRange / 2) * widenFactor;
-          forecastCiLow = lineValue - halfSpread;
+          forecastCiLow = Math.max(0, lineValue - halfSpread);
           forecastCiRange = 2 * halfSpread;
         }
+        const ciBand: [number, number] | null =
+          forecastCiLow != null && forecastCiRange != null
+            ? [forecastCiLow, forecastCiLow + forecastCiRange]
+            : null;
         return {
           month: monthToLabel(point.month),
           currentData: isHistorical ? currentData : null,
@@ -152,6 +158,7 @@ export default function Home() {
           lineValue,
           forecastCiLow,
           forecastCiRange,
+          ciBand,
         };
       });
     },
@@ -183,17 +190,21 @@ export default function Home() {
       const forecast = isForecast ? avgCost : null;
       const lineValue = currentData ?? forecast;
 
-      const hasForecastCi = isForecast || isLastHistorical;
+      const hasForecastCi = isForecast;
       let forecastCiLow: number | null = null;
       let forecastCiRange: number | null = null;
       if (hasForecastCi && lineValue != null && lineValue > 0 && lineValue < MAX_SAFE_COST) {
         const halfSpread = lineValue * 0.1;
-        const forecastIndex = isLastHistorical ? -1 : index - lastHistoricalIndex - 1;
-        const widenFactor = 1 + 0.1 * Math.max(0, forecastIndex);
+        const forecastIndex = Math.max(0, index - lastHistoricalIndex - 1);
+        const widenFactor = 1 + 0.1 * forecastIndex;
         const scaledHalfSpread = halfSpread * widenFactor;
         forecastCiLow = Math.max(0, lineValue - scaledHalfSpread);
         forecastCiRange = 2 * scaledHalfSpread;
       }
+      const ciBand: [number, number] | null =
+        forecastCiLow != null && forecastCiRange != null
+          ? [forecastCiLow, forecastCiLow + forecastCiRange]
+          : null;
       return {
         month: monthToLabel(point.month),
         currentData: isHistorical ? currentData : null,
@@ -201,12 +212,18 @@ export default function Home() {
         lineValue,
         forecastCiLow,
         forecastCiRange,
+        ciBand,
       };
     });
   }, [claims, displayedCosts]);
 
+  /** Match charts: if neither series has displayable points, table shows "No data" (not rows with zeros / severity-only avg). */
+  const hasMonthlyTableData =
+    chartHasDisplayableData(claimsChartData) || chartHasDisplayableData(avgCostChartData);
+
   const monthlyRows = useMemo<MonthlyRow[]>(() => {
-    const rows = displayedCosts.map((costPoint) => {
+    const rows = displayedCosts
+      .map((costPoint) => {
         const claimPoint = claims.find((entry) => entry.month === costPoint.month);
         if (!claimPoint) {
           return null;
@@ -216,6 +233,7 @@ export default function Home() {
           claims: claimPoint.claims_count_forecast,
           paid: costPoint.paid_amount_forecast,
           avgCost: costPoint.avg_cost_per_claim,
+          isForecast: !hasActual(claimPoint),
         };
       })
       .filter((row): row is MonthlyRow => row !== null);
@@ -254,49 +272,64 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto max-w-[1400px] space-y-4 px-4 py-6 text-indigo-950/90 md:px-6 md:py-8 md:space-y-5 lg:px-8">
-      <DashboardHeader
-        segments={segments}
-        stateValue={stateValue}
-        setStateValue={setStateValue}
-        industry={industry}
-        setIndustry={setIndustry}
-        claimType={claimType}
-        setClaimType={setClaimType}
-        fromMonth={fromMonth}
-        setFromMonth={setFromMonth}
-        forecastPeriod={forecastPeriod}
-        setForecastPeriod={setForecastPeriod}
-      />
+    <main className="mx-auto max-w-[1600px] px-4 py-6 text-indigo-950/90 md:px-6 md:py-8 lg:px-8">
+      <div className="flex justify-center">
+        <div className="flex w-full max-w-full flex-col lg:w-fit">
+          <header className="mb-6 pb-2">
+            <h1 className="text-2xl font-bold tracking-tight text-indigo-950 md:text-3xl">
+              Insurecast forecasting dashboard
+            </h1>
+            <p className="mt-1 text-sm text-indigo-700/75">Claims and paid amount trends by segment</p>
+          </header>
 
-      <ScenarioPanel
-        severityInflation={severityInflation}
-        setSeverityInflation={setSeverityInflation}
-        frequencyShock={frequencyShock}
-        setFrequencyShock={setFrequencyShock}
-        onApplyScenario={applyScenario}
-        error={error}
-      />
+          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,48rem)] lg:items-start lg:gap-8">
+            <aside className="order-1 flex min-w-0 flex-col gap-4 lg:sticky lg:top-6">
+              <DashboardHeader
+                segments={segments}
+                stateValue={stateValue}
+                setStateValue={setStateValue}
+                industry={industry}
+                setIndustry={setIndustry}
+                claimType={claimType}
+                setClaimType={setClaimType}
+                fromMonth={fromMonth}
+                setFromMonth={setFromMonth}
+                forecastPeriod={forecastPeriod}
+                setForecastPeriod={setForecastPeriod}
+              />
+              <ScenarioPanel
+                severityInflation={severityInflation}
+                setSeverityInflation={setSeverityInflation}
+                frequencyShock={frequencyShock}
+                setFrequencyShock={setFrequencyShock}
+                onApplyScenario={applyScenario}
+                error={error}
+              />
+            </aside>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        <ForecastChart
-          title="Amount of Claims per Month"
-          description="Historical data plus forecast for the selected period."
-          data={claimsChartData}
-          valueFormatter={formatNumber}
-        />
-        <ForecastChart
-          title="Average Cost per Claim per Month"
-          description="Historical data plus forecast for the selected period."
-          data={avgCostChartData}
-          valueFormatter={formatCurrency}
-          skipZeroFloor
-          allowDataOverflow
-        />
-      </section>
+            <div className="order-2 min-w-0 w-full space-y-4">
+              <section className="flex flex-col gap-4">
+                <ForecastChart
+                  title="Amount of Claims per Month"
+                  description="Historical data plus forecast for the selected period."
+                  data={claimsChartData}
+                  valueFormatter={formatNumber}
+                />
+                <ForecastChart
+                  title="Average Cost per Claim per Month"
+                  description="Historical data plus forecast for the selected period."
+                  data={avgCostChartData}
+                  valueFormatter={formatCurrency}
+                  skipZeroFloor
+                  allowDataOverflow
+                />
+              </section>
 
-      <MonthlyTable rows={monthlyRows} />
-      <ModelMetadata metadata={metadata} />
+              <MonthlyTable rows={hasMonthlyTableData ? monthlyRows : []} />
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

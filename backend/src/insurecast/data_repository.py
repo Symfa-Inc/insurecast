@@ -4,7 +4,11 @@ import csv
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-from statistics import mean
+
+from insurecast.sarimax_forecast import (
+    forecast_horizon_dict,
+    naive_forecast_interval,
+)
 
 
 @dataclass(frozen=True)
@@ -96,6 +100,10 @@ class DemoDataRepository:
         self.actual_start = min(all_months)
         self.actual_end = max(all_months)
         self.forecast_end = date(max(2026, self.actual_end.year + 1), 12, 1)
+        self._forecast_interval_cache: dict[
+            SegmentKey,
+            dict[date, tuple[float, float, float]],
+        ] = {}
 
     def get_segments(self) -> dict[str, list[str]]:
         return {
@@ -121,25 +129,50 @@ class DemoDataRepository:
         )
         return 1.0 + (h % 1001) / 1000.0 * 2 * scale - scale
 
-    def forecast_claims(self, month: date, segment: SegmentKey) -> float:
-        """Forecast using naive seasonal model: mean of same month-of-year in history."""
+    def _ensure_forecast_cache(self, segment: SegmentKey) -> None:
+        if segment in self._forecast_interval_cache:
+            return
+        history = self.claim_history.get(segment, [])
+        fc_dict, _meta = forecast_horizon_dict(
+            history,
+            self.actual_end,
+            self.forecast_end,
+        )
+        self._forecast_interval_cache[segment] = fc_dict
+
+    def forecast_claims_with_interval(
+        self,
+        month: date,
+        segment: SegmentKey,
+    ) -> tuple[float, float, float]:
+        """
+        Point forecast and approximate interval.
+
+        Historical months return actuals with heuristic CI; future months use
+        SARIMAX (with seasonal naive / ARIMA fallbacks when needed).
+        """
+        mk = date(month.year, month.month, 1)
         actual = self.actual_claims(month, segment)
         if actual is not None:
-            return round(actual, 2)
+            a = float(actual)
+            lo, hi = claims_ci(a)
+            return round(a, 2), lo, hi
+
+        self._ensure_forecast_cache(segment)
+        cached = self._forecast_interval_cache.get(segment, {}).get(mk)
+        if cached is not None:
+            pt, lo, hi = cached
+            return round(pt, 2), round(lo, 2), round(hi, 2)
 
         history = self.claim_history.get(segment, [])
         if not history:
-            return 0.0
+            return 0.0, 0.0, 0.0
+        pt, lo, hi = naive_forecast_interval(history, mk)
+        return round(pt, 2), round(lo, 2), round(hi, 2)
 
-        same_month_values = [
-            value for value_month, value in history if value_month.month == month.month
-        ]
-        if same_month_values:
-            forecast = mean(same_month_values)
-        else:
-            forecast = mean(v for _, v in history)
-
-        return round(max(0.0, forecast), 2)
+    def forecast_claims(self, month: date, segment: SegmentKey) -> float:
+        """Forecast point (SARIMAX-based for months beyond observed actuals)."""
+        return self.forecast_claims_with_interval(month, segment)[0]
 
     def avg_severity(self, month: date, segment: SegmentKey) -> float:
         base = self.severity_by_segment.get(segment, 8000.0)

@@ -1,5 +1,6 @@
 "use client";
 
+import { useId } from "react";
 import {
   Area,
   CartesianGrid,
@@ -22,6 +23,11 @@ export type ForecastChartPoint = {
   lineValue: number | null;
   forecastCiLow: number | null;
   forecastCiRange: number | null;
+  /**
+   * [low, high] for Recharts range Area (no stackId). Null = no band at this point.
+   * Prefer this over stacked low+range so the full forecast segment renders as one region.
+   */
+  ciBand: [number, number] | null;
 };
 
 type ForecastChartProps = {
@@ -45,8 +51,12 @@ function computeYDomain(
   const allVals: number[] = [];
   for (const pt of data) {
     const vals = [pt.currentData, pt.forecast, pt.lineValue];
-    if (!fromLineOnly && pt.forecastCiLow != null && pt.forecastCiRange != null) {
-      vals.push(pt.forecastCiLow, pt.forecastCiLow + pt.forecastCiRange);
+    if (!fromLineOnly) {
+      if (pt.ciBand != null) {
+        vals.push(pt.ciBand[0], pt.ciBand[1]);
+      } else if (pt.forecastCiLow != null && pt.forecastCiRange != null) {
+        vals.push(pt.forecastCiLow, pt.forecastCiLow + pt.forecastCiRange);
+      }
     }
     for (const v of vals) {
       if (v != null && isFinite(v) && v >= 0 && v < 1e7) {
@@ -84,7 +94,7 @@ function computeYDomain(
   return [domainMin, domainMax];
 }
 
-function hasPlottableData(data: ForecastChartPoint[]): boolean {
+export function hasPlottableData(data: ForecastChartPoint[]): boolean {
   if (!data.length) return false;
   for (const pt of data) {
     const line = pt.lineValue != null && isFinite(pt.lineValue) ? pt.lineValue : null;
@@ -103,6 +113,14 @@ function sanitizeChartData(data: ForecastChartPoint[]): ForecastChartPoint[] {
   return data.map((pt) => {
     const sane = (v: number | null): number | null =>
       v != null && isFinite(v) && v >= 0 && v < SANE_MAX ? v : null;
+    let ciBand: [number, number] | null = null;
+    if (pt.ciBand != null && pt.ciBand.length === 2) {
+      const lo = sane(pt.ciBand[0]);
+      const hi = sane(pt.ciBand[1]);
+      if (lo != null && hi != null) {
+        ciBand = lo <= hi ? [lo, hi] : [hi, lo];
+      }
+    }
     return {
       ...pt,
       currentData: sane(pt.currentData),
@@ -116,8 +134,14 @@ function sanitizeChartData(data: ForecastChartPoint[]): ForecastChartPoint[] {
         pt.forecastCiRange < SANE_MAX
           ? pt.forecastCiRange
           : null,
+      ciBand,
     };
   });
+}
+
+/** Same rule as the charts: sanitized series must have at least one non-zero plottable point */
+export function chartHasDisplayableData(data: ForecastChartPoint[]): boolean {
+  return hasPlottableData(sanitizeChartData(data));
 }
 
 export function ForecastChart({
@@ -130,10 +154,11 @@ export function ForecastChart({
   allowDataOverflow: allowDataOverflowProp,
 }: ForecastChartProps) {
   const sanitizedData = sanitizeChartData(data);
-  const hasData = hasPlottableData(sanitizedData);
+  const hasData = chartHasDisplayableData(data);
   const yDomain = hasData
     ? computeYDomain(sanitizedData, domainFromLineOnly, skipZeroFloor)
     : [0, 1];
+  const ciGradientId = `forecastCi-${useId().replace(/:/g, "")}`;
 
   return (
     <article className="group rounded-2xl border border-indigo-200/50 bg-white p-5 shadow-sm ring-1 ring-indigo-100/50 transition-shadow hover:shadow-md">
@@ -149,7 +174,7 @@ export function ForecastChart({
         >
           <ComposedChart data={sanitizedData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="forecastCiGradient" x1="0" y1="0" x2="1" y2="0">
+              <linearGradient id={ciGradientId} x1="0" y1="0" x2="1" y2="0">
                 <stop offset="0%" stopColor="#c7d2fe" stopOpacity={0.5} />
                 <stop offset="100%" stopColor="#a5b4fc" stopOpacity={0.25} />
               </linearGradient>
@@ -176,19 +201,11 @@ export function ForecastChart({
             <Legend wrapperStyle={{ fontSize: 12 }} />
             <Area
               type="monotone"
-              dataKey="forecastCiLow"
-              stackId="band"
+              dataKey="ciBand"
               stroke="none"
-              fillOpacity={0}
-              legendType="none"
-            />
-            <Area
-              type="monotone"
-              dataKey="forecastCiRange"
-              stackId="band"
-              stroke="none"
-              fill="url(#forecastCiGradient)"
+              fill={`url(#${ciGradientId})`}
               name="Forecast CI"
+              isAnimationActive={false}
             />
             <Line
               type="monotone"

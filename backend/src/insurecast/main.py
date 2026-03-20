@@ -44,8 +44,7 @@ class ScenarioRequest(BaseModel):
 
 def build_claims_row(month: date, segment: SegmentKey) -> dict[str, Any]:
     actual = repo.actual_claims(month, segment)
-    forecast = repo.forecast_claims(month, segment)
-    ci_low, ci_high = claims_ci(forecast)
+    forecast, ci_low, ci_high = repo.forecast_claims_with_interval(month, segment)
     return {
         "month": month.strftime("%Y-%m"),
         "state": segment.state,
