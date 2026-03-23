@@ -26,8 +26,7 @@ function EmptyTableState() {
 
 const thClass =
   "border-b border-indigo-200/60 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-indigo-700 sm:px-3 md:px-4";
-const tdBase =
-  "px-2 py-3 align-middle text-center sm:px-3 md:px-4";
+const tdBase = "px-2 py-3 align-middle text-center sm:px-3 md:px-4";
 const tdHistorical = `${tdBase} border-b border-indigo-100/70`;
 const tdForecast = `${tdBase} border-b border-violet-200/55`;
 
@@ -52,7 +51,9 @@ export function MonthlyTable({ rows }: MonthlyTableProps) {
         className="flex w-full cursor-pointer items-start justify-between gap-3 border-b border-indigo-100/80 bg-indigo-50/60 px-4 py-3 text-left transition-colors hover:bg-indigo-50/90"
       >
         <div>
-          <h2 className="text-base font-semibold text-indigo-900">Monthly values</h2>
+          <h2 className="text-base font-semibold text-indigo-900">
+            Monthly values
+          </h2>
           <p className="mt-0.5 text-xs text-indigo-600/80">
             Forecast rows use a soft violet tint; historical rows stay on white.
           </p>
@@ -63,7 +64,11 @@ export function MonthlyTable({ rows }: MonthlyTableProps) {
       </button>
 
       {expanded && (
-        <div id="monthly-table-panel" role="region" aria-labelledby="monthly-table-toggle">
+        <div
+          id="monthly-table-panel"
+          role="region"
+          aria-labelledby="monthly-table-toggle"
+        >
           {hasRows ? (
             <div className="w-full overflow-x-auto">
               <table className="w-full min-w-full table-fixed border-collapse text-sm md:text-[0.9375rem]">
@@ -91,9 +96,17 @@ export function MonthlyTable({ rows }: MonthlyTableProps) {
                           : "transition-colors hover:bg-indigo-50/40"
                       }
                     >
-                      <td className={row.isForecast ? `${tdForecast} text-violet-950` : `${tdHistorical} text-indigo-900`}>
+                      <td
+                        className={
+                          row.isForecast
+                            ? `${tdForecast} text-violet-950`
+                            : `${tdHistorical} text-indigo-900`
+                        }
+                      >
                         <div className="flex flex-col items-center gap-0.5">
-                          <span className={`font-medium ${row.isForecast ? "text-violet-950" : "text-indigo-900"}`}>
+                          <span
+                            className={`font-medium ${row.isForecast ? "text-violet-950" : "text-indigo-900"}`}
+                          >
                             {monthToLabel(row.month)}
                           </span>
                           {row.isForecast && (

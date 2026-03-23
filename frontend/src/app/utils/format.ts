@@ -7,7 +7,9 @@ export function formatCurrency(value: number): string {
 }
 
 export function formatNumber(value: number): string {
-  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(value);
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(
+    value,
+  );
 }
 
 export function monthToLabel(month: string): string {

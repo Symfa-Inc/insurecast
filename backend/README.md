@@ -4,6 +4,10 @@ Time-series models applied to insurance data.
 
 Claim-count forecasts beyond the last observed month use **SARIMAX** `(1,1,1)×(1,1,1,12)` via statsmodels, with ARIMA(1,1,1) or seasonal naive fallbacks if fitting fails. Intervals for forecast months use the model’s 95% prediction interval when available.
 
+### OpenAI dashboard summary
+
+`POST /ai/forecast-summary` merges the same monthly claims and cost rows as the charts, sends them to **OpenAI** (`OPENAI_API_KEY`), and returns a short narrative. If the key is missing or the API fails, the endpoint still returns `200` with a deterministic summary and `source=fallback`. See `.env.example`.
+
 ## Setup
 
 ```bash

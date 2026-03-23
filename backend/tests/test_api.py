@@ -64,6 +64,68 @@ def test_costs_series_endpoint_returns_points() -> None:
     assert "avg_cost_per_claim" in first
 
 
+def test_forecast_summary_llm_no_data_skips_openai(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    response = client.post(
+        "/ai/forecast-summary",
+        json={
+            "from": "2030-12",
+            "to": "2020-01",
+            "state": "CA",
+            "industry": "Construction",
+            "claim_type": "LostTime",
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["source"] == "no_data"
+    assert "no data" in payload["narrative"].lower()
+
+
+def test_forecast_summary_llm_fallback_without_openai_key(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    response = client.post(
+        "/ai/forecast-summary",
+        json={
+            "from": "2023-01",
+            "to": "2026-12",
+            "state": "CA",
+            "industry": "Construction",
+            "claim_type": "LostTime",
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["source"] == "fallback"
+    assert payload["narrative"]
+    assert payload["segment_label"] == "CA · Construction · LostTime"
+    assert payload["segment_label"] == "CA · Construction · LostTime"
+    assert payload["notice"]
+
+
+def test_forecast_summary_endpoint_matches_series_params() -> None:
+    response = client.get(
+        "/series/forecast-summary",
+        params={
+            "from": "2023-01",
+            "to": "2026-12",
+            "state": "CA",
+            "industry": "Construction",
+            "claim_type": "LostTime",
+        },
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["headline"]
+    assert len(payload["bullets"]) >= 2
+    assert payload["model_name"] == "SARIMAX"
+    assert payload["segment_label"] == "CA · Construction · LostTime"
+    assert payload["chart_from"] == "2023-01"
+    assert payload["chart_to"] == "2026-12"
+    assert payload["historical_months_in_chart"] >= 0
+    assert payload["forecast_months_in_chart"] >= 0
+
+
 def test_metadata_endpoint_returns_metrics() -> None:
     response = client.get("/model/metadata")
     assert response.status_code == 200
