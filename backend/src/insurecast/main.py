@@ -1,6 +1,5 @@
 from datetime import date
 from pathlib import Path
-from statistics import mean
 from typing import Any, Literal
 
 from dotenv import load_dotenv
@@ -79,25 +78,6 @@ class ForecastSummaryLLMResponse(BaseModel):
     actual_data_end: str
 
 
-class ForecastSummaryResponse(BaseModel):
-    """Narrative + stats for the claims forecast in the selected chart window (OpenAPI schema)."""
-
-    headline: str
-    bullets: list[str]
-    segment_label: str
-    chart_from: str
-    chart_to: str
-    model_name: str
-    train_window: str
-    actual_data_end: str
-    api_forecast_end: str
-    historical_months_in_chart: int
-    forecast_months_in_chart: int
-    last_actual_month: str | None = None
-    last_actual_claims: float | None = None
-    mean_monthly_forecast_claims: float | None = None
-
-
 def build_claims_row(month: date, segment: SegmentKey) -> dict[str, Any]:
     actual = repo.actual_claims(month, segment)
     forecast, ci_low, ci_high = repo.forecast_claims_with_interval(month, segment)
@@ -153,96 +133,6 @@ async def get_claims_series(
     end = min(parse_month(to), repo.forecast_end)
     series = [build_claims_row(month, segment) for month in iter_months(start, end)]
     return {"series": series}
-
-
-@app.get(
-    "/series/forecast-summary",
-    response_model=ForecastSummaryResponse,
-    summary="Forecast summary for charts",
-    description=(
-        "Returns a short narrative and counts for the selected segment and date range. "
-        "Use the same query parameters as `/series/claims` so the summary matches the charts."
-    ),
-)
-async def get_forecast_summary(
-    from_: str = Query(..., alias="from"),
-    to: str = Query(...),
-    state: str = Query(...),
-    industry: str = Query(...),
-    claim_type: str = Query(...),
-) -> ForecastSummaryResponse:
-    segment = SegmentKey(state=state, industry=industry, claim_type=claim_type)
-    start = parse_month(from_)
-    end = min(parse_month(to), repo.forecast_end)
-
-    train_window = (
-        f"{repo.actual_start.strftime('%Y-%m')}..{repo.actual_end.strftime('%Y-%m')}"
-    )
-    model_name = "SARIMAX"
-    segment_label = f"{state} · {industry} · {claim_type}"
-
-    hist_count = 0
-    fc_count = 0
-    fc_values: list[float] = []
-    last_act_month: date | None = None
-    last_act_val: float | None = None
-
-    for month in iter_months(start, end):
-        act = repo.actual_claims(month, segment)
-        if act is not None:
-            hist_count += 1
-            last_act_month = month
-            last_act_val = float(act)
-        else:
-            fc_count += 1
-            fc_values.append(repo.forecast_claims(month, segment))
-
-    mean_fc = round(mean(fc_values), 2) if fc_values else None
-
-    headline = f"Forecast summary — {segment_label}"
-
-    bullets = [
-        (
-            f"{model_name} is fit on monthly claim counts from the demo OSHA-based series "
-            f"({train_window})."
-        ),
-        (
-            f"Selected chart window {from_} → {to}: {hist_count} month(s) with observed claims "
-            f"and {fc_count} forecast-only month(s). The API can project through "
-            f"{repo.forecast_end.strftime('%Y-%m')}."
-        ),
-    ]
-    if last_act_month is not None and last_act_val is not None:
-        bullets.append(
-            f"Latest observed month in this window: {last_act_month.strftime('%Y-%m')} "
-            f"at {last_act_val:g} claims.",
-        )
-    if mean_fc is not None:
-        bullets.append(
-            f"Mean projected monthly claims over forecast-only months in this window: {mean_fc:g}.",
-        )
-    if fc_count == 0:
-        bullets.append(
-            "No forecast-only months fall in this range; extend the end date or forecast period "
-            "to see projected counts.",
-        )
-
-    return ForecastSummaryResponse(
-        headline=headline,
-        bullets=bullets,
-        segment_label=segment_label,
-        chart_from=from_,
-        chart_to=to,
-        model_name=model_name,
-        train_window=train_window,
-        actual_data_end=repo.actual_end.strftime("%Y-%m"),
-        api_forecast_end=repo.forecast_end.strftime("%Y-%m"),
-        historical_months_in_chart=hist_count,
-        forecast_months_in_chart=fc_count,
-        last_actual_month=last_act_month.strftime("%Y-%m") if last_act_month else None,
-        last_actual_claims=last_act_val,
-        mean_monthly_forecast_claims=mean_fc,
-    )
 
 
 @app.post(

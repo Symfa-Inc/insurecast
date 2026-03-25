@@ -61,8 +61,6 @@ export type ForecastChartPoint = {
   forecast: number | null;
   /** Combined value for the main fitted+forecast line */
   lineValue: number | null;
-  forecastCiLow: number | null;
-  forecastCiRange: number | null;
   /**
    * [low, high] for Recharts range Area (no stackId). Null = no band at this point.
    * Prefer this over stacked low+range so the full forecast segment renders as one region.
@@ -86,9 +84,6 @@ type ForecastChartProps = {
   skipZeroFloor?: boolean;
   /** When true, enforce our domain without extending to include all data (prevents axis starting at 0 when data is higher) */
   allowDataOverflow?: boolean;
-  /** Override default motion when data updates (e.g. longer ease-out after scenario apply). */
-  animationDurationMs?: number;
-  animationEasing?: "ease" | "ease-in" | "ease-out" | "ease-in-out" | "linear";
 };
 
 function computeYDomain(
@@ -99,12 +94,8 @@ function computeYDomain(
   const allVals: number[] = [];
   for (const pt of data) {
     const vals = [pt.currentData, pt.forecast, pt.lineValue, pt.solidBridge];
-    if (!fromLineOnly) {
-      if (pt.ciBand != null) {
-        vals.push(pt.ciBand[0], pt.ciBand[1]);
-      } else if (pt.forecastCiLow != null && pt.forecastCiRange != null) {
-        vals.push(pt.forecastCiLow, pt.forecastCiLow + pt.forecastCiRange);
-      }
+    if (!fromLineOnly && pt.ciBand != null) {
+      vals.push(pt.ciBand[0], pt.ciBand[1]);
     }
     for (const v of vals) {
       if (v != null && isFinite(v) && v >= 0 && v < 1e7) {
@@ -139,14 +130,10 @@ function computeYDomain(
     !fromLineOnly &&
     data.some(
       (pt) =>
-        (pt.ciBand != null &&
-          pt.ciBand.length === 2 &&
-          isFinite(pt.ciBand[0]) &&
-          isFinite(pt.ciBand[1])) ||
-        (pt.forecastCiLow != null &&
-          isFinite(pt.forecastCiLow) &&
-          pt.forecastCiRange != null &&
-          isFinite(pt.forecastCiRange)),
+        pt.ciBand != null &&
+        pt.ciBand.length === 2 &&
+        isFinite(pt.ciBand[0]) &&
+        isFinite(pt.ciBand[1]),
     );
   if (hasConfidenceBand) {
     padding += Math.max(range * 0.14, 0.85);
@@ -161,7 +148,7 @@ function computeYDomain(
   return [domainMin, domainMax];
 }
 
-export function hasPlottableData(data: ForecastChartPoint[]): boolean {
+function hasPlottableData(data: ForecastChartPoint[]): boolean {
   if (!data.length) return false;
   for (const pt of data) {
     const line =
@@ -207,14 +194,6 @@ function sanitizeChartData(data: ForecastChartPoint[]): ForecastChartPoint[] {
       currentData: sane(pt.currentData),
       forecast: sane(pt.forecast),
       lineValue: sane(pt.lineValue),
-      forecastCiLow: sane(pt.forecastCiLow),
-      forecastCiRange:
-        pt.forecastCiRange != null &&
-        isFinite(pt.forecastCiRange) &&
-        pt.forecastCiRange >= 0 &&
-        pt.forecastCiRange < SANE_MAX
-          ? pt.forecastCiRange
-          : null,
       ciBand,
       solidBridge: sane(pt.solidBridge),
     };
@@ -260,8 +239,6 @@ export function ForecastChart({
   domainFromLineOnly = false,
   skipZeroFloor = false,
   allowDataOverflow: allowDataOverflowProp,
-  animationDurationMs = CHART_ANIMATION_MS,
-  animationEasing = CHART_ANIMATION_EASING,
 }: ForecastChartProps) {
   const sanitizedData = sanitizeChartData(data);
   const hasData = chartHasDisplayableData(data);
@@ -348,8 +325,8 @@ export function ForecastChart({
                 fill={`url(#${ciGradientId})`}
                 name="Forecast CI"
                 isAnimationActive="auto"
-                animationDuration={animationDurationMs}
-                animationEasing={animationEasing}
+                animationDuration={CHART_ANIMATION_MS}
+                animationEasing={CHART_ANIMATION_EASING}
                 zIndex={10}
               />
               <Line
@@ -363,8 +340,8 @@ export function ForecastChart({
                 dot={false}
                 connectNulls
                 isAnimationActive="auto"
-                animationDuration={animationDurationMs}
-                animationEasing={animationEasing}
+                animationDuration={CHART_ANIMATION_MS}
+                animationEasing={CHART_ANIMATION_EASING}
               />
               <Line
                 type="linear"
@@ -379,8 +356,8 @@ export function ForecastChart({
                 legendType="none"
                 tooltipType="none"
                 isAnimationActive="auto"
-                animationDuration={animationDurationMs}
-                animationEasing={animationEasing}
+                animationDuration={CHART_ANIMATION_MS}
+                animationEasing={CHART_ANIMATION_EASING}
               />
               <Line
                 type="monotone"
@@ -394,8 +371,8 @@ export function ForecastChart({
                 dot={false}
                 connectNulls
                 isAnimationActive="auto"
-                animationDuration={animationDurationMs}
-                animationEasing={animationEasing}
+                animationDuration={CHART_ANIMATION_MS}
+                animationEasing={CHART_ANIMATION_EASING}
               />
               {boundaryRef != null ? (
                 <ReferenceLine

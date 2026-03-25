@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatCurrency, formatNumber, monthToLabel } from "@/app/utils/format";
 
 export type MonthlyRow = {
@@ -33,12 +33,6 @@ const tdForecast = `${tdBase} border-b border-violet-200/55`;
 export function MonthlyTable({ rows }: MonthlyTableProps) {
   const hasRows = rows.length > 0;
   const [expanded, setExpanded] = useState(true);
-
-  useEffect(() => {
-    if (hasRows) {
-      setExpanded(true);
-    }
-  }, [hasRows]);
 
   return (
     <section className="overflow-hidden rounded-2xl border border-indigo-200/50 bg-white shadow-sm ring-1 ring-indigo-100/50">

@@ -132,11 +132,8 @@ export default function Home() {
       setForecastSummary(null);
       setSummaryLoadPhase("charts");
       try {
-        let meta = metadata;
-        if (!meta) {
-          meta = await getModelMetadata();
-          setMetadata(meta);
-        }
+        const meta = await getModelMetadata();
+        setMetadata(meta);
         const forecastMonthsNum = Math.max(
           1,
           parseInt(forecastPeriod, 10) || 3,
@@ -297,8 +294,6 @@ export default function Home() {
         currentData: isHistorical ? currentData : null,
         forecast: isForecast ? forecast : null,
         lineValue,
-        forecastCiLow,
-        forecastCiRange,
         ciBand,
         solidBridge,
       };
@@ -367,8 +362,6 @@ export default function Home() {
         currentData: isHistorical ? currentData : null,
         forecast: isForecast ? forecast : null,
         lineValue,
-        forecastCiLow,
-        forecastCiRange,
         ciBand,
         solidBridge,
       };
@@ -481,6 +474,7 @@ export default function Home() {
                       />
                     </section>
                     <MonthlyTable
+                      key={hasMonthlyTableData ? monthlyRows.length : 0}
                       rows={hasMonthlyTableData ? monthlyRows : []}
                     />
                   </>

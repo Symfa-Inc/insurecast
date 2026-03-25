@@ -38,24 +38,6 @@ export type MetadataResponse = {
   assumptions_json: Record<string, string>;
 };
 
-/** Matches FastAPI `ForecastSummaryResponse` (deterministic GET). */
-export type ForecastSummaryResponse = {
-  headline: string;
-  bullets: string[];
-  segment_label: string;
-  chart_from: string;
-  chart_to: string;
-  model_name: string;
-  train_window: string;
-  actual_data_end: string;
-  api_forecast_end: string;
-  historical_months_in_chart: number;
-  forecast_months_in_chart: number;
-  last_actual_month: string | null;
-  last_actual_claims: number | null;
-  mean_monthly_forecast_claims: number | null;
-};
-
 /** Matches FastAPI `ForecastSummaryLLMResponse` — OpenAI narrative + metadata. */
 export type ForecastSummaryLLMResponse = {
   narrative: string;
@@ -132,22 +114,6 @@ export async function getModelMetadata(): Promise<MetadataResponse> {
   return data;
 }
 
-export async function getForecastSummary(params: {
-  from: string;
-  to: string;
-  state: string;
-  industry: string;
-  claim_type: string;
-}): Promise<ForecastSummaryResponse> {
-  const { data } = await api.get<ForecastSummaryResponse>(
-    "/series/forecast-summary",
-    {
-      params,
-    },
-  );
-  return data;
-}
-
 /** Calls OpenAI on the server using merged claims + cost rows (same window as charts). */
 export async function postForecastSummaryLLM(body: {
   from: string;
@@ -172,5 +138,3 @@ export async function recalculateScenario(
   );
   return data.series;
 }
-
-export default api;

@@ -33,6 +33,12 @@ const rangeClass = [
   "[&::-moz-range-thumb]:[box-shadow:none]",
 ].join(" ");
 
+const SEVERITY_TOOLTIP =
+  "Scales the modeled average cost per claim (severity) for forecast months when you click Apply. Historical months on the chart keep real series values; only the forecast segment uses this adjustment.";
+
+const FREQUENCY_TOOLTIP =
+  "Scales forecast claim counts up or down by this percentage before paid totals and intervals are recalculated. Click Apply to refresh the charts and table.";
+
 export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
   const [severityInflation, setSeverityInflation] = useState(0);
   const [frequencyShock, setFrequencyShock] = useState(0);
@@ -45,7 +51,13 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
       </p>
 
       <div className="mt-4 flex flex-col gap-3">
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <p id="scenario-tip-severity" className="sr-only">
+          {SEVERITY_TOOLTIP}
+        </p>
+        <label
+          className="cursor-help text-xs font-semibold uppercase tracking-wide text-white/90"
+          title={SEVERITY_TOOLTIP}
+        >
           Severity inflation ({severityInflation}%)
           <input
             type="range"
@@ -54,9 +66,16 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
             value={severityInflation}
             onChange={(e) => setSeverityInflation(Number(e.target.value))}
             className={rangeClass}
+            aria-describedby="scenario-tip-severity"
           />
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <p id="scenario-tip-frequency" className="sr-only">
+          {FREQUENCY_TOOLTIP}
+        </p>
+        <label
+          className="cursor-help text-xs font-semibold uppercase tracking-wide text-white/90"
+          title={FREQUENCY_TOOLTIP}
+        >
           Frequency shock ({frequencyShock}%)
           <input
             type="range"
@@ -65,6 +84,7 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
             value={frequencyShock}
             onChange={(e) => setFrequencyShock(Number(e.target.value))}
             className={rangeClass}
+            aria-describedby="scenario-tip-frequency"
           />
         </label>
         <button
