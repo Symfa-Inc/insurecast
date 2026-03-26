@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://insurecast.symfa.ai"),
-  title: "Insurecast Workers' Compensation Dashboard",
-  description: "Monthly claims and paid-amount forecasting demo dashboard",
+  title: "Insurecast",
+  description: "Monthly claims and paid-amount forecasting dashboard",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
