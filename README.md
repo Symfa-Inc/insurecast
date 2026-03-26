@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src=".assets/logo.svg" width="100" alt="Insurecast Logo">
+<img src=".assets/logo.png" width="150" alt="Insurecast Logo">
 
 # Insurecast
 
