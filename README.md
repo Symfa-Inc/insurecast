@@ -1,6 +1,8 @@
 <div align="center">
 
-# 📈 Insurecast
+<img src=".assets/logo.svg" width="100" alt="Insurecast Logo">
+
+# Insurecast
 
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
@@ -12,6 +14,12 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 
 **Time-series forecasting dashboard for monthly claims and paid amounts by segment.**
+
+🔗 **Live Demo**: [insurecast.symfa.ai](https://insurecast.symfa.ai)
+
+💻 **GitHub**: [Symfa-Inc/insurecast](https://github.com/Symfa-Inc/insurecast)
+
+📘 **Confluence**: [Project Description](https://symfa.atlassian.net/wiki/)
 
 </div>
 
@@ -91,6 +99,8 @@ insurecast/
 │   ├── docker-entrypoint.sh        # Injects API_URL at container start
 │   └── src/app/                    # App Router UI (dashboard, charts, table)
 │
+├── .github/workflows/              # CI/CD workflows
+├── insurecast-portainer-stack.txt  # Portainer deployment stack
 ├── pyproject.toml                  # uv workspace (members: backend)
 └── README.md
 ```
@@ -100,7 +110,7 @@ insurecast/
 ### Prerequisites
 
 - Python 3.13+
-- Node.js 20+ (matches frontend Docker image; 18+ usually works locally)
+- Node.js 24+
 - [uv](https://github.com/astral-sh/uv) (backend)
 - [pnpm](https://pnpm.io/) (frontend)
 
@@ -108,7 +118,7 @@ insurecast/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_ORG/insurecast.git
+git clone https://github.com/Symfa-Inc/insurecast.git
 cd insurecast
 
 # Backend dependencies (from repo root)
@@ -149,7 +159,7 @@ uv run uvicorn insurecast.main:app --port 8000 --reload
 
 ```bash
 cd frontend
-pnpm run dev
+pnpm dev
 ```
 
 - API: `http://localhost:8000`
@@ -174,6 +184,16 @@ docker run -p 3000:3000 -e API_URL=http://host.docker.internal:8000 insurecast-f
 ```
 
 On Linux, point **`API_URL`** at the host IP or service name that reaches the backend (not `localhost` from inside the container unless using host networking).
+
+### Deployment
+
+- Frontend domain: `https://insurecast.symfa.ai`
+- Backend domain: `https://api-insurecast.symfa.ai`
+- GAR repository: `insurecast`
+- Published images: `europe-west3-docker.pkg.dev/symfa-1669197925914/insurecast/{backend,frontend}`
+- Portainer stack: `insurecast-portainer-stack.txt`
+
+The frontend Docker image uses runtime API URL injection via `frontend/docker-entrypoint.sh`, so the same built image can be deployed against different backend domains by setting `API_URL` when the container starts.
 
 ### Development tooling
 

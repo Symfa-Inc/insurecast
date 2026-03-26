@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Insurecast Frontend
+
+Next.js frontend for the Insurecast forecasting dashboard. The production image uses standalone Next.js output and replaces the baked-in local API URL with `API_URL` at container startup, so the same image can target local Docker, staging, or `https://api-insurecast.symfa.ai`.
 
 ## Getting Started
 
-First, run the development server:
+Prerequisites:
+
+- Node.js 24+
+- pnpm
+
+Install dependencies and start the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The frontend expects the backend API at [http://localhost:8000](http://localhost:8000) during local development.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+pnpm lint
+pnpm check
+pnpm build
+```
 
-## Learn More
+## Docker
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+docker build -t insurecast-frontend .
+docker run -p 3000:3000 -e API_URL=http://host.docker.internal:8000 insurecast-frontend
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+At deployment time, set `API_URL=https://api-insurecast.symfa.ai` so the UI points at the hosted backend without rebuilding the image.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+- Frontend: [https://insurecast.symfa.ai](https://insurecast.symfa.ai)
+- Backend API: [https://api-insurecast.symfa.ai](https://api-insurecast.symfa.ai)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The production Dockerfile uses Node.js 24 and keeps `PORT=3000` and `HOSTNAME=0.0.0.0` in the runtime container for deployment parity with the reference repo.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## References
+
+- [Next.js documentation](https://nextjs.org/docs)
