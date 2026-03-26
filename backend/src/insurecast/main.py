@@ -1,3 +1,4 @@
+import os
 from datetime import date
 from pathlib import Path
 from typing import Any, Literal
@@ -30,10 +31,30 @@ app = FastAPI(
 )
 repo = DemoDataRepository()
 
+
+def _load_cors_origins() -> list[str]:
+    raw_origins = os.environ.get("CORS_ORIGINS") or os.environ.get(
+        "FRONTEND_ORIGINS",
+    )
+    if raw_origins:
+        return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
+
+    default_origins = [
+        "http://localhost:3000",
+        "https://insurecast.symfa.ai",
+    ]
+    frontend_url = os.environ.get("FRONTEND_URL")
+    if frontend_url and frontend_url not in default_origins:
+        default_origins.append(frontend_url)
+    return default_origins
+
+
+CORS_ORIGINS = _load_cors_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -13,8 +13,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Insurecast Workers' Compensation Dashboard",
-  description: "Monthly claims and paid-amount forecasting demo dashboard",
+  metadataBase: new URL("https://insurecast.symfa.ai"),
+  title: "Insurecast",
+  description: "Monthly claims and paid-amount forecasting dashboard",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

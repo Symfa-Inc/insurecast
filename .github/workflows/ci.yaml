@@ -9,17 +9,13 @@ on:
     branches:
     - main
 
-env:
-  GREEN: '\033[0;32m'
-  NO_COLOR: '\033[0m'
-
 jobs:
-  linting:
+  backend:
     runs-on: ubuntu-latest
-    name: "Backend: Lint & Type Check"
+    name: 'Backend: Lint & Type Check'
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup Python
       uses: actions/setup-python@v5
@@ -35,24 +31,22 @@ jobs:
       run: uv sync --dev
 
     - name: Run all pre-commit hooks
-      run: |
-        uv run pre-commit run --all-files --verbose
-        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
+      run: uv run pre-commit run --all-files --verbose
 
   frontend:
     runs-on: ubuntu-latest
-    name: "Frontend: Lint, Format & Build"
+    name: 'Frontend: Lint, Format & Build'
     defaults:
       run:
         working-directory: frontend
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '22'
+        node-version: '24'
 
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
@@ -63,7 +57,7 @@ jobs:
     - name: Get pnpm store directory
       id: pnpm-cache
       shell: bash
-      run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+      run: echo "STORE_PATH=$(pnpm store path)" >> "$GITHUB_OUTPUT"
 
     - name: Cache pnpm dependencies
       uses: actions/cache@v4
@@ -82,22 +76,18 @@ jobs:
       run: pnpm check
 
     - name: Build
-      run: |
-        pnpm build
-        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
+      run: pnpm build
 
   docker:
     runs-on: ubuntu-latest
-    name: "Docker: Build Images"
-    needs: [linting, frontend]
+    name: 'Docker: Build Images'
+    needs: [backend, frontend]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Build backend image
       run: docker build -t insurecast-backend ./backend
 
     - name: Build frontend image
-      run: |
-        docker build -t insurecast-frontend ./frontend
-        echo -e "${GREEN}Job completed successfully${NO_COLOR}"
+      run: docker build -t insurecast-frontend ./frontend
