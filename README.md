@@ -60,7 +60,7 @@ cp .env.example .env          # Add your OpenAI API key
 uv sync
 uv run uvicorn insurecast.main:app --reload
 
-# Frontend (in a separate terminal)
+# Frontend
 cd frontend
 pnpm install
 pnpm dev
