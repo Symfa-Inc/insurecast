@@ -15,7 +15,7 @@
 
 Time-series forecasting dashboard for monthly claims and paid amounts using SARIMAX models on OSHA severe-injury report data.
 
-**[Live Demo](https://insurecast.symfa.ai)** · **[GitHub](https://github.com/Symfa-Inc/insurecast)** · **[Confluence](https://symfa.atlassian.net/wiki/spaces/SYMFA/pages/5012029451)**
+**[Live Demo](https://insurecast.symfa.ai)** · **[GitHub](https://github.com/Symfa-Inc/insurecast)** · **[Confluence](https://symfa.atlassian.net/wiki/x/NgBFMQE)**
 
 </div>
 
