@@ -1,6 +1,6 @@
-# 🐍 Insurecast Backend
+# 🐍 InsureCast Backend
 
-FastAPI backend for the **Insurecast** forecasting dashboard: monthly **claims** and **paid / average cost** series by segment, **SARIMAX**-style forecasts via statsmodels, optional **OpenAI** narrative summaries, and **scenario** recalculation (severity / frequency shocks).
+FastAPI backend for the **InsureCast** forecasting dashboard: monthly **claims** and **paid / average cost** series by segment, **SARIMAX**-style forecasts via statsmodels, optional **OpenAI** narrative summaries, and **scenario** recalculation (severity / frequency shocks).
 
 Claim counts beyond the last observed month use **SARIMAX** `(1,1,1)×(1,1,1,12)` when fitting succeeds, with **ARIMA(1,1,1)** or **seasonal naive** fallbacks. Forecast-month intervals use the model’s **95% prediction interval** when available.
 

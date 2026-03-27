@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src=".assets/logo.png" width="150" alt="Insurecast Logo">
+<img src=".assets/logo.png" width="150" alt="InsureCast Logo">
 
-# Insurecast
+# InsureCast
 
 [![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/downloads/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6.svg)](https://www.typescriptlang.org/)
@@ -25,7 +25,7 @@
 
 ## Overview
 
-Insurecast is a demo stack that applies **SARIMAX**-style seasonal models to OSHA-derived severe-injury report data, exposed through a **FastAPI** backend and a **Next.js** dashboard. You can explore historical claim counts and average cost per claim, extend the horizon with configurable forecast months, run **what-if scenarios** (severity inflation and frequency shock), and optionally generate an **LLM narrative** of the current view.
+InsureCast is a demo stack that applies **SARIMAX**-style seasonal models to OSHA-derived severe-injury report data, exposed through a **FastAPI** backend and a **Next.js** dashboard. You can explore historical claim counts and average cost per claim, extend the horizon with configurable forecast months, run **what-if scenarios** (severity inflation and frequency shock), and optionally generate an **LLM narrative** of the current view.
 
 ### Key Features
 

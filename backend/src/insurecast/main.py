@@ -25,7 +25,7 @@ load_dotenv(_backend_root / ".env")
 load_dotenv()  # optional: .env in CWD when starting the server
 
 app = FastAPI(
-    title="Insurecast",
+    title="InsureCast",
     description="Time-series models applied to insurance data",
     version="0.1.0",
 )

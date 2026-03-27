@@ -1,6 +1,6 @@
-# Insurecast Frontend
+# InsureCast Frontend
 
-Next.js frontend for the Insurecast forecasting dashboard. The production image uses standalone Next.js output and replaces the baked-in local API URL with `API_URL` at container startup, so the same image can target local Docker, staging, or `https://api-insurecast.symfa.ai`.
+Next.js frontend for the InsureCast forecasting dashboard. The production image uses standalone Next.js output and replaces the baked-in local API URL with `API_URL` at container startup, so the same image can target local Docker, staging, or `https://api-insurecast.symfa.ai`.
 
 ## Getting Started
 
