@@ -12,8 +12,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY pyproject.toml ./
 RUN uv sync --no-dev --no-install-project
 
-# Copy application code
+# Copy application code and data
 COPY src/ src/
+COPY data/ data/
 
 # Install the project itself
 RUN uv sync --no-dev

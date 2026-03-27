@@ -417,7 +417,7 @@ export default function Home() {
         <div className="flex w-full max-w-full flex-col lg:w-fit">
           <header className="mb-6 pb-2">
             <h1 className="text-2xl font-bold tracking-tight text-indigo-950 md:text-3xl">
-              Insurecast forecasting dashboard
+              InsureCast forecasting dashboard
             </h1>
             <p className="mt-1 text-sm text-indigo-700/75">
               Claims and paid amount trends by segment
