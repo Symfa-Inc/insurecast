@@ -251,7 +251,7 @@ async def get_costs_series(
 @app.get("/model/metadata")
 async def get_model_metadata() -> dict[str, Any]:
     return {
-        "run_id": "demo-sarimax-001",
+        "run_id": "sarimax-001",
         "trained_at": "2026-03-04",
         "actual_start": repo.actual_start.strftime("%Y-%m"),
         "actual_end": repo.actual_end.strftime("%Y-%m"),

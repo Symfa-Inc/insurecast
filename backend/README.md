@@ -11,7 +11,7 @@ backend/
 ├── Dockerfile              # Container configuration
 ├── src/insurecast/         # Python package (API & forecasting)
 │   ├── main.py             # FastAPI application & routes
-│   ├── data_repository.py  # Demo CSV loading & segment metadata
+│   ├── data_repository.py  # CSV loading & segment metadata
 │   ├── sarimax_forecast.py # SARIMAX / fallback forecasting
 │   ├── llm_summary.py      # OpenAI + deterministic summary helpers
 │   ├── chart_display_guard.py
@@ -47,9 +47,9 @@ docker build -t insurecast-backend .
 docker run -p 8000:8000 insurecast-backend
 ```
 
-## 📊 Data pipeline (OSHA demo)
+## 📊 Data pipeline (OSHA)
 
-Generate demo artifacts from **OSHA Severe Injury Reports** and normalize to the dashboard schema:
+Generate source artifacts from **OSHA Severe Injury Reports** and normalize to the dashboard schema:
 
 ```bash
 # From backend/

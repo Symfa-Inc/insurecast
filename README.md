@@ -25,7 +25,7 @@
 
 ## Overview
 
-InsureCast is a demo stack that applies **SARIMAX**-style seasonal models to OSHA-derived severe-injury report data, exposed through a **FastAPI** backend and a **Next.js** dashboard. You can explore historical claim counts and average cost per claim, extend the horizon with configurable forecast months, run **what-if scenarios** (severity inflation and frequency shock), and optionally generate an **LLM narrative** of the current view.
+InsureCast is a forecasting application that applies **SARIMAX**-style seasonal models to OSHA-derived severe-injury report data, exposed through a **FastAPI** backend and a **Next.js** dashboard. You can explore historical claim counts and average cost per claim, extend the horizon with configurable forecast months, run **what-if scenarios** (severity inflation and frequency shock), and optionally generate an **LLM narrative** of the current view.
 
 ### Key Features
 
@@ -34,7 +34,7 @@ InsureCast is a demo stack that applies **SARIMAX**-style seasonal models to OSH
 - **Scenario recalculation** – Adjust severity and frequency for forecast months; charts and table refresh from `POST /scenario/recalculate`
 - **Monthly table** – Aligned rows for claims, paid amount, and average cost (forecast rows highlighted)
 - **AI summary** – `POST /ai/forecast-summary` merges the same series as the UI and calls OpenAI when `OPENAI_API_KEY` is set (deterministic fallback otherwise)
-- **Demo data pipeline** – Scripts to ingest OSHA SIR data, merge severity, and optionally fill gaps with synthetic rows
+- **Data pipeline** – Scripts to ingest OSHA SIR data, merge severity, and optionally fill gaps with synthetic rows
 
 ### Target Audience
 
@@ -54,7 +54,7 @@ Product and engineering teams evaluating **forecasting UX** for insurance or saf
 | **Frontend** | TypeScript, Next.js, React, Tailwind CSS |
 | **AI / forecasting** | statsmodels (SARIMAX), OpenAI (optional narrative) |
 | **Charts & HTTP** | Recharts, Axios |
-| **Data** | pandas, NumPy, CSV demo artifacts |
+| **Data** | pandas, NumPy, CSV artifacts |
 | **Validation** | Pydantic |
 | **Package management** | uv (backend), pnpm (frontend) |
 | **Deployment** | Docker (backend + frontend) |
@@ -77,7 +77,7 @@ The default dashboard reads **`backend/data/demo/merged_claims_with_severity.csv
 | Column | Description |
 |--------|-------------|
 | `claims_count_actual` | Observed monthly claim count (historical months) |
-| `base_avg_cost` | Baseline average cost per claim used for paid / severity modeling in the demo |
+| `base_avg_cost` | Baseline average cost per claim used for paid / severity modeling in the application |
 
 Intermediate artifacts (from ingestion scripts) include **`monthly_claims.csv`** and **`severity_params.csv`**; see **Backend README** for merge and synthetic-fill steps.
 
@@ -88,7 +88,7 @@ insurecast/
 ├── backend/                        # Python backend (FastAPI)
 │   ├── Dockerfile                  # Backend container
 │   ├── src/insurecast/             # Application code (API, data repo, SARIMAX helpers)
-│   ├── data/demo/                  # CSV inputs for the demo repository
+│   ├── data/demo/                  # CSV inputs for the application
 │   ├── models/                     # Optional model artifacts
 │   ├── notebooks/                  # Jupyter notebooks
 │   ├── scripts/                    # Ingest, merge, synthetic fill
@@ -135,7 +135,7 @@ cd ..
 From the **repository root**:
 
 ```bash
-# Generate or refresh demo CSVs from OSHA public data (see backend/scripts)
+# Generate or refresh CSVs from OSHA public data (see backend/scripts)
 uv run python backend/scripts/ingest_osha_sir.py
 
 # Build merged file used by the API (from backend/)
