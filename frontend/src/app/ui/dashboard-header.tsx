@@ -1,6 +1,7 @@
 "use client";
 
 import type { SegmentsResponse } from "@/app/utils/api";
+import { filterStatesForUi } from "@/app/utils/allowed-states";
 
 type DashboardHeaderProps = {
   segments: SegmentsResponse | null;
@@ -45,7 +46,7 @@ export function DashboardHeader({
             onChange={(e) => setStateValue(e.target.value)}
             className={controlClass}
           >
-            {(segments?.states ?? []).map((entry) => (
+            {filterStatesForUi(segments?.states ?? []).map((entry) => (
               <option key={entry} value={entry}>
                 {entry}
               </option>
