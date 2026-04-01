@@ -15,6 +15,7 @@ import {
   type ScenarioPoint,
   type SegmentsResponse,
 } from "./utils/api";
+import { filterStatesForUi } from "./utils/allowed-states";
 import { rawSeriesHasPlottableChartData } from "./utils/chart-display-guard";
 import {
   addMonths,
@@ -64,7 +65,7 @@ function mergeClaimsWithScenario(
 
 export default function Home() {
   const [segments, setSegments] = useState<SegmentsResponse | null>(null);
-  const [stateValue, setStateValue] = useState("CA");
+  const [stateValue, setStateValue] = useState("FL");
   const [industry, setIndustry] = useState("Construction");
   const [claimType, setClaimType] = useState("LostTime");
   const [fromMonth, setFromMonth] = useState("2019-01");
@@ -110,7 +111,7 @@ export default function Home() {
     async function loadSegments() {
       const payload = await getSegments();
       setSegments(payload);
-      setStateValue(payload.states[0] ?? "CA");
+      setStateValue(filterStatesForUi(payload.states)[0] ?? "FL");
       setIndustry(payload.industries[0] ?? "Construction");
       setClaimType(payload.claim_types[0] ?? "LostTime");
     }
