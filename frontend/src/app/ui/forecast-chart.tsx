@@ -63,31 +63,6 @@ function CustomTooltip({
 const CHART_ANIMATION_MS = 1000;
 const CHART_ANIMATION_EASING = "ease-in-out" as const;
 
-/**
- * Range `Area` (ciBand) supplies [low, high] per point — not a scalar. Tooltip must not pass that to Intl as one number.
- */
-function formatTooltipValue(
-  value: unknown,
-  valueFormatter: (n: number) => string,
-): string {
-  if (value != null && Array.isArray(value) && value.length >= 2) {
-    const lo = value[0];
-    const hi = value[1];
-    if (
-      typeof lo === "number" &&
-      typeof hi === "number" &&
-      Number.isFinite(lo) &&
-      Number.isFinite(hi)
-    ) {
-      return `${valueFormatter(lo)} – ${valueFormatter(hi)}`;
-    }
-  }
-  if (value != null && typeof value === "number" && Number.isFinite(value)) {
-    return valueFormatter(value);
-  }
-  return "—";
-}
-
 export type ForecastChartPoint = {
   month: string;
   /** Observed value (historical only); used for dots */
@@ -110,7 +85,6 @@ export type ForecastChartPoint = {
 
 type ForecastChartProps = {
   title: string;
-  description: string;
   data: ForecastChartPoint[];
   valueFormatter: (value: number) => string;
   /** When true, Y domain is based only on line values (not the CI band), giving a tighter axis for narrow data ranges */

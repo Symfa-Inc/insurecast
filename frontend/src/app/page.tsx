@@ -455,14 +455,12 @@ export default function Home() {
             <section className="flex flex-col gap-4">
               <ForecastChart
                 title="Amount of Claims per Month"
-                description="Historical data plus forecast for the selected period."
                 data={claimsChartData}
                 valueFormatter={formatNumber}
                 allowDataOverflow
               />
               <ForecastChart
                 title="Average Cost per Claim per Month"
-                description="Historical data plus forecast for the selected period."
                 data={avgCostChartData}
                 valueFormatter={formatCurrency}
                 skipZeroFloor
