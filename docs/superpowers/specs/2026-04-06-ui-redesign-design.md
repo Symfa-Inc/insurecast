@@ -25,16 +25,20 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 
 ### Color palette
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| Page background | `zinc-50` (#FAFAFA) | Canvas |
-| Card / sidebar background | `white` | Surfaces |
-| Border | `zinc-200` (#E4E4E7) | All borders consistently |
-| Primary text | `zinc-900` | Headings, values |
-| Secondary text | `zinc-700` | Body, narrative |
-| Muted text | `zinc-500` / `zinc-400` | Labels, metadata |
-| Accent | `blue-600` (#2563EB) | Focus, CTA, forecast line only |
-| Accent light | `blue-50` / `blue-100` | Badge backgrounds, confidence band |
+| Purpose | Tailwind | Hex | CSS token |
+|---------|----------|-----|-----------|
+| Page background | `zinc-50` | #FAFAFA | `--color-background` |
+| Card / sidebar background | `white` | #FFFFFF | `--color-surface` |
+| Border | `zinc-200` | #E4E4E7 | `--color-border` |
+| Primary text | `zinc-900` | #18181B | `--color-text-primary` |
+| Secondary text | `zinc-700` | #3F3F46 | `--color-text-secondary` |
+| Muted text (labels) | `zinc-500` | #71717A | `--color-text-muted` |
+| Placeholder / axis ticks | `zinc-400` | #A1A1AA | `--color-text-placeholder` |
+| Accent | `blue-600` | #2563EB | `--color-accent` |
+| Accent badge background | `blue-50` | #EFF6FF | `--color-accent-light` |
+| Confidence band fill | `blue-100` | #DBEAFE | (inline hex only) |
+
+Use `--color-text-muted` (#71717A) for control labels and body-level muted text. Use `--color-text-placeholder` (#A1A1AA) for axis ticks, section divider labels, and timestamps. Do not use the other value interchangeably.
 
 ### Removals
 - All indigo, violet, teal fills from UI chrome
@@ -43,9 +47,58 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 - `shadow-*` reduced to `shadow-sm` on cards only
 
 ### Chart data colors (survive the purge)
-- Historical line: `zinc-500` (#71717A) — neutral past data
-- Forecast line: `blue-600` (#2563EB) — single accent, clearly "prediction"
-- Confidence band fill: `blue-100` at 50% opacity
+- Historical line + solidBridge connector: `#71717A` (zinc-500) — neutral past data. Both series use the same color so the bridge reads as a seamless continuation of historical data.
+- Forecast line: `#2563EB` (blue-600) — single accent, clearly "prediction"
+- Confidence band fill: `#DBEAFE` (blue-100) at 50% opacity
+
+### `globals.css` replacement
+
+Replace the **entire contents** of `frontend/src/app/globals.css` with exactly the following. This removes: `--background`, `--background-warm`, `--ink`, `--focus-ring` tokens; the gradient body background; the indigo `box-shadow` focus rule on `input:focus` / `select:focus`; and the `forecast-summary-enter` keyframe.
+
+```css
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #fafafa;
+  --color-surface: #ffffff;
+  --color-border: #e4e4e7;
+  --color-text-primary: #18181b;
+  --color-text-secondary: #3f3f46;
+  --color-text-muted: #71717a;
+  --color-text-placeholder: #a1a1aa;
+  --color-accent: #2563eb;
+  --color-accent-light: #eff6ff;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Single global focus style — all components rely on this, do not add focus:ring-* per component */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+```
+
+**Do NOT add `focus:ring-*` Tailwind classes on any individual input or select element.** The global `:focus-visible` rule is the sole focus style.
 
 ---
 
@@ -55,7 +108,7 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 
 ### Hierarchy ladder
 
-| Level | Usage | Style |
+| Level | Usage | Tailwind classes |
 |-------|-------|-------|
 | 1 — Page title | App name "InsureCast" | `text-base font-semibold text-zinc-900` |
 | 2 — Section label | "Parameters", "Scenario", "Forecast conclusion" | `text-xs font-semibold uppercase tracking-widest text-zinc-400` |
@@ -67,10 +120,41 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 
 - **Control labels (sidebar):** `text-xs font-medium text-zinc-500`
 - **Control inputs:** `text-sm text-zinc-900`
-- **Table headers:** `text-xs font-semibold uppercase tracking-wide text-zinc-500`
-- **Table rows:** `text-sm tabular-nums text-zinc-800`
-- **Forecast badge:** `text-[10px] font-semibold uppercase tracking-wide text-blue-600 bg-blue-50 rounded px-1.5`
+- **Table headers (`<th>`):** `text-xs font-semibold uppercase tracking-wide text-zinc-500 bg-white border-b border-zinc-200`
+- **Table rows (`<td>`):** `text-sm tabular-nums text-zinc-800`
+- **Historical table row background:** `bg-white`
+- **Forecast table row background:** `bg-blue-50/40` (replaces `bg-violet-50/85`)
+- **Forecast badge:** `text-[10px] font-semibold uppercase tracking-wide text-blue-600 bg-blue-50 rounded px-1.5 py-0.5` (replaces `text-violet-700/90 bg-violet-100` badge)
+- **Table cell borders:** `border-zinc-100` for all rows (replaces `border-indigo-100/70` and `border-violet-200/55`)
 - **Summary bold spans:** `font-medium text-zinc-900`
+
+### Table toggle/collapse button
+
+Replace the existing indigo-styled toggle button header with:
+
+```tsx
+<button
+  type="button"
+  id="monthly-table-toggle"
+  onClick={() => setExpanded((e) => !e)}
+  className="w-full flex items-center justify-between px-4 py-3 bg-white border-b border-zinc-200 text-left hover:bg-zinc-50 transition-colors"
+  aria-expanded={expanded}
+  aria-controls="monthly-table-panel"
+>
+  <div>
+    <h2 className="text-sm font-semibold text-zinc-800">Monthly values</h2>
+    <p className="mt-0.5 text-xs text-zinc-500">Forecast rows are highlighted in blue.</p>
+  </div>
+  <svg
+    className={`w-4 h-4 text-zinc-400 transition-transform shrink-0 ${expanded ? "rotate-180" : ""}`}
+    fill="none" stroke="currentColor" viewBox="0 0 24 24"
+  >
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+</button>
+```
+
+Note: `id="monthly-table-toggle"` and `aria-controls="monthly-table-panel"` are preserved from the existing code (lines 41–43). The `type="button"` and `onClick={() => setExpanded((e) => !e)}` pattern (line 44) is unchanged.
 
 **Rule:** Color is never used to establish importance — only weight and size.
 
@@ -84,21 +168,86 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 - White card: `rounded-xl border border-zinc-200 shadow-sm`
 - No inner sub-container (remove `bg-slate-50/50` wrapper)
 - Padding: `p-5`
-- Chart title: `text-sm font-semibold text-zinc-800` above the chart
+- Above the `<ResponsiveContainer>`, a flex row: `<div className="flex items-center justify-between mb-3">` containing:
+  - Left: chart title — `<h3 className="text-sm font-semibold text-zinc-800">{title}</h3>`
+  - Right: custom legend (see below)
 
 ### Chart dimensions
 - Height: **320px** (up from 256px)
+- In `forecast-chart.tsx`, remove the inner `<div className="mt-4 relative w-full min-w-0 rounded-xl bg-slate-50/50 border border-indigo-100/60 p-3" style={{ height: 256 }}>` wrapper entirely (line 257–260).
+- Set the height directly on `<ResponsiveContainer>` by changing `height="100%"` to `height={320}`.
+- Remove the `initialDimension` prop from `<ResponsiveContainer>` — it is non-standard and has no effect; the explicit `height={320}` prop is sufficient.
+- Set `minHeight={280}` on `<ResponsiveContainer>` (replaces `minHeight={220}`).
 
 ### Visual styling
-- **Grid:** Horizontal lines only, `stroke="#E4E4E7"` (zinc-200), no vertical grid lines, no dots
-- **Axes:** `text-xs` zinc-400 labels, no tick marks, no axis lines — floating labels only
-- **Reference line** (forecast boundary): `stroke="#D4D4D8"` dashed, `text-[10px] text-zinc-400` label "Forecast starts"
-- **Legend:** Inline above chart, right-aligned — two `inline-flex items-center gap-1.5` pills replacing Recharts default
+- **Grid:** `<CartesianGrid vertical={false} stroke="#E4E4E7" />` — horizontal lines only, no dots
+- **Axes:** Add `axisLine={false}` and `tickLine={false}` to both `<XAxis>` and `<YAxis>`. Set `tick={{ fontSize: 11, fill: "#a1a1aa" }}` on both.
+- **Reference line** (forecast boundary): `<ReferenceLine stroke="#d4d4d8" strokeDasharray="4 3">` with `<Label value="Forecast starts" position="insideTopRight" style={{ fontSize: 10, fill: "#a1a1aa" }} />`. **Important:** add `Label` to the recharts import in `forecast-chart.tsx` (line 4–15). The current imports do not include `Label`. Change the import block to include `Label`:
+  ```tsx
+  import { Area, CartesianGrid, ComposedChart, Label, Line, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+  ```
+  Remove `Legend` from this import since it is replaced by custom JSX.
+- **solidBridge series:** `stroke="#71717A"`, `strokeDasharray` unset (solid), same as historical
+
+### Custom legend (inline above chart)
+
+Remove the Recharts `<Legend>` component. Replace with a manual JSX element inside the title row. Render exactly two items — Historical and Forecast. The confidence band is self-evident and not listed.
+
+```tsx
+<div className="flex items-center gap-4">
+  <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+    <span className="inline-block w-5 h-0 border-t-2 border-zinc-400" />
+    Historical
+  </span>
+  <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+    <span className="inline-block w-5 h-0 border-t-2 border-dashed border-blue-500" />
+    Forecast
+  </span>
+</div>
+```
+
+Note: `h-0` + `border-t-2` renders as a 2px horizontal line with zero height, which correctly mimics a chart line swatch.
 
 ### Tooltip
-- White background, `border border-zinc-200 shadow-md rounded-lg p-3`
-- `text-sm text-zinc-800` — matches card language
-- Wrapped in Framer Motion `motion.div` for animated entry
+
+**Add the following import to `forecast-chart.tsx`:**
+```tsx
+import { motion } from "framer-motion";
+```
+
+Create a `CustomTooltip` component inside `forecast-chart.tsx` (above the main export). It receives Recharts' standard `TooltipProps` interface. Render the following structure:
+
+```tsx
+import type { TooltipProps } from "recharts";
+import type { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
+
+function CustomTooltip({ active, payload, label }: TooltipProps<ValueType, NameType>) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.1 }}
+      className="bg-white border border-zinc-200 shadow-md rounded-lg p-3 min-w-[160px]"
+    >
+      <p className="text-xs font-semibold text-zinc-500 mb-2">{label}</p>
+      {payload.map((entry) => (
+        <div key={entry.dataKey as string} className="flex items-center justify-between gap-4 text-sm">
+          <span className="text-zinc-500">{entry.name}</span>
+          <span className="font-semibold text-zinc-900">
+            {typeof entry.value === "number" ? entry.value.toLocaleString() : entry.value}
+          </span>
+        </div>
+      ))}
+    </motion.div>
+  );
+}
+```
+
+Pass it to the Recharts tooltip: `<Tooltip content={<CustomTooltip />} />`.
+
+Because Recharts manages tooltip mount/unmount internally, the `motion.div` entry animation fires each time the tooltip appears. No `AnimatePresence` wrapper is needed.
 
 ---
 
@@ -106,40 +255,158 @@ The redesign resolves all four by stripping back color to a single accent, rebui
 
 **Goal:** Make the sidebar feel like a purposeful control surface, not a form dump.
 
-### Sidebar structure
-- `w-72 bg-white border-r border-zinc-200` full viewport height
-- Padding: `px-5 py-6`
-- Two sections divided by `border-t border-zinc-100`:
-  1. **Parameters** — state, industry, claim type, from month, forecast period
-  2. **Scenario** — severity slider, frequency slider, apply button
+### Top-level page layout
 
-### App header
-- `h-14 border-b border-zinc-200 bg-white px-6 flex items-center justify-between`
-- Left: `InsureCast` — `text-base font-semibold text-zinc-900`
-- Right: last updated timestamp — `text-xs text-zinc-400`
+**`layout.tsx` changes:**
+
+The current `layout.tsx` body renders `{children}` directly inside `<body>`. The `<body>` tag has `className={${geistSans.variable} ${geistMono.variable} antialiased}` — **preserve this className exactly**. Only add an inner wrapper div:
+
+```tsx
+// Keep the existing <body> tag with its className unchanged.
+// Replace {children} with:
+<div className="flex flex-col h-screen">
+  <header className="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10">
+    <span className="text-base font-semibold text-zinc-900">InsureCast</span>
+    <span className="text-xs text-zinc-400">Insurance claims forecasting</span>
+  </header>
+  <div className="flex flex-1 min-h-0 overflow-hidden">
+    {children}
+  </div>
+</div>
+```
+
+**`page.tsx` changes:**
+
+1. **Remove** the `import { SmoothSummaryStack } from "./ui/smooth-summary-stack"` import line at the top of the file. `page.tsx` is the only consumer — no other file imports `SmoothSummaryStack`.
+2. **Remove** the `<header>` element (lines 419–426) — the app title/description is now in `layout.tsx`.
+3. **Delete** the outer `<main className="mx-auto max-w-[1600px] ...">` element (line 416) along with its inner `<div className="flex justify-center">` and `<div className="flex w-full ...">` wrappers. The entire return statement becomes a fragment:
+
+```tsx
+return (
+  <>
+    <aside className="w-72 shrink-0 bg-white border-r border-zinc-200 flex flex-col overflow-y-auto">
+      <DashboardHeader {/* existing props unchanged */} />
+      <div className="border-t border-zinc-100 mx-5" />
+      <ScenarioPanel {/* existing props unchanged */} />
+    </aside>
+    <main className="flex-1 overflow-y-auto bg-zinc-50 px-6 py-6">
+      <div className="space-y-5">
+        {/* n=0 */ }
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0 }}>
+          <ForecastSummaryPanel summary={forecastSummary} loadPhase={summaryLoadPhase} />
+        </motion.div>
+        {/* n=1 */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.06 }}>
+          <section className="flex flex-col gap-4">
+            <ForecastChart title="Amount of Claims per Month" description="Historical data plus forecast for the selected period." data={claimsChartData} valueFormatter={formatNumber} allowDataOverflow />
+            <ForecastChart title="Average Cost per Claim per Month" description="Historical data plus forecast for the selected period." data={avgCostChartData} valueFormatter={formatCurrency} skipZeroFloor allowDataOverflow />
+          </section>
+        </motion.div>
+        {/* n=2 */}
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.12 }}>
+          <MonthlyTable key={hasMonthlyTableData ? monthlyRows.length : 0} rows={hasMonthlyTableData ? monthlyRows : []} />
+        </motion.div>
+      </div>
+    </main>
+  </>
+);
+```
+
+All existing prop names and values remain unchanged — only the wrapper structure changes.
+
+**Add the following import to `page.tsx`:**
+```tsx
+import { motion } from "framer-motion";
+```
+
+### Sidebar components (`DashboardHeader`, `ScenarioPanel`)
+
+Both components' outermost element becomes a plain `<div className="px-5 py-6">`. Remove all gradient `className` props and inline `style` background props. Do not add `flex-1` or `flex-none` — both components size to their natural content height inside the `flex flex-col overflow-y-auto` `<aside>`.
+
+Each section opens with:
+```tsx
+<p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+  Parameters {/* or "Scenario" */}
+</p>
+```
 
 ### Select / input controls
+
+Apply the following classes to every `<select>` and `<input type="month">` in `DashboardHeader`:
+
 ```
-h-9 w-full text-sm text-zinc-900 bg-white
-border border-zinc-200 rounded-lg px-3
-appearance-none                          ← removes browser arrow
-focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-hover:border-zinc-300 transition-colors
+h-9 w-full text-sm text-zinc-900 bg-white border border-zinc-200 rounded-lg px-3 appearance-none hover:border-zinc-300 transition-colors
 ```
-- Custom chevron via inline SVG background-image (no browser default)
+
+Do NOT add `focus:ring-*` — the global `:focus-visible` in `globals.css` handles it.
+
+Custom chevron for `<select>` elements — add this inline `style` (removes browser arrow, adds custom SVG):
+
+```tsx
+style={{
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "right 10px center",
+  paddingRight: "28px",
+}}
+```
 
 ### Scenario sliders
-- Track: `h-1 bg-zinc-200 rounded-full`
-- Thumb: `w-3 h-3 bg-blue-600 rounded-full shadow-sm`
-- Value readout inline right of label: `text-sm font-semibold text-zinc-900`
-- Label: `text-xs text-zinc-500`
+
+**Add the following import to `scenario-panel.tsx`:**
+```tsx
+import { motion } from "framer-motion";
+```
+
+Replace the current webkit/moz hacked slider markup with:
+
+```tsx
+<div className="mb-5">
+  <div className="flex items-center justify-between mb-1.5">
+    <label className="text-xs text-zinc-500">{label}</label>
+    <span className="text-sm font-semibold text-zinc-900">{displayValue}</span>
+  </div>
+  <input
+    type="range"
+    className="w-full h-1 appearance-none rounded-full bg-zinc-200 cursor-pointer
+               [&::-webkit-slider-thumb]:appearance-none
+               [&::-webkit-slider-thumb]:w-3
+               [&::-webkit-slider-thumb]:h-3
+               [&::-webkit-slider-thumb]:rounded-full
+               [&::-webkit-slider-thumb]:bg-blue-600
+               [&::-webkit-slider-thumb]:shadow-sm
+               [&::-moz-range-thumb]:w-3
+               [&::-moz-range-thumb]:h-3
+               [&::-moz-range-thumb]:rounded-full
+               [&::-moz-range-thumb]:bg-blue-600
+               [&::-moz-range-thumb]:border-0"
+    {...rangeProps}
+  />
+</div>
+```
 
 ### Apply button
+
+```tsx
+<motion.button
+  whileHover={{ scale: 1.01 }}
+  whileTap={{ scale: 0.97 }}
+  className="w-full h-9 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+  onClick={handleApply}
+>
+  Apply scenario
+</motion.button>
 ```
-w-full h-9 bg-blue-600 hover:bg-blue-700
-text-white text-sm font-medium rounded-lg transition-colors
+
+### Error state in ScenarioPanel
+
+Replace the current `bg-rose-950/35 border-rose-200/40 text-rose-50` error block with:
+
+```tsx
+<div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+  {errorMessage}
+</div>
 ```
-- Only solid-filled button in the UI — unambiguous primary action
 
 ---
 
@@ -148,47 +415,108 @@ text-white text-sm font-medium rounded-lg transition-colors
 **Goal:** Replace all ad-hoc CSS animations and the `SmoothSummaryStack` FLIP component with consistent Framer Motion patterns.
 
 ### Dependency
-Add `framer-motion` to `frontend/package.json`.
+
+Add to `frontend/package.json` dependencies:
+```json
+"framer-motion": "^11.0.0"
+```
+
+### Framer Motion imports — required per file
+
+Add these imports to each file that uses Framer Motion:
+
+| File | Import |
+|------|--------|
+| `page.tsx` | `import { motion } from "framer-motion";` |
+| `forecast-chart.tsx` | `import { motion } from "framer-motion";` |
+| `forecast-summary-panel.tsx` | `import { motion, AnimatePresence } from "framer-motion";` |
+| `monthly-table.tsx` | `import { motion, AnimatePresence } from "framer-motion";` |
+| `scenario-panel.tsx` | `import { motion } from "framer-motion";` |
 
 ### Page load / section entry
-Each major section (summary panel, chart cards, table) enters with:
-```js
-initial={{ opacity: 0, y: 8 }}
-animate={{ opacity: 1, y: 0 }}
-transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: n * 0.06 }}
+
+In `page.tsx`, wrap each of the three main content blocks (summary panel, charts section, table) in a `motion.div`. Use `n = 0, 1, 2` for the three blocks:
+
+```tsx
+<motion.div
+  initial={{ opacity: 0, y: 8 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: n * 0.06 }}
+>
+  {/* block content */}
+</motion.div>
 ```
-Stagger delays: 0ms → 60ms → 120ms.
 
-### Summary panel (replaces `SmoothSummaryStack` + `forecast-summary-enter` keyframe)
-- `AnimatePresence` wraps narrative text
-- Height: `motion.div` with `animate={{ height: "auto" }}` — replaces FLIP logic
-- Content swap: `initial={{ opacity: 0 }} animate={{ opacity: 1 }}`
+### Summary panel (replaces `SmoothSummaryStack` + `forecast-summary-enter`)
 
-### Loading states
-- CSS spinner → Framer Motion `animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}`
-- Chart skeleton: `motion.div` shimmer with `animate={{ backgroundPosition: ["200% 0", "-200% 0"] }}`
+In `forecast-summary-panel.tsx`:
 
-### Interactive controls
-- Slider thumb wrapper: `whileTap={{ scale: 0.9 }}`
-- Apply button: `whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}`
-- Input focus ring: `transition: all 0.15s ease` (CSS, no Framer needed)
+- `ForecastSummaryPanel` currently does NOT import `SmoothSummaryStack` — that import is in `page.tsx` and has already been removed in Section 4.
+- Wrap the narrative/loading content in `AnimatePresence` with a `key` that changes when the content changes. The component already returns `null` when `loadPhase === "idle"`, so `AnimatePresence` is only active for the `"charts"`, `"llm"`, and loaded states:
 
-### Chart tooltip
-- Custom Recharts tooltip wrapped in `motion.div`:
-  ```js
-  initial={{ opacity: 0, scale: 0.97 }}
-  animate={{ opacity: 1, scale: 1 }}
-  transition={{ duration: 0.1 }}
-  ```
+```tsx
+// Derive summaryKey from the current content state so AnimatePresence re-animates on change:
+const summaryKey = summary?.segment_label ?? loadPhase ?? "empty";
+
+// ...
+
+<AnimatePresence mode="wait">
+  <motion.div
+    key={summaryKey}
+    initial={{ opacity: 0, height: 0 }}
+    animate={{ opacity: 1, height: "auto" }}
+    exit={{ opacity: 0, height: 0 }}
+    transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
+    style={{ overflow: "hidden" }}
+  >
+    {/* existing loading states and narrative content — unchanged */}
+  </motion.div>
+</AnimatePresence>
+```
+
+### Loading spinners
+
+The `SummaryLoadingInline` sub-component in `forecast-summary-panel.tsx` currently uses a CSS `animate-spin` border div with two color variants (`border-indigo-200 border-t-indigo-600` for charts phase; `border-violet-200 border-t-violet-700` for LLM phase). Replace both variants with a single Framer Motion spinner — the two-phase distinction is retained via the label text only, not color. Also update the `formatBoldSegments` function at line 38: change `<strong className="font-semibold text-indigo-950">` to `<strong className="font-medium text-zinc-900">`.
+
+```tsx
+// Replace the spinner <div> in both loading branches with:
+<motion.div
+  className="w-5 h-5 rounded-full border-2 border-zinc-200 border-t-blue-600 shrink-0"
+  animate={{ rotate: 360 }}
+  transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+/>
+```
+
+The `animate-spin` class and the `border-indigo-*` / `border-violet-*` classes are removed.
 
 ### Table expand/collapse
-- Replace manual toggle height tracking with `AnimatePresence` + `motion.div`:
-  ```js
-  initial={{ height: 0, opacity: 0 }}
-  animate={{ height: "auto", opacity: 1 }}
-  exit={{ height: 0, opacity: 0 }}
-  transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-  ```
+
+In `monthly-table.tsx`, replace the existing conditional render of the table with `AnimatePresence`. Preserve the existing `id="monthly-table-panel"` and `aria-labelledby` attributes on the wrapping element:
+
+```tsx
+<AnimatePresence initial={false}>
+  {expanded && (
+    <motion.div
+      id="monthly-table-panel"
+      role="region"
+      aria-labelledby="monthly-table-toggle"
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: "auto", opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      style={{ overflow: "hidden" }}
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          {/* existing table content */}
+        </table>
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
+```
+
+Add `id="monthly-table-toggle"` to the toggle button so the `aria-labelledby` reference resolves.
 
 ---
 
@@ -196,16 +524,16 @@ Stagger delays: 0ms → 60ms → 120ms.
 
 | File | Changes |
 |------|---------|
-| `frontend/src/app/globals.css` | Remove gradient tokens, `forecast-summary-enter` keyframe; add minimal base tokens |
-| `frontend/src/app/layout.tsx` | Add `h-14` app header bar |
-| `frontend/src/app/page.tsx` | Update layout classes, wrap sections in Framer Motion entry animations |
-| `frontend/src/app/ui/dashboard-header.tsx` | Strip gradient, restyle all controls and labels |
-| `frontend/src/app/ui/scenario-panel.tsx` | Restyle sliders, apply button, remove gradient |
-| `frontend/src/app/ui/forecast-chart.tsx` | Update colors, grid, axes, tooltip, legend, height; add motion tooltip |
-| `frontend/src/app/ui/forecast-summary-panel.tsx` | Replace CSS animation with Framer Motion; update typography |
-| `frontend/src/app/ui/monthly-table.tsx` | Update row styles, forecast badge, add AnimatePresence expand/collapse |
-| `frontend/src/app/ui/smooth-summary-stack.tsx` | **Delete** — replaced by Framer Motion in `forecast-summary-panel.tsx` |
-| `frontend/package.json` | Add `framer-motion` dependency |
+| `frontend/src/app/globals.css` | Full replacement — see Section 1 for exact content |
+| `frontend/src/app/layout.tsx` | Preserve `<body>` className; add inner flex shell + `h-14` app header bar |
+| `frontend/src/app/page.tsx` | Remove `SmoothSummaryStack` import; remove `<header>` element; delete `<main>` root wrapper; return `<aside>` + `<main>` fragment; add Framer Motion entry wrappers; add `motion` import |
+| `frontend/src/app/ui/dashboard-header.tsx` | Remove gradient background; restyle all controls and labels per Section 4 |
+| `frontend/src/app/ui/scenario-panel.tsx` | Remove gradient background; restyle sliders, apply button, error state; add `motion` import |
+| `frontend/src/app/ui/forecast-chart.tsx` | Update chart colors, grid, axes; replace tooltip with `CustomTooltip`; replace `<Legend>` with custom JSX; height 256→320px; `initialDimension` 256→320; add `motion` import |
+| `frontend/src/app/ui/forecast-summary-panel.tsx` | Replace CSS spinner (indigo/violet) with Framer Motion; add `AnimatePresence` content wrapper; update typography; add `motion, AnimatePresence` imports |
+| `frontend/src/app/ui/monthly-table.tsx` | Update row styles (violet→blue tint), forecast badge (violet→blue), `<thead>` and toggle button (indigo→zinc), `EmptyTableState` (`text-indigo-500/80`→`text-zinc-400`), outer `<section>` border (indigo→zinc), add `AnimatePresence` expand/collapse; preserve `id`/`aria-*`; add `motion, AnimatePresence` imports |
+| `frontend/src/app/ui/smooth-summary-stack.tsx` | **Delete this file** |
+| `frontend/package.json` | Add `"framer-motion": "^11.0.0"` |
 
 ---
 
@@ -214,6 +542,10 @@ Stagger delays: 0ms → 60ms → 120ms.
 - No indigo, violet, or teal in UI chrome — only in chart data if needed
 - Single blue accent (`blue-600`) used in ≤4 places per screen
 - Clear visual hierarchy: a new user can identify the most important element within 2 seconds
-- Charts are visually dominant — largest single element on screen
-- Sidebar controls feel intentional and modern, not browser-default
-- All animations use Framer Motion, `SmoothSummaryStack` deleted
+- Charts are visually dominant — largest single element on screen, 320px height
+- Sidebar controls feel intentional and modern — no browser-default arrows, clean sliders
+- All animations use Framer Motion; `SmoothSummaryStack` and `forecast-summary-enter` keyframe deleted
+- Error states use light-mode-appropriate red (not dark `rose-950`)
+- Focus styling governed solely by global `:focus-visible` — no per-component `focus:ring-*` duplication
+- `layout.tsx` `<body>` className (Geist font variables) preserved unchanged
+- `monthly-table.tsx` `id` and `aria-*` attributes preserved on the collapsible panel
