@@ -1,7 +1,6 @@
 "use client";
 
 import { formatCurrency, formatNumber, monthToLabel } from "@/app/utils/format";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useState } from "react";
 
 export type MonthlyRow = {
@@ -81,8 +80,6 @@ function Row({ row }: { row: MonthlyRow }) {
 
 export function MonthlyTable({ rows }: MonthlyTableProps) {
   const hasRows = rows.length > 0;
-  const shouldReduceMotion = useReducedMotion() ?? false;
-  const [expanded, setExpanded] = useState(true);
   const [showAll, setShowAll] = useState(false);
 
   const canExpand = rows.length > PREVIEW_COUNT;
@@ -91,97 +88,53 @@ export function MonthlyTable({ rows }: MonthlyTableProps) {
 
   return (
     <section className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm">
-      <button
-        type="button"
-        id="monthly-table-toggle"
-        aria-expanded={expanded}
-        aria-controls="monthly-table-panel"
-        onClick={() => setExpanded((e) => !e)}
-        className="flex w-full items-center justify-between border-b border-zinc-200 bg-white px-4 py-3 text-left transition-colors hover:bg-zinc-50"
-      >
-        <div>
-          <h2 className="text-sm font-semibold text-zinc-800">
-            Monthly values
-          </h2>
-          <p className="mt-0.5 text-xs text-zinc-500">
-            Forecast rows are highlighted in blue.
-          </p>
-        </div>
-        <svg
-          className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform ${expanded ? "rotate-180" : ""}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          aria-hidden
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
-      </button>
+      <div className="border-b border-zinc-200 px-4 py-3">
+        <h2 className="text-sm font-semibold text-zinc-800">Monthly values</h2>
+        <p className="mt-0.5 text-xs text-zinc-500">
+          Forecast rows are highlighted in blue.
+        </p>
+      </div>
 
-      <AnimatePresence initial={false}>
-        {expanded ? (
-          <motion.div
-            id="monthly-table-panel"
-            role="region"
-            aria-labelledby="monthly-table-toggle"
-            initial={shouldReduceMotion ? false : { height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={shouldReduceMotion ? undefined : { height: 0, opacity: 0 }}
-            transition={
-              shouldReduceMotion
-                ? { duration: 0 }
-                : { duration: 0.2, ease: [0.4, 0, 0.2, 1] }
-            }
-            style={{ overflow: "hidden" }}
-          >
-            {hasRows ? (
-              <>
-                <div className="w-full overflow-x-auto">
-                  <table className="w-full min-w-full table-fixed border-collapse text-sm">
-                    <colgroup>
-                      <col style={{ width: "25%" }} />
-                      <col style={{ width: "18.75%" }} />
-                      <col style={{ width: "28.125%" }} />
-                      <col style={{ width: "28.125%" }} />
-                    </colgroup>
-                    <thead className="bg-white">
-                      <tr>
-                        <th className={thClass}>Month</th>
-                        <th className={thClass}>Claims</th>
-                        <th className={thClass}>Paid amount</th>
-                        <th className={thClass}>Avg cost per claim</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {visibleRows.map((row) => (
-                        <Row key={row.month} row={row} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {canExpand && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAll((v) => !v)}
-                    className="flex w-full items-center justify-center gap-1.5 border-t border-zinc-100 py-2.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-700"
-                  >
-                    {showAll
-                      ? "Show less"
-                      : `Show ${hiddenCount} more row${hiddenCount === 1 ? "" : "s"}`}
-                  </button>
-                )}
-              </>
-            ) : (
-              <EmptyTableState />
-            )}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      {hasRows ? (
+        <>
+          <div className="w-full overflow-x-auto">
+            <table className="w-full min-w-full table-fixed border-collapse text-sm">
+              <colgroup>
+                <col style={{ width: "25%" }} />
+                <col style={{ width: "18.75%" }} />
+                <col style={{ width: "28.125%" }} />
+                <col style={{ width: "28.125%" }} />
+              </colgroup>
+              <thead className="bg-white">
+                <tr>
+                  <th className={thClass}>Month</th>
+                  <th className={thClass}>Claims</th>
+                  <th className={thClass}>Paid amount</th>
+                  <th className={thClass}>Avg cost per claim</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visibleRows.map((row) => (
+                  <Row key={row.month} row={row} />
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {canExpand && (
+            <button
+              type="button"
+              onClick={() => setShowAll((v) => !v)}
+              className="flex w-full cursor-pointer items-center justify-center gap-1.5 border-t border-zinc-100 py-2.5 text-xs font-medium text-zinc-500 transition-colors hover:bg-zinc-50 hover:text-zinc-700"
+            >
+              {showAll
+                ? "Show less"
+                : `Show ${hiddenCount} more row${hiddenCount === 1 ? "" : "s"}`}
+            </button>
+          )}
+        </>
+      ) : (
+        <EmptyTableState />
+      )}
     </section>
   );
 }
