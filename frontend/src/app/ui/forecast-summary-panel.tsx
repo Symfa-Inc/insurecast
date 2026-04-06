@@ -26,7 +26,47 @@ function toSingleConclusionParagraph(raw: string): string {
     .trim();
 }
 
-function formatBoldSegments(text: string): ReactNode[] {
+const QUANTITATIVE_PHRASE_RE =
+  /(\$[\d,]+(?:\.\d+)?(?:\s?USD)?|\b\d{4}-\d{2}[–-]\d{4}-\d{2}\b|\b\d{4}-\d{2}\b|\b\d+(?:,\d{3})*(?:\.\d+)?%?\b(?:\s+(?:claims?|months?|USD))?)/g;
+
+function emphasizeQuantitativePhrases(
+  text: string,
+  keyPrefix: string,
+  isExplicitStrong = false,
+): ReactNode[] {
+  const out: ReactNode[] = [];
+  let last = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+
+  while ((match = QUANTITATIVE_PHRASE_RE.exec(text)) !== null) {
+    if (match.index > last) {
+      out.push(text.slice(last, match.index));
+    }
+    out.push(
+      <strong
+        key={`${keyPrefix}-${key}`}
+        className={
+          isExplicitStrong
+            ? "rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800"
+            : "rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700"
+        }
+      >
+        {match[0]}
+      </strong>,
+    );
+    key += 1;
+    last = match.index + match[0].length;
+  }
+
+  if (last < text.length) {
+    out.push(text.slice(last));
+  }
+
+  return out.length ? out : [text];
+}
+
+function formatNarrativeSegments(text: string): ReactNode[] {
   const re = /\*\*([^*]+)\*\*/g;
   const out: ReactNode[] = [];
   let last = 0;
@@ -34,18 +74,23 @@ function formatBoldSegments(text: string): ReactNode[] {
   let key = 0;
   while ((match = re.exec(text)) !== null) {
     if (match.index > last) {
-      out.push(text.slice(last, match.index));
+      out.push(
+        ...emphasizeQuantitativePhrases(
+          text.slice(last, match.index),
+          `plain-${key}`,
+        ),
+      );
     }
     out.push(
-      <strong key={key} className="font-medium text-zinc-900">
-        {match[1]}
+      <strong key={`markdown-${key}`} className="font-semibold text-stone-800">
+        {emphasizeQuantitativePhrases(match[1], `strong-${key}`, true)}
       </strong>,
     );
     key += 1;
     last = match.index + match[0].length;
   }
   if (last < text.length) {
-    out.push(text.slice(last));
+    out.push(...emphasizeQuantitativePhrases(text.slice(last), `tail-${key}`));
   }
   return out;
 }
@@ -76,11 +121,13 @@ function SummaryLoadingInline({
         aria-hidden
       />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-zinc-800">{title}</p>
+        <p className="text-sm font-semibold text-stone-700">{title}</p>
         {detail ? (
-          <p className="mt-1 text-xs leading-relaxed text-zinc-500">{detail}</p>
+          <p className="mt-1 text-xs leading-relaxed text-stone-500">
+            {detail}
+          </p>
         ) : null}
-        <p className="mt-1.5 text-[11px] font-medium text-zinc-400 transition-opacity duration-500">
+        <p className="mt-1.5 text-[11px] font-medium text-stone-400 transition-opacity duration-500">
           Please wait…
         </p>
       </div>
@@ -127,8 +174,8 @@ function SummaryLoadingBadge({
           aria-hidden
         />
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-zinc-800">{title}</p>
-          <p className="mt-0.5 text-[11px] leading-relaxed text-zinc-500">
+          <p className="text-xs font-semibold text-stone-700">{title}</p>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-stone-500">
             {detail}
           </p>
         </div>
@@ -164,11 +211,11 @@ export function ForecastSummaryPanel({
             <div aria-labelledby="forecast-summary-heading">
               <h2
                 id="forecast-summary-heading"
-                className="text-sm font-semibold text-zinc-800"
+                className="text-sm font-semibold text-stone-700"
               >
                 Forecast summary
               </h2>
-              <p className="mt-1 text-sm leading-relaxed text-zinc-700">
+              <p className="mt-1 text-[15px] leading-7 text-stone-600">
                 {toSingleConclusionParagraph(summary.narrative)}
               </p>
             </div>
@@ -179,7 +226,7 @@ export function ForecastSummaryPanel({
               </p>
               <h2
                 id="forecast-summary-heading"
-                className="mb-1 text-sm font-semibold text-zinc-800"
+                className="mb-1 text-sm font-semibold text-stone-700"
               >
                 {summary.segment_label}
               </h2>
@@ -192,12 +239,12 @@ export function ForecastSummaryPanel({
                 </p>
               ) : null}
               {supplementalNotice ? (
-                <p className="text-xs leading-relaxed text-zinc-500">
+                <p className="text-xs leading-relaxed text-stone-500">
                   {supplementalNotice}
                 </p>
               ) : null}
-              <p className="text-sm leading-relaxed text-zinc-700">
-                {formatBoldSegments(
+              <p className="text-[15px] leading-7 text-stone-600">
+                {formatNarrativeSegments(
                   toSingleConclusionParagraph(summary.narrative),
                 )}
               </p>
