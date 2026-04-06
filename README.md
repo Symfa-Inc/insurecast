@@ -19,6 +19,10 @@ Time-series forecasting dashboard for monthly claims and paid amounts using SARI
 
 </div>
 
+<p align="center">
+<img src=".assets/insurecast.png" width="100%" alt="InsureCast Preview">
+</p>
+
 ## Features
 
 - **Claims & Cost Forecasting** – Monthly charts with confidence bands powered by SARIMAX seasonal models

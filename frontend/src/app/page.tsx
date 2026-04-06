@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   getClaimsSeries,
   getCostsSeries,
@@ -26,7 +27,6 @@ import {
 } from "./utils/format";
 import { DashboardHeader } from "./ui/dashboard-header";
 import { ForecastSummaryPanel } from "./ui/forecast-summary-panel";
-import { SmoothSummaryStack } from "./ui/smooth-summary-stack";
 import {
   chartHasDisplayableData,
   ForecastChart,
@@ -36,6 +36,67 @@ import { MonthlyTable, type MonthlyRow } from "./ui/monthly-table";
 import { ScenarioPanel } from "./ui/scenario-panel";
 
 const MAX_SAFE_COST = 1e6;
+const DEFAULT_STATE = "NY";
+const DEFAULT_INDUSTRY = "Healthcare";
+const DEFAULT_CLAIM_TYPE = "Indemnity";
+const DEFAULT_FROM_MONTH = "2023-01";
+const DEFAULT_FORECAST_PERIOD = "12";
+const SIDEBAR_CONTROL_KEYS = [
+  "stateValue",
+  "industry",
+  "claimType",
+  "fromMonth",
+  "forecastPeriod",
+  "severityInflationPct",
+  "frequencyShockPct",
+] as const;
+
+type SidebarControls = {
+  stateValue: string;
+  industry: string;
+  claimType: string;
+  fromMonth: string;
+  forecastPeriod: string;
+  severityInflationPct: number;
+  frequencyShockPct: number;
+};
+
+const DEFAULT_SIDEBAR_CONTROLS: SidebarControls = {
+  stateValue: DEFAULT_STATE,
+  industry: DEFAULT_INDUSTRY,
+  claimType: DEFAULT_CLAIM_TYPE,
+  fromMonth: DEFAULT_FROM_MONTH,
+  forecastPeriod: DEFAULT_FORECAST_PERIOD,
+  severityInflationPct: 0,
+  frequencyShockPct: 0,
+};
+
+function resolveSidebarDefaults(payload: SegmentsResponse): SidebarControls {
+  const availableStates = filterStatesForUi(payload.states);
+
+  return {
+    ...DEFAULT_SIDEBAR_CONTROLS,
+    stateValue: availableStates.includes(DEFAULT_STATE)
+      ? DEFAULT_STATE
+      : (availableStates[0] ?? DEFAULT_STATE),
+    industry: payload.industries.includes(DEFAULT_INDUSTRY)
+      ? DEFAULT_INDUSTRY
+      : (payload.industries[0] ?? DEFAULT_INDUSTRY),
+    claimType: payload.claim_types.includes(DEFAULT_CLAIM_TYPE)
+      ? DEFAULT_CLAIM_TYPE
+      : (payload.claim_types[0] ?? DEFAULT_CLAIM_TYPE),
+  };
+}
+
+function countChangedSidebarControls(
+  draftControls: SidebarControls,
+  appliedControls: SidebarControls,
+) {
+  return SIDEBAR_CONTROL_KEYS.reduce(
+    (count, key) => count + Number(draftControls[key] !== appliedControls[key]),
+    0,
+  );
+}
 
 /** Forecast months use scenario claims/CIs; historical actuals stay from baseline API. */
 function mergeClaimsWithScenario(
@@ -64,12 +125,14 @@ function mergeClaimsWithScenario(
 }
 
 export default function Home() {
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [segments, setSegments] = useState<SegmentsResponse | null>(null);
-  const [stateValue, setStateValue] = useState("FL");
-  const [industry, setIndustry] = useState("Construction");
-  const [claimType, setClaimType] = useState("LostTime");
-  const [fromMonth, setFromMonth] = useState("2019-01");
-  const [forecastPeriod, setForecastPeriod] = useState("3");
+  const [draftControls, setDraftControls] = useState<SidebarControls>(
+    DEFAULT_SIDEBAR_CONTROLS,
+  );
+  const [appliedControls, setAppliedControls] = useState<SidebarControls>(
+    DEFAULT_SIDEBAR_CONTROLS,
+  );
   const [claims, setClaims] = useState<ClaimsPoint[]>([]);
   const [costs, setCosts] = useState<CostsPoint[]>([]);
   /** Full scenario API series; drives adjusted costs + merged forecast claims. */
@@ -85,7 +148,17 @@ export default function Home() {
   >("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const forecastMonths = Math.max(1, parseInt(forecastPeriod, 10) || 3);
+  const isApplying = summaryLoadPhase !== "idle";
+  const pendingChangeCount = useMemo(
+    () => countChangedSidebarControls(draftControls, appliedControls),
+    [draftControls, appliedControls],
+  );
+  const hasUnappliedChanges = pendingChangeCount > 0;
+  const forecastMonths = Math.max(
+    1,
+    parseInt(appliedControls.forecastPeriod, 10) ||
+      Number(DEFAULT_FORECAST_PERIOD),
+  );
   const toMonth = useMemo(() => {
     if (metadata?.actual_end && metadata?.forecast_end) {
       const endWithForecast = addMonths(metadata.actual_end, forecastMonths);
@@ -93,27 +166,21 @@ export default function Home() {
         ? endWithForecast
         : metadata.forecast_end;
     }
-    return addMonths(fromMonth, 24);
-  }, [metadata?.actual_end, metadata?.forecast_end, forecastMonths, fromMonth]);
-
-  const seriesParams = useMemo(
-    () => ({
-      from: fromMonth,
-      to: toMonth,
-      state: stateValue,
-      industry,
-      claim_type: claimType,
-    }),
-    [claimType, fromMonth, industry, stateValue, toMonth],
-  );
+    return addMonths(appliedControls.fromMonth, 24);
+  }, [
+    appliedControls.fromMonth,
+    metadata?.actual_end,
+    metadata?.forecast_end,
+    forecastMonths,
+  ]);
 
   useEffect(() => {
     async function loadSegments() {
       const payload = await getSegments();
+      const resolvedControls = resolveSidebarDefaults(payload);
       setSegments(payload);
-      setStateValue(filterStatesForUi(payload.states)[0] ?? "FL");
-      setIndustry(payload.industries[0] ?? "Construction");
-      setClaimType(payload.claim_types[0] ?? "LostTime");
+      setDraftControls(resolvedControls);
+      setAppliedControls(resolvedControls);
     }
 
     void loadSegments().catch((loadError: unknown) => {
@@ -130,14 +197,14 @@ export default function Home() {
 
     async function loadData() {
       setError(null);
-      setForecastSummary(null);
       setSummaryLoadPhase("charts");
       try {
         const meta = await getModelMetadata();
         setMetadata(meta);
         const forecastMonthsNum = Math.max(
           1,
-          parseInt(forecastPeriod, 10) || 3,
+          parseInt(appliedControls.forecastPeriod, 10) ||
+            Number(DEFAULT_FORECAST_PERIOD),
         );
         const computedTo =
           meta?.actual_end && meta?.forecast_end
@@ -147,20 +214,32 @@ export default function Home() {
               ) <= 0
               ? addMonths(meta.actual_end, forecastMonthsNum)
               : meta.forecast_end
-            : addMonths(fromMonth, 24);
+            : addMonths(appliedControls.fromMonth, 24);
         const params = {
-          from: fromMonth,
+          from: appliedControls.fromMonth,
           to: computedTo,
-          state: stateValue,
-          industry,
-          claim_type: claimType,
+          state: appliedControls.stateValue,
+          industry: appliedControls.industry,
+          claim_type: appliedControls.claimType,
         };
-        const [claimsPayload, costsPayload] = await Promise.all([
-          getClaimsSeries(params),
-          getCostsSeries(params),
-        ]);
+        const scenarioPromise =
+          appliedControls.severityInflationPct !== 0 ||
+          appliedControls.frequencyShockPct !== 0
+            ? recalculateScenario({
+                ...params,
+                severity_inflation_pct: appliedControls.severityInflationPct,
+                frequency_shock_pct: appliedControls.frequencyShockPct,
+              })
+            : Promise.resolve(null);
+        const [claimsPayload, costsPayload, scenarioPayload] =
+          await Promise.all([
+            getClaimsSeries(params),
+            getCostsSeries(params),
+            scenarioPromise,
+          ]);
         setClaims(claimsPayload);
         setCosts(costsPayload);
+        setScenarioSeries(scenarioPayload);
 
         if (!rawSeriesHasPlottableChartData(claimsPayload, costsPayload)) {
           setForecastSummary({
@@ -169,8 +248,8 @@ export default function Home() {
             source: "no_data",
             llm_model: null,
             notice: null,
-            segment_label: `${stateValue} · ${industry} · ${claimType}`,
-            chart_from: fromMonth,
+            segment_label: `${appliedControls.stateValue} · ${appliedControls.industry} · ${appliedControls.claimType}`,
+            chart_from: appliedControls.fromMonth,
             chart_to: computedTo,
             insurance_forecast_model: "SARIMAX (1,1,1)×(1,1,1,12)",
             train_window:
@@ -184,21 +263,20 @@ export default function Home() {
           const summaryPayload = await postForecastSummaryLLM(params);
           setForecastSummary(summaryPayload);
         }
-        setScenarioSeries(null);
       } catch (loadError: unknown) {
         setError(
           loadError instanceof Error
             ? loadError.message
             : "Failed to load dashboard data.",
         );
-        setForecastSummary(null);
+        setScenarioSeries(null);
       } finally {
         setSummaryLoadPhase("idle");
       }
     }
 
     void loadData();
-  }, [segments, claimType, fromMonth, forecastPeriod, industry, stateValue]);
+  }, [segments, appliedControls]);
 
   const displayedCosts = useMemo(() => {
     if (!scenarioSeries?.length) {
@@ -395,96 +473,148 @@ export default function Home() {
     return [...rows].reverse();
   }, [displayedClaims, displayedCosts]);
 
-  async function applyScenario(
-    severityInflationPct: number,
-    frequencyShockPct: number,
-  ) {
-    try {
-      const series = await recalculateScenario({
-        ...seriesParams,
-        severity_inflation_pct: severityInflationPct,
-        frequency_shock_pct: frequencyShockPct,
-      });
-      setScenarioSeries(series);
-      setError(null);
-    } catch {
-      setError("Scenario recalculation failed.");
+  const scenarioSummaryNotice =
+    appliedControls.severityInflationPct !== 0 ||
+    appliedControls.frequencyShockPct !== 0
+      ? `Scenario applied: severity ${appliedControls.severityInflationPct >= 0 ? "+" : ""}${appliedControls.severityInflationPct}% and frequency ${appliedControls.frequencyShockPct >= 0 ? "+" : ""}${appliedControls.frequencyShockPct}%. Charts and table reflect the adjustment.`
+      : null;
+
+  function applySidebarChanges() {
+    if (!hasUnappliedChanges || isApplying) {
+      return;
     }
+
+    setAppliedControls(draftControls);
+  }
+
+  function resetDraftControls() {
+    setDraftControls(appliedControls);
   }
 
   return (
-    <main className="mx-auto max-w-[1600px] px-4 py-6 text-indigo-950/90 md:px-6 md:py-8 lg:px-8">
-      <div className="flex justify-center">
-        <div className="flex w-full max-w-full flex-col lg:w-fit">
-          <header className="mb-6 pb-2">
-            <h1 className="text-2xl font-bold tracking-tight text-indigo-950 md:text-3xl">
-              InsureCast forecasting dashboard
-            </h1>
-            <p className="mt-1 text-sm text-indigo-700/75">
-              Claims and paid amount trends by segment
-            </p>
-          </header>
-
-          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,48rem)] lg:items-start lg:gap-8">
-            <aside className="order-1 flex min-w-0 flex-col gap-4 lg:sticky lg:top-6">
-              <DashboardHeader
-                segments={segments}
-                stateValue={stateValue}
-                setStateValue={setStateValue}
-                industry={industry}
-                setIndustry={setIndustry}
-                claimType={claimType}
-                setClaimType={setClaimType}
-                fromMonth={fromMonth}
-                setFromMonth={setFromMonth}
-                forecastPeriod={forecastPeriod}
-                setForecastPeriod={setForecastPeriod}
+    <>
+      <aside className="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white">
+        <DashboardHeader
+          segments={segments}
+          actualStart={metadata?.actual_start ?? null}
+          actualEnd={metadata?.actual_end ?? null}
+          stateValue={draftControls.stateValue}
+          setStateValue={(value) =>
+            setDraftControls((current) => ({ ...current, stateValue: value }))
+          }
+          industry={draftControls.industry}
+          setIndustry={(value) =>
+            setDraftControls((current) => ({ ...current, industry: value }))
+          }
+          claimType={draftControls.claimType}
+          setClaimType={(value) =>
+            setDraftControls((current) => ({ ...current, claimType: value }))
+          }
+          fromMonth={draftControls.fromMonth}
+          setFromMonth={(value) =>
+            setDraftControls((current) => ({ ...current, fromMonth: value }))
+          }
+          forecastPeriod={draftControls.forecastPeriod}
+          setForecastPeriod={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              forecastPeriod: value,
+            }))
+          }
+        />
+        <div className="border-t border-zinc-100 mx-5" />
+        <ScenarioPanel
+          severityInflationPct={draftControls.severityInflationPct}
+          setSeverityInflationPct={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              severityInflationPct: value,
+            }))
+          }
+          frequencyShockPct={draftControls.frequencyShockPct}
+          setFrequencyShockPct={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              frequencyShockPct: value,
+            }))
+          }
+          pendingChangeCount={pendingChangeCount}
+          hasUnappliedChanges={hasUnappliedChanges}
+          isApplying={isApplying}
+          onApplyChanges={applySidebarChanges}
+          onResetChanges={resetDraftControls}
+          error={error}
+        />
+      </aside>
+      <main
+        id="main-content"
+        className="flex-1 overflow-y-auto bg-zinc-50 px-6 py-6"
+      >
+        <div className="space-y-5">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : { duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0 }
+            }
+          >
+            <ForecastSummaryPanel
+              summary={forecastSummary}
+              loadPhase={summaryLoadPhase}
+              supplementalNotice={scenarioSummaryNotice}
+            />
+          </motion.div>
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.25,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: 0.06,
+                  }
+            }
+          >
+            <section className="flex flex-col gap-4">
+              <ForecastChart
+                title="Amount of Claims per Month"
+                data={claimsChartData}
+                valueFormatter={formatNumber}
+                allowDataOverflow
               />
-              <ScenarioPanel
-                key={`${stateValue}-${industry}-${claimType}-${fromMonth}-${forecastPeriod}`}
-                onApplyScenario={applyScenario}
-                error={error}
+              <ForecastChart
+                title="Average Cost per Claim per Month"
+                data={avgCostChartData}
+                valueFormatter={formatCurrency}
+                skipZeroFloor
+                allowDataOverflow
               />
-            </aside>
-
-            <div className="order-2 min-w-0 w-full">
-              <SmoothSummaryStack
-                summary={
-                  <ForecastSummaryPanel
-                    summary={forecastSummary}
-                    loadPhase={summaryLoadPhase}
-                  />
-                }
-                below={
-                  <>
-                    <section className="flex flex-col gap-4">
-                      <ForecastChart
-                        title="Amount of Claims per Month"
-                        description="Historical data plus forecast for the selected period."
-                        data={claimsChartData}
-                        valueFormatter={formatNumber}
-                        allowDataOverflow
-                      />
-                      <ForecastChart
-                        title="Average Cost per Claim per Month"
-                        description="Historical data plus forecast for the selected period."
-                        data={avgCostChartData}
-                        valueFormatter={formatCurrency}
-                        skipZeroFloor
-                        allowDataOverflow
-                      />
-                    </section>
-                    <MonthlyTable
-                      key={hasMonthlyTableData ? monthlyRows.length : 0}
-                      rows={hasMonthlyTableData ? monthlyRows : []}
-                    />
-                  </>
-                }
-              />
-            </div>
-          </div>
+            </section>
+          </motion.div>
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.25,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: 0.12,
+                  }
+            }
+          >
+            <MonthlyTable
+              key={hasMonthlyTableData ? monthlyRows.length : 0}
+              rows={hasMonthlyTableData ? monthlyRows : []}
+            />
+          </motion.div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

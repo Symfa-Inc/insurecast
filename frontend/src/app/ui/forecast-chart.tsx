@@ -5,7 +5,7 @@ import {
   Area,
   CartesianGrid,
   ComposedChart,
-  Legend,
+  Label,
   Line,
   ReferenceLine,
   ResponsiveContainer,
@@ -13,45 +13,83 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { motion, useReducedMotion } from "framer-motion";
+import type { TooltipContentProps } from "recharts/types/component/Tooltip";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
-/** Historical (actuals) — blue */
-const STROKE_HISTORICAL = "#1d4ed8";
-/** Forecast dashed line — orange (bridge segment uses historical blue above) */
-const STROKE_FORECAST = "#ea580c";
+/** Historical (actuals) + solidBridge — neutral zinc */
+const STROKE_HISTORICAL = "#71717a";
+/** Forecast dashed line — blue accent */
+const STROKE_FORECAST = "#2563eb";
 /** Vertical divider at forecast start */
-const STROKE_FORECAST_MARKER = "#c2410c";
-/** Confidence band (forecast only) — warm tint */
-const CI_GRADIENT_START = "#ffedd5";
-const CI_GRADIENT_END = "#fdba74";
+const STROKE_FORECAST_MARKER = "#d4d4d8";
+/** Confidence band (forecast only) — blue tint */
+const CI_FILL = "#dbeafe";
 
-/** Same duration + easing on Area + all Line series so motion stays in sync (avoids “pop-in” order). */
+type TooltipEntry = NonNullable<
+  TooltipContentProps<ValueType, NameType>["payload"]
+>[number];
+
+function CustomTooltip({
+  active,
+  payload,
+  label,
+  valueFormatter,
+}: TooltipContentProps<ValueType, NameType> & {
+  valueFormatter: (value: number) => string;
+}) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
+
+  if (!active || !payload?.length) return null;
+
+  return (
+    <motion.div
+      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.1 }}
+      className="bg-white border border-zinc-200 shadow-md rounded-lg p-3 min-w-[160px]"
+    >
+      <p className="text-xs font-semibold text-zinc-500 mb-2">{label}</p>
+      {payload
+        .filter(
+          (entry: TooltipEntry) =>
+            entry.name && entry.dataKey !== "solidBridge",
+        )
+        .map((entry: TooltipEntry) => {
+          const formattedValue = Array.isArray(entry.value)
+            ? entry.value
+                .map((item: ValueType) =>
+                  typeof item === "number"
+                    ? valueFormatter(item)
+                    : String(item),
+                )
+                .join(" - ")
+            : typeof entry.value === "number"
+              ? valueFormatter(entry.value)
+              : String(entry.value ?? "");
+
+          return (
+            <div
+              key={entry.dataKey as string}
+              className="flex items-center justify-between gap-4 text-sm"
+            >
+              <span className="text-zinc-500">{entry.name}</span>
+              <span className="font-semibold text-zinc-900">
+                {formattedValue}
+              </span>
+            </div>
+          );
+        })}
+    </motion.div>
+  );
+}
+
+/** Same duration + easing on Area + all Line series so motion stays in sync (avoids "pop-in" order). */
 const CHART_ANIMATION_MS = 1000;
 const CHART_ANIMATION_EASING = "ease-in-out" as const;
-
-/**
- * Range `Area` (ciBand) supplies [low, high] per point — not a scalar. Tooltip must not pass that to Intl as one number.
- */
-function formatTooltipValue(
-  value: unknown,
-  valueFormatter: (n: number) => string,
-): string {
-  if (value != null && Array.isArray(value) && value.length >= 2) {
-    const lo = value[0];
-    const hi = value[1];
-    if (
-      typeof lo === "number" &&
-      typeof hi === "number" &&
-      Number.isFinite(lo) &&
-      Number.isFinite(hi)
-    ) {
-      return `${valueFormatter(lo)} – ${valueFormatter(hi)}`;
-    }
-  }
-  if (value != null && typeof value === "number" && Number.isFinite(value)) {
-    return valueFormatter(value);
-  }
-  return "—";
-}
 
 export type ForecastChartPoint = {
   month: string;
@@ -75,7 +113,6 @@ export type ForecastChartPoint = {
 
 type ForecastChartProps = {
   title: string;
-  description: string;
   data: ForecastChartPoint[];
   valueFormatter: (value: number) => string;
   /** When true, Y domain is based only on line values (not the CI band), giving a tighter axis for narrow data ranges */
@@ -233,7 +270,6 @@ function forecastBoundaryRef(
 
 export function ForecastChart({
   title,
-  description,
   data,
   valueFormatter,
   domainFromLineOnly = false,
@@ -249,73 +285,59 @@ export function ForecastChart({
   const boundaryRef = forecastBoundaryRef(sanitizedData);
 
   return (
-    <article className="group rounded-2xl border border-indigo-200/50 bg-white p-5 shadow-sm ring-1 ring-indigo-100/50 transition-shadow hover:shadow-md">
-      <h2 className="text-xl font-semibold text-indigo-900 md:text-2xl">
-        {title}
-      </h2>
-      <p className="mt-1 text-sm text-indigo-700/70">{description}</p>
-      <div
-        className="mt-4 relative w-full min-w-0 rounded-xl bg-slate-50/50 border border-indigo-100/60 p-3"
-        style={{ height: 256 }}
-      >
+    <article className="rounded-xl border border-zinc-200 border-t-blue-600/40 bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-zinc-800">{title}</h3>
+        <div className="flex items-center gap-4">
+          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+            <span className="inline-block w-5 h-0 border-t-2 border-zinc-400" />
+            Historical
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500">
+            <span className="inline-block w-5 h-0 border-t-2 border-dashed border-blue-500" />
+            Forecast
+          </span>
+        </div>
+      </div>
+      <div className="relative w-full min-w-0">
         {hasData ? (
-          <ResponsiveContainer
-            width="100%"
-            height="100%"
-            minHeight={220}
-            initialDimension={{ width: 400, height: 256 }}
-          >
+          <ResponsiveContainer width="100%" height={320} minHeight={280}>
             <ComposedChart
               data={sanitizedData}
               margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
             >
               <defs>
-                <linearGradient id={ciGradientId} x1="0" y1="0" x2="1" y2="0">
-                  <stop
-                    offset="0%"
-                    stopColor={CI_GRADIENT_START}
-                    stopOpacity={0.55}
-                  />
-                  <stop
-                    offset="100%"
-                    stopColor={CI_GRADIENT_END}
-                    stopOpacity={0.35}
-                  />
+                <linearGradient id={ciGradientId} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CI_FILL} stopOpacity={0.65} />
+                  <stop offset="100%" stopColor={CI_FILL} stopOpacity={0.35} />
                 </linearGradient>
               </defs>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="#c7b8f0"
-                strokeOpacity={0.6}
-              />
+              <CartesianGrid vertical={false} stroke="#E4E4E7" />
               <XAxis
                 dataKey="month"
                 interval="preserveStartEnd"
                 minTickGap={20}
-                tick={{ fill: "#5b21b6", fontSize: 11 }}
+                tick={{ fill: "#a1a1aa", fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
               />
               <YAxis
                 domain={yDomain}
                 allowDataOverflow={allowDataOverflowProp ?? domainFromLineOnly}
-                tick={{ fill: "#5b21b6", fontSize: 12 }}
+                tick={{ fill: "#a1a1aa", fontSize: 11 }}
                 tickFormatter={(v) =>
                   typeof v === "number" && (v >= SANE_MAX || !isFinite(v))
                     ? ""
                     : valueFormatter(v as number)
                 }
+                axisLine={false}
+                tickLine={false}
               />
               <Tooltip
-                formatter={(value, name) => [
-                  formatTooltipValue(value, valueFormatter),
-                  name ?? "",
-                ]}
-                contentStyle={{
-                  borderRadius: 10,
-                  borderColor: "#fb923c",
-                  backgroundColor: "#fff7ed",
-                }}
+                content={(props) => (
+                  <CustomTooltip {...props} valueFormatter={valueFormatter} />
+                )}
               />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
               {/* CI in a lower z layer; all Line series share default line zIndex so SVG order matches children:
                 historical → bridge → forecast (later sibling paints on top). */}
               <Area
@@ -379,17 +401,25 @@ export function ForecastChart({
                   x={boundaryRef.x}
                   position={boundaryRef.position}
                   stroke={STROKE_FORECAST_MARKER}
-                  strokeWidth={1.5}
-                  strokeDasharray="4 4"
-                  strokeOpacity={0.95}
+                  strokeWidth={1}
+                  strokeDasharray="4 3"
                   zIndex={500}
-                />
+                >
+                  <Label
+                    value="Forecast starts"
+                    position="insideTopRight"
+                    style={{ fontSize: 10, fill: "#a1a1aa" }}
+                  />
+                </ReferenceLine>
               ) : null}
             </ComposedChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-indigo-500/80">
-            <p className="text-base font-medium">No data</p>
+          <div
+            className="flex items-center justify-center"
+            style={{ height: 320 }}
+          >
+            <p className="text-sm font-medium text-zinc-400">No data</p>
           </div>
         )}
       </div>
