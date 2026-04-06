@@ -495,7 +495,7 @@ export default function Home() {
 
   return (
     <>
-      <aside className="w-72 shrink-0 bg-white border-r border-zinc-200 flex flex-col overflow-y-auto">
+      <aside className="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white">
         <DashboardHeader
           segments={segments}
           stateValue={draftControls.stateValue}

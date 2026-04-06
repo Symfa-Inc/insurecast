@@ -54,68 +54,70 @@ export function ScenarioPanel({
     : "Forecast is up to date.";
 
   return (
-    <div className="flex min-h-full flex-1 flex-col px-5 py-6">
+    <div className="flex min-h-0 flex-1 flex-col px-5 py-6">
       <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
         Scenario
       </p>
 
-      <div className="flex flex-col gap-1">
-        <p id="scenario-tip-severity" className="sr-only">
-          {SEVERITY_TOOLTIP}
-        </p>
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-1.5">
-            <label
-              className="text-xs text-zinc-500 cursor-help"
-              title={SEVERITY_TOOLTIP}
-            >
-              Severity inflation
-            </label>
-            <span className="text-sm font-semibold text-zinc-900">
-              {severityInflationPct}%
-            </span>
+      <div className="min-h-0 flex-1 overflow-y-auto pb-4">
+        <div className="flex flex-col gap-1">
+          <p id="scenario-tip-severity" className="sr-only">
+            {SEVERITY_TOOLTIP}
+          </p>
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                className="text-xs text-zinc-500 cursor-help"
+                title={SEVERITY_TOOLTIP}
+              >
+                Severity inflation
+              </label>
+              <span className="text-sm font-semibold text-zinc-900">
+                {severityInflationPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              name="severityInflation"
+              min={0}
+              max={20}
+              value={severityInflationPct}
+              onChange={(e) => setSeverityInflationPct(Number(e.target.value))}
+              className={rangeClass}
+              aria-describedby="scenario-tip-severity"
+            />
           </div>
-          <input
-            type="range"
-            name="severityInflation"
-            min={0}
-            max={20}
-            value={severityInflationPct}
-            onChange={(e) => setSeverityInflationPct(Number(e.target.value))}
-            className={rangeClass}
-            aria-describedby="scenario-tip-severity"
-          />
-        </div>
 
-        <p id="scenario-tip-frequency" className="sr-only">
-          {FREQUENCY_TOOLTIP}
-        </p>
-        <div className="mb-5">
-          <div className="flex items-center justify-between mb-1.5">
-            <label
-              className="text-xs text-zinc-500 cursor-help"
-              title={FREQUENCY_TOOLTIP}
-            >
-              Frequency shock
-            </label>
-            <span className="text-sm font-semibold text-zinc-900">
-              {frequencyShockPct}%
-            </span>
+          <p id="scenario-tip-frequency" className="sr-only">
+            {FREQUENCY_TOOLTIP}
+          </p>
+          <div className="mb-5">
+            <div className="flex items-center justify-between mb-1.5">
+              <label
+                className="text-xs text-zinc-500 cursor-help"
+                title={FREQUENCY_TOOLTIP}
+              >
+                Frequency shock
+              </label>
+              <span className="text-sm font-semibold text-zinc-900">
+                {frequencyShockPct}%
+              </span>
+            </div>
+            <input
+              type="range"
+              name="frequencyShock"
+              min={-10}
+              max={25}
+              value={frequencyShockPct}
+              onChange={(e) => setFrequencyShockPct(Number(e.target.value))}
+              className={rangeClass}
+              aria-describedby="scenario-tip-frequency"
+            />
           </div>
-          <input
-            type="range"
-            name="frequencyShock"
-            min={-10}
-            max={25}
-            value={frequencyShockPct}
-            onChange={(e) => setFrequencyShockPct(Number(e.target.value))}
-            className={rangeClass}
-            aria-describedby="scenario-tip-frequency"
-          />
         </div>
       </div>
 
-      <div className="mt-auto border-t border-zinc-100 pt-4">
+      <div className="-mx-5 mt-auto border-t border-zinc-100 bg-white px-5 pb-6 pt-4">
         <div className="mb-3 space-y-1">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
             Draft
