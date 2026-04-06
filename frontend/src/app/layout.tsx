@@ -36,7 +36,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <div className="flex flex-col h-screen">
+          <header className="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10">
+            <span className="text-base font-semibold text-zinc-900">InsureCast</span>
+            <span className="text-xs text-zinc-400">Insurance claims forecasting</span>
+          </header>
+          <div className="flex flex-1 min-h-0 overflow-hidden">
+            {children}
+          </div>
+        </div>
       </body>
     </html>
   );
