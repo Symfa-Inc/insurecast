@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 type ScenarioPanelProps = {
   severityInflationPct: number;
@@ -15,36 +16,16 @@ type ScenarioPanelProps = {
   error: string | null;
 };
 
-const SEVERITY_TOOLTIP =
-  "Scales the modeled average cost per claim for forecast months after you update the forecast. Historical months keep the real series values.";
+const TOOLTIPS = {
+  severity:
+    "Scales the modeled average cost per claim for forecast months. Historical months always keep their real values.",
+  frequency:
+    "Scales forecast claim counts up or down. Charts and the monthly table reflect the adjusted outlook.",
+};
 
-const FREQUENCY_TOOLTIP =
-  "Scales forecast claim counts up or down after you update the forecast. Charts and table reflect the adjusted outlook.";
+type TipKey = keyof typeof TOOLTIPS;
 
-function InfoTooltip({ text }: { text: string }) {
-  return (
-    <span className="group relative ml-1 inline-block">
-      <svg
-        className="h-3.5 w-3.5 cursor-help text-zinc-400 hover:text-zinc-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden
-      >
-        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
-        <path strokeLinecap="round" strokeWidth="1.5" d="M12 11v5" />
-        <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
-      </svg>
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-52 -translate-x-1/2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-600 shadow-md opacity-0 transition-opacity duration-150 group-hover:opacity-100"
-      >
-        {text}
-        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-zinc-200" />
-      </span>
-    </span>
-  );
-}
+type TipState = { key: TipKey; top: number; left: number } | null;
 
 const rangeClass = [
   "w-full h-1 appearance-none rounded-full bg-zinc-200 cursor-pointer",
@@ -61,6 +42,41 @@ const rangeClass = [
   "[&::-moz-range-thumb]:border-0",
 ].join(" ");
 
+function InfoButton({
+  tipKey,
+  active,
+  onOpen,
+}: {
+  tipKey: TipKey;
+  active: boolean;
+  onOpen: (key: TipKey, rect: DOMRect) => void;
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={`About ${tipKey}`}
+      aria-expanded={active}
+      onClick={(e) => {
+        e.stopPropagation();
+        onOpen(tipKey, e.currentTarget.getBoundingClientRect());
+      }}
+      className="ml-1.5 inline-flex items-center justify-center rounded-full p-0.5 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+    >
+      <svg
+        className="h-3.5 w-3.5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden
+      >
+        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+        <path strokeLinecap="round" strokeWidth="1.5" d="M12 11v5" />
+        <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
+      </svg>
+    </button>
+  );
+}
+
 export function ScenarioPanel({
   severityInflationPct,
   setSeverityInflationPct,
@@ -74,6 +90,26 @@ export function ScenarioPanel({
   error,
 }: ScenarioPanelProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
+  const [tip, setTip] = useState<TipState>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  const openTip = (key: TipKey, rect: DOMRect) => {
+    if (tip?.key === key) {
+      setTip(null);
+      return;
+    }
+    setTip({ key, top: rect.bottom + 6, left: rect.left });
+  };
+
+  useEffect(() => {
+    if (!tip) return;
+    const close = (e: MouseEvent) => {
+      if (!popoverRef.current?.contains(e.target as Node)) setTip(null);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [tip]);
+
   const statusLabel = hasUnappliedChanges
     ? `${pendingChangeCount} unapplied ${pendingChangeCount === 1 ? "change" : "changes"}`
     : "Forecast is up to date.";
@@ -86,15 +122,16 @@ export function ScenarioPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto pb-4">
         <div className="flex flex-col gap-1">
-          <p id="scenario-tip-severity" className="sr-only">
-            {SEVERITY_TOOLTIP}
-          </p>
           <div className="mb-5">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="flex items-center text-xs text-zinc-500">
+              <span className="flex items-center text-xs text-zinc-500">
                 Severity inflation
-                <InfoTooltip text={SEVERITY_TOOLTIP} />
-              </label>
+                <InfoButton
+                  tipKey="severity"
+                  active={tip?.key === "severity"}
+                  onOpen={openTip}
+                />
+              </span>
               <span className="text-sm font-semibold text-zinc-900">
                 {severityInflationPct}%
               </span>
@@ -107,19 +144,20 @@ export function ScenarioPanel({
               value={severityInflationPct}
               onChange={(e) => setSeverityInflationPct(Number(e.target.value))}
               className={rangeClass}
-              aria-describedby="scenario-tip-severity"
+              aria-label="Severity inflation"
             />
           </div>
 
-          <p id="scenario-tip-frequency" className="sr-only">
-            {FREQUENCY_TOOLTIP}
-          </p>
           <div className="mb-5">
             <div className="flex items-center justify-between mb-1.5">
-              <label className="flex items-center text-xs text-zinc-500">
+              <span className="flex items-center text-xs text-zinc-500">
                 Frequency shock
-                <InfoTooltip text={FREQUENCY_TOOLTIP} />
-              </label>
+                <InfoButton
+                  tipKey="frequency"
+                  active={tip?.key === "frequency"}
+                  onOpen={openTip}
+                />
+              </span>
               <span className="text-sm font-semibold text-zinc-900">
                 {frequencyShockPct}%
               </span>
@@ -132,11 +170,32 @@ export function ScenarioPanel({
               value={frequencyShockPct}
               onChange={(e) => setFrequencyShockPct(Number(e.target.value))}
               className={rangeClass}
-              aria-describedby="scenario-tip-frequency"
+              aria-label="Frequency shock"
             />
           </div>
         </div>
       </div>
+
+      {/* Fixed-position popover — escapes overflow containers */}
+      <AnimatePresence>
+        {tip && (
+          <motion.div
+            ref={popoverRef}
+            key={tip.key}
+            role="tooltip"
+            initial={shouldReduceMotion ? false : { opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.15 }}
+            style={{ position: "fixed", top: tip.top, left: tip.left }}
+            className="z-50 w-56 rounded-lg border border-zinc-200 bg-white px-3 py-2.5 shadow-lg"
+          >
+            <p className="text-xs leading-relaxed text-zinc-600">
+              {TOOLTIPS[tip.key]}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="-mx-5 mt-auto border-t border-zinc-100 bg-white px-5 pb-6 pt-4">
         <div className="mb-3 space-y-1">
