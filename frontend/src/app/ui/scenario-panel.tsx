@@ -24,23 +24,77 @@ const TOOLTIPS = {
 };
 
 type TipKey = keyof typeof TOOLTIPS;
-
 type TipState = { key: TipKey; top: number; left: number } | null;
 
-const rangeClass = [
-  "w-full h-1 appearance-none rounded-full bg-zinc-200 cursor-pointer",
-  "[&::-webkit-slider-thumb]:appearance-none",
-  "[&::-webkit-slider-thumb]:w-3",
-  "[&::-webkit-slider-thumb]:h-3",
-  "[&::-webkit-slider-thumb]:rounded-full",
-  "[&::-webkit-slider-thumb]:bg-blue-600",
-  "[&::-webkit-slider-thumb]:shadow-sm",
-  "[&::-moz-range-thumb]:w-3",
-  "[&::-moz-range-thumb]:h-3",
-  "[&::-moz-range-thumb]:rounded-full",
-  "[&::-moz-range-thumb]:bg-blue-600",
-  "[&::-moz-range-thumb]:border-0",
-].join(" ");
+// Custom slider — uses an inline linear-gradient so the filled track is
+// always exactly the accent color, with no browser inconsistencies.
+function Slider({
+  name,
+  min,
+  max,
+  value,
+  onChange,
+  ariaLabel,
+}: {
+  name: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (v: number) => void;
+  ariaLabel: string;
+}) {
+  const pct = ((value - min) / (max - min)) * 100;
+  const track = `linear-gradient(to right, #2563eb ${pct}%, #e4e4e7 ${pct}%)`;
+
+  return (
+    <input
+      type="range"
+      name={name}
+      min={min}
+      max={max}
+      value={value}
+      onChange={(e) => onChange(Number(e.target.value))}
+      aria-label={ariaLabel}
+      style={{ background: track }}
+      className={[
+        "w-full cursor-pointer appearance-none rounded-full",
+        "h-1.5",
+        // Webkit thumb — white disc with blue ring
+        "[&::-webkit-slider-thumb]:appearance-none",
+        "[&::-webkit-slider-thumb]:h-4",
+        "[&::-webkit-slider-thumb]:w-4",
+        "[&::-webkit-slider-thumb]:rounded-full",
+        "[&::-webkit-slider-thumb]:border-2",
+        "[&::-webkit-slider-thumb]:border-blue-600",
+        "[&::-webkit-slider-thumb]:bg-white",
+        "[&::-webkit-slider-thumb]:shadow-[0_1px_4px_rgba(0,0,0,0.18)]",
+        "[&::-webkit-slider-thumb]:transition-shadow",
+        "[&::-webkit-slider-thumb:hover]:shadow-[0_0_0_4px_rgba(37,99,235,0.12),0_1px_4px_rgba(0,0,0,0.18)]",
+        "[&::-webkit-slider-thumb:active]:shadow-[0_0_0_6px_rgba(37,99,235,0.15),0_1px_4px_rgba(0,0,0,0.18)]",
+        // Firefox thumb
+        "[&::-moz-range-thumb]:h-4",
+        "[&::-moz-range-thumb]:w-4",
+        "[&::-moz-range-thumb]:rounded-full",
+        "[&::-moz-range-thumb]:border-2",
+        "[&::-moz-range-thumb]:border-blue-600",
+        "[&::-moz-range-thumb]:bg-white",
+        "[&::-moz-range-thumb]:shadow-sm",
+        // Firefox track — gradient doesn't apply, use flat zinc + moz-range-progress
+        "[&::-moz-range-track]:h-1.5",
+        "[&::-moz-range-track]:rounded-full",
+        "[&::-moz-range-track]:bg-zinc-200",
+        "[&::-moz-range-progress]:h-1.5",
+        "[&::-moz-range-progress]:rounded-full",
+        "[&::-moz-range-progress]:bg-blue-600",
+        // Focus ring
+        "focus-visible:outline-none",
+        "focus-visible:ring-2",
+        "focus-visible:ring-blue-600",
+        "focus-visible:ring-offset-2",
+      ].join(" ")}
+    />
+  );
+}
 
 function InfoButton({
   tipKey,
@@ -94,10 +148,7 @@ export function ScenarioPanel({
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const openTip = (key: TipKey, rect: DOMRect) => {
-    if (tip?.key === key) {
-      setTip(null);
-      return;
-    }
+    if (tip?.key === key) { setTip(null); return; }
     setTip({ key, top: rect.bottom + 6, left: rect.left });
   };
 
@@ -120,10 +171,10 @@ export function ScenarioPanel({
         Scenario
       </p>
 
-      <div className="min-h-0 flex-1 overflow-y-auto pb-4">
+      <div className="flex-1 pb-4">
         <div className="flex flex-col gap-1">
-          <div className="mb-5">
-            <div className="flex items-center justify-between mb-1.5">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
               <span className="flex items-center text-xs text-zinc-500">
                 Severity inflation
                 <InfoButton
@@ -132,24 +183,22 @@ export function ScenarioPanel({
                   onOpen={openTip}
                 />
               </span>
-              <span className="text-sm font-semibold text-zinc-900">
+              <span className="text-sm font-semibold tabular-nums text-zinc-900">
                 {severityInflationPct}%
               </span>
             </div>
-            <input
-              type="range"
+            <Slider
               name="severityInflation"
               min={0}
               max={20}
               value={severityInflationPct}
-              onChange={(e) => setSeverityInflationPct(Number(e.target.value))}
-              className={rangeClass}
-              aria-label="Severity inflation"
+              onChange={setSeverityInflationPct}
+              ariaLabel="Severity inflation"
             />
           </div>
 
-          <div className="mb-5">
-            <div className="flex items-center justify-between mb-1.5">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
               <span className="flex items-center text-xs text-zinc-500">
                 Frequency shock
                 <InfoButton
@@ -158,19 +207,17 @@ export function ScenarioPanel({
                   onOpen={openTip}
                 />
               </span>
-              <span className="text-sm font-semibold text-zinc-900">
+              <span className="text-sm font-semibold tabular-nums text-zinc-900">
                 {frequencyShockPct}%
               </span>
             </div>
-            <input
-              type="range"
+            <Slider
               name="frequencyShock"
               min={-10}
               max={25}
               value={frequencyShockPct}
-              onChange={(e) => setFrequencyShockPct(Number(e.target.value))}
-              className={rangeClass}
-              aria-label="Frequency shock"
+              onChange={setFrequencyShockPct}
+              ariaLabel="Frequency shock"
             />
           </div>
         </div>
