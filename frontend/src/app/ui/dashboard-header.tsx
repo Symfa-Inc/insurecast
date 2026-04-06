@@ -31,8 +31,18 @@ const selectClass =
   "mt-1.5 h-9 w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 hover:border-zinc-300 transition-colors";
 
 const MONTH_NAMES = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 export function DashboardHeader({
@@ -53,7 +63,8 @@ export function DashboardHeader({
   const [selectedYear, selectedMonth] = fromMonth.split("-");
 
   const { years, monthsForYear } = useMemo(() => {
-    if (!actualStart || !actualEnd) return { years: [] as string[], monthsForYear: [] as number[] };
+    if (!actualStart || !actualEnd)
+      return { years: [] as string[], monthsForYear: [] as number[] };
 
     const [startY, startM] = actualStart.split("-").map(Number);
     const [endY, endM] = actualEnd.split("-").map(Number);
@@ -156,7 +167,9 @@ export function DashboardHeader({
             >
               {years.length > 0 ? (
                 years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
                 ))
               ) : (
                 <option value={selectedYear}>{selectedYear}</option>

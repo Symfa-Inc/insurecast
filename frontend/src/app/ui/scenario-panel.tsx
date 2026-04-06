@@ -148,7 +148,10 @@ export function ScenarioPanel({
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const openTip = (key: TipKey, rect: DOMRect) => {
-    if (tip?.key === key) { setTip(null); return; }
+    if (tip?.key === key) {
+      setTip(null);
+      return;
+    }
     setTip({ key, top: rect.bottom + 6, left: rect.left });
   };
 
