@@ -493,7 +493,7 @@ export default function Home() {
 
   return (
     <>
-      <aside className="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white">
+      <aside className="flex w-72 shrink-0 flex-col overflow-y-auto border-r border-zinc-200 bg-white">
         <DashboardHeader
           segments={segments}
           actualStart={metadata?.actual_start ?? null}

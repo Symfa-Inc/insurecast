@@ -308,8 +308,8 @@ export function ForecastChart({
             >
               <defs>
                 <linearGradient id={ciGradientId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={CI_FILL} stopOpacity={0.5} />
-                  <stop offset="100%" stopColor={CI_FILL} stopOpacity={0.2} />
+                <stop offset="0%" stopColor={CI_FILL} stopOpacity={0.65} />
+                <stop offset="100%" stopColor={CI_FILL} stopOpacity={0.35} />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} stroke="#E4E4E7" />
