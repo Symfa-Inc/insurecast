@@ -26,7 +26,7 @@ import {
 } from "./utils/format";
 import { DashboardHeader } from "./ui/dashboard-header";
 import { ForecastSummaryPanel } from "./ui/forecast-summary-panel";
-import { SmoothSummaryStack } from "./ui/smooth-summary-stack";
+import { motion } from "framer-motion";
 import {
   chartHasDisplayableData,
   ForecastChart,
@@ -413,78 +413,75 @@ export default function Home() {
   }
 
   return (
-    <main className="mx-auto max-w-[1600px] px-4 py-6 text-indigo-950/90 md:px-6 md:py-8 lg:px-8">
-      <div className="flex justify-center">
-        <div className="flex w-full max-w-full flex-col lg:w-fit">
-          <header className="mb-6 pb-2">
-            <h1 className="text-2xl font-bold tracking-tight text-indigo-950 md:text-3xl">
-              InsureCast forecasting dashboard
-            </h1>
-            <p className="mt-1 text-sm text-indigo-700/75">
-              Claims and paid amount trends by segment
-            </p>
-          </header>
-
-          <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(280px,320px)_minmax(0,48rem)] lg:items-start lg:gap-8">
-            <aside className="order-1 flex min-w-0 flex-col gap-4 lg:sticky lg:top-6">
-              <DashboardHeader
-                segments={segments}
-                stateValue={stateValue}
-                setStateValue={setStateValue}
-                industry={industry}
-                setIndustry={setIndustry}
-                claimType={claimType}
-                setClaimType={setClaimType}
-                fromMonth={fromMonth}
-                setFromMonth={setFromMonth}
-                forecastPeriod={forecastPeriod}
-                setForecastPeriod={setForecastPeriod}
+    <>
+      <aside className="w-72 shrink-0 bg-white border-r border-zinc-200 flex flex-col overflow-y-auto">
+        <DashboardHeader
+          segments={segments}
+          stateValue={stateValue}
+          setStateValue={setStateValue}
+          industry={industry}
+          setIndustry={setIndustry}
+          claimType={claimType}
+          setClaimType={setClaimType}
+          fromMonth={fromMonth}
+          setFromMonth={setFromMonth}
+          forecastPeriod={forecastPeriod}
+          setForecastPeriod={setForecastPeriod}
+        />
+        <div className="border-t border-zinc-100 mx-5" />
+        <ScenarioPanel
+          key={`${stateValue}-${industry}-${claimType}-${fromMonth}-${forecastPeriod}`}
+          onApplyScenario={applyScenario}
+          error={error}
+        />
+      </aside>
+      <main className="flex-1 overflow-y-auto bg-zinc-50 px-6 py-6">
+        <div className="space-y-5">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0 }}
+          >
+            <ForecastSummaryPanel
+              summary={forecastSummary}
+              loadPhase={summaryLoadPhase}
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.06 }}
+          >
+            <section className="flex flex-col gap-4">
+              <ForecastChart
+                title="Amount of Claims per Month"
+                description="Historical data plus forecast for the selected period."
+                data={claimsChartData}
+                valueFormatter={formatNumber}
+                allowDataOverflow
               />
-              <ScenarioPanel
-                key={`${stateValue}-${industry}-${claimType}-${fromMonth}-${forecastPeriod}`}
-                onApplyScenario={applyScenario}
-                error={error}
+              <ForecastChart
+                title="Average Cost per Claim per Month"
+                description="Historical data plus forecast for the selected period."
+                data={avgCostChartData}
+                valueFormatter={formatCurrency}
+                skipZeroFloor
+                allowDataOverflow
               />
-            </aside>
-
-            <div className="order-2 min-w-0 w-full">
-              <SmoothSummaryStack
-                summary={
-                  <ForecastSummaryPanel
-                    summary={forecastSummary}
-                    loadPhase={summaryLoadPhase}
-                  />
-                }
-                below={
-                  <>
-                    <section className="flex flex-col gap-4">
-                      <ForecastChart
-                        title="Amount of Claims per Month"
-                        description="Historical data plus forecast for the selected period."
-                        data={claimsChartData}
-                        valueFormatter={formatNumber}
-                        allowDataOverflow
-                      />
-                      <ForecastChart
-                        title="Average Cost per Claim per Month"
-                        description="Historical data plus forecast for the selected period."
-                        data={avgCostChartData}
-                        valueFormatter={formatCurrency}
-                        skipZeroFloor
-                        allowDataOverflow
-                      />
-                    </section>
-                    <MonthlyTable
-                      key={hasMonthlyTableData ? monthlyRows.length : 0}
-                      rows={hasMonthlyTableData ? monthlyRows : []}
-                    />
-                  </>
-                }
-              />
-            </div>
-          </div>
+            </section>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.12 }}
+          >
+            <MonthlyTable
+              key={hasMonthlyTableData ? monthlyRows.length : 0}
+              rows={hasMonthlyTableData ? monthlyRows : []}
+            />
+          </motion.div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
