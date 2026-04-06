@@ -1,4 +1,5 @@
 import type { ForecastSummaryLLMResponse } from "@/app/utils/api";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
 export type SummaryLoadPhase = "idle" | "charts" | "llm";
@@ -35,7 +36,7 @@ function formatBoldSegments(text: string): ReactNode[] {
       out.push(text.slice(last, match.index));
     }
     out.push(
-      <strong key={key} className="font-semibold text-indigo-950">
+      <strong key={key} className="font-medium text-zinc-900">
         {match[1]}
       </strong>,
     );
@@ -51,35 +52,34 @@ function formatBoldSegments(text: string): ReactNode[] {
 function SummaryLoadingInline({
   title,
   detail,
-  tone = "indigo",
+  shouldReduceMotion,
 }: {
   title: string;
   detail?: string;
-  tone?: "indigo" | "violet";
+  shouldReduceMotion: boolean;
 }) {
-  const spin =
-    tone === "violet"
-      ? "border-violet-200 border-t-violet-700"
-      : "border-indigo-200 border-t-indigo-600";
-
   return (
     <div
       className="flex items-start gap-3 py-0.5"
       aria-busy="true"
       aria-live="polite"
     >
-      <div
-        className={`mt-0.5 size-5 shrink-0 animate-spin rounded-full border-2 ${spin}`}
+      <motion.div
+        className="mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 border-zinc-200 border-t-blue-600"
+        animate={shouldReduceMotion ? undefined : { rotate: 360 }}
+        transition={
+          shouldReduceMotion
+            ? undefined
+            : { repeat: Infinity, duration: 0.8, ease: "linear" }
+        }
         aria-hidden
       />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-indigo-950">{title}</p>
+        <p className="text-sm font-semibold text-zinc-800">{title}</p>
         {detail ? (
-          <p className="mt-1 text-xs leading-relaxed text-indigo-800/80">
-            {detail}
-          </p>
+          <p className="mt-1 text-xs leading-relaxed text-zinc-500">{detail}</p>
         ) : null}
-        <p className="mt-1.5 text-[11px] font-medium text-indigo-500/80 transition-opacity duration-500">
+        <p className="mt-1.5 text-[11px] font-medium text-zinc-400 transition-opacity duration-500">
           Please wait…
         </p>
       </div>
@@ -91,6 +91,7 @@ export function ForecastSummaryPanel({
   summary,
   loadPhase,
 }: ForecastSummaryPanelProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const loadingCharts = loadPhase === "charts";
   const isLoading = loadPhase === "charts" || loadPhase === "llm";
 
@@ -98,70 +99,85 @@ export function ForecastSummaryPanel({
     return null;
   }
 
+  const summaryKey = summary?.segment_label ?? loadPhase ?? "empty";
+
   return (
-    <section aria-busy={isLoading}>
-      {isLoading ? (
-        <div
-          key={loadingCharts ? "phase-charts" : "phase-llm"}
-          className="forecast-summary-enter flex flex-col justify-start pt-0.5"
+    <section
+      className="rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm"
+      aria-busy={isLoading}
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={summaryKey}
+          initial={shouldReduceMotion ? false : { opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={shouldReduceMotion ? undefined : { opacity: 0, height: 0 }}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }
+          }
+          style={{ overflow: "hidden" }}
         >
-          {loadingCharts ? (
-            <SummaryLoadingInline
-              title="Loading chart data…"
-              detail="Fetching claims and cost series for your selection."
-            />
-          ) : (
-            <SummaryLoadingInline
-              tone="violet"
-              title="Generating forecast conclusion…"
-            />
-          )}
-        </div>
-      ) : summary ? (
-        <div key="summary-content" className="forecast-summary-enter space-y-2">
-          {summary.source === "no_data" ? (
-            <div
-              className="text-slate-800"
-              aria-labelledby="forecast-summary-heading"
-            >
-              <h2
-                id="forecast-summary-heading"
-                className="text-base font-semibold text-slate-900 md:text-lg"
-              >
-                Forecast summary
-              </h2>
-              <p className="text-sm leading-relaxed text-slate-700">
-                {toSingleConclusionParagraph(summary.narrative)}
-              </p>
+          {isLoading ? (
+            <div className="flex flex-col justify-start pt-0.5">
+              {loadingCharts ? (
+                <SummaryLoadingInline
+                  title="Loading chart data…"
+                  detail="Fetching claims and cost series for your selection."
+                  shouldReduceMotion={shouldReduceMotion}
+                />
+              ) : (
+                <SummaryLoadingInline
+                  title="Generating forecast conclusion…"
+                  shouldReduceMotion={shouldReduceMotion}
+                />
+              )}
             </div>
-          ) : (
-            <div
-              className="text-indigo-950"
-              aria-labelledby="forecast-summary-heading"
-            >
-              <h2
-                id="forecast-summary-heading"
-                className="text-base font-semibold md:text-lg"
-              >
-                Forecast conclusion — {summary.segment_label}
-              </h2>
-              {summary.notice ? (
-                <p
-                  className="text-xs leading-relaxed text-amber-900/90"
-                  role="status"
-                >
-                  {summary.notice}
-                </p>
-              ) : null}
-              <p className="text-sm leading-relaxed text-indigo-900/90">
-                {formatBoldSegments(
-                  toSingleConclusionParagraph(summary.narrative),
-                )}
-              </p>
+          ) : summary ? (
+            <div className="space-y-2">
+              {summary.source === "no_data" ? (
+                <div aria-labelledby="forecast-summary-heading">
+                  <h2
+                    id="forecast-summary-heading"
+                    className="text-sm font-semibold text-zinc-800"
+                  >
+                    Forecast summary
+                  </h2>
+                  <p className="mt-1 text-sm leading-relaxed text-zinc-700">
+                    {toSingleConclusionParagraph(summary.narrative)}
+                  </p>
+                </div>
+              ) : (
+                <div aria-labelledby="forecast-summary-heading">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                    Forecast conclusion
+                  </p>
+                  <h2
+                    id="forecast-summary-heading"
+                    className="mb-1 text-sm font-semibold text-zinc-800"
+                  >
+                    {summary.segment_label}
+                  </h2>
+                  {summary.notice ? (
+                    <p
+                      className="text-xs leading-relaxed text-amber-700"
+                      role="status"
+                    >
+                      {summary.notice}
+                    </p>
+                  ) : null}
+                  <p className="text-sm leading-relaxed text-zinc-700">
+                    {formatBoldSegments(
+                      toSingleConclusionParagraph(summary.narrative),
+                    )}
+                  </p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ) : null}
+          ) : null}
+        </motion.div>
+      </AnimatePresence>
     </section>
   );
 }
