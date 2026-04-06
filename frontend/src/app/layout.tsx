@@ -45,7 +45,7 @@ export default function RootLayout({
           </a>
           <header className="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10">
             <span className="text-base font-semibold text-zinc-900">
-              InsureCast
+              Insure<span className="text-blue-600">Cast</span>
             </span>
             <span className="text-xs text-zinc-400">
               Insurance claims forecasting

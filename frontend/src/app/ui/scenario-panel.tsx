@@ -167,7 +167,7 @@ export function ScenarioPanel({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col px-5 py-6">
-      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">
         Scenario
       </p>
 
@@ -246,10 +246,15 @@ export function ScenarioPanel({
 
       <div className="-mx-5 mt-auto border-t border-zinc-100 bg-white px-5 pb-6 pt-4">
         <div className="mb-3 space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600/60">
             Draft
           </p>
-          <p className="text-sm text-zinc-700">{statusLabel}</p>
+          <p className="flex items-center gap-1.5 text-sm text-zinc-700">
+            <span
+              className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${hasUnappliedChanges ? "bg-amber-500" : "bg-emerald-500"}`}
+            />
+            {statusLabel}
+          </p>
           <p className="text-xs leading-relaxed text-zinc-500">
             Sidebar changes stay local until you update the forecast.
           </p>
@@ -260,7 +265,7 @@ export function ScenarioPanel({
           whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
           onClick={onApplyChanges}
           disabled={!hasUnappliedChanges || isApplying}
-          className="h-10 w-full rounded-md bg-zinc-900 px-4 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+          className="h-10 w-full rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
         >
           {isApplying ? "Updating…" : "Update Forecast"}
         </motion.button>

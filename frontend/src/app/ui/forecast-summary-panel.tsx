@@ -153,7 +153,7 @@ export function ForecastSummaryPanel({
 
   return (
     <section
-      className="relative rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm"
+      className={`relative rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm ${hasSummary && !isLoading ? "border-l-2 border-l-blue-600" : ""}`}
       aria-busy={isLoading}
     >
       {hasSummary ? (
@@ -174,7 +174,7 @@ export function ForecastSummaryPanel({
             </div>
           ) : (
             <div aria-labelledby="forecast-summary-heading">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600/70">
                 Forecast conclusion
               </p>
               <h2

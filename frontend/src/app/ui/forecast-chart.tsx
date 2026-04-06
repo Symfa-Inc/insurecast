@@ -285,7 +285,7 @@ export function ForecastChart({
   const boundaryRef = forecastBoundaryRef(sanitizedData);
 
   return (
-    <article className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+    <article className="rounded-xl border border-zinc-200 border-t-blue-600/40 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-sm font-semibold text-zinc-800">{title}</h3>
         <div className="flex items-center gap-4">

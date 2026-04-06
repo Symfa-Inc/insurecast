@@ -87,7 +87,7 @@ export function DashboardHeader({
 
   return (
     <div className="px-5 py-6">
-      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+      <p className="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">
         Parameters
       </p>
 
