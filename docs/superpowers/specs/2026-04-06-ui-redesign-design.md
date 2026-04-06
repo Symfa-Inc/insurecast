@@ -529,7 +529,7 @@ Add `id="monthly-table-toggle"` to the toggle button so the `aria-labelledby` re
 | `frontend/src/app/page.tsx` | Remove `SmoothSummaryStack` import; remove `<header>` element; delete `<main>` root wrapper; return `<aside>` + `<main>` fragment; add Framer Motion entry wrappers; add `motion` import |
 | `frontend/src/app/ui/dashboard-header.tsx` | Remove gradient background; restyle all controls and labels per Section 4 |
 | `frontend/src/app/ui/scenario-panel.tsx` | Remove gradient background; restyle sliders, apply button, error state; add `motion` import |
-| `frontend/src/app/ui/forecast-chart.tsx` | Update chart colors, grid, axes; replace tooltip with `CustomTooltip`; replace `<Legend>` with custom JSX; height 256→320px; `initialDimension` 256→320; add `motion` import |
+| `frontend/src/app/ui/forecast-chart.tsx` | Update chart colors, grid, axes; replace tooltip with `CustomTooltip`; replace `<Legend>` with custom JSX; height 256→320px (set on `<ResponsiveContainer height={320}>`); remove `initialDimension` prop (non-standard no-op); add `Label` to recharts imports, remove `Legend`; add `motion` import |
 | `frontend/src/app/ui/forecast-summary-panel.tsx` | Replace CSS spinner (indigo/violet) with Framer Motion; add `AnimatePresence` content wrapper; update typography; add `motion, AnimatePresence` imports |
 | `frontend/src/app/ui/monthly-table.tsx` | Update row styles (violet→blue tint), forecast badge (violet→blue), `<thead>` and toggle button (indigo→zinc), `EmptyTableState` (`text-indigo-500/80`→`text-zinc-400`), outer `<section>` border (indigo→zinc), add `AnimatePresence` expand/collapse; preserve `id`/`aria-*`; add `motion, AnimatePresence` imports |
 | `frontend/src/app/ui/smooth-summary-stack.tsx` | **Delete this file** |
