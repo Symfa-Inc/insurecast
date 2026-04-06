@@ -17,8 +17,18 @@ type DashboardHeaderProps = {
   setForecastPeriod: (value: string) => void;
 };
 
-const controlClass =
-  "mt-1.5 w-full rounded-lg border border-white/30 bg-white px-3 py-2.5 text-slate-700 shadow-sm transition-shadow focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-indigo-600";
+const chevronStyle = {
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E")`,
+  backgroundRepeat: "no-repeat" as const,
+  backgroundPosition: "right 10px center",
+  paddingRight: "28px",
+};
+
+const selectClass =
+  "mt-1.5 h-9 w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 hover:border-zinc-300 transition-colors";
+
+const inputClass =
+  "mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 hover:border-zinc-300 transition-colors";
 
 export function DashboardHeader({
   segments,
@@ -34,17 +44,19 @@ export function DashboardHeader({
   setForecastPeriod,
 }: DashboardHeaderProps) {
   return (
-    <section className="rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-teal-600 p-5 text-white shadow-lg shadow-indigo-200/30">
-      <p className="text-lg font-bold tracking-tight">Parameters</p>
-      <p className="mt-1 text-xs text-white/85">Segment and forecast window</p>
+    <div className="px-5 py-6">
+      <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
+        Parameters
+      </p>
 
-      <div className="mt-4 flex flex-col gap-3">
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+      <div className="flex flex-col gap-4">
+        <label className="text-xs font-medium text-zinc-500">
           State
           <select
             value={stateValue}
             onChange={(e) => setStateValue(e.target.value)}
-            className={controlClass}
+            className={selectClass}
+            style={chevronStyle}
           >
             {filterStatesForUi(segments?.states ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -53,12 +65,13 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <label className="text-xs font-medium text-zinc-500">
           Industry
           <select
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
-            className={controlClass}
+            className={selectClass}
+            style={chevronStyle}
           >
             {(segments?.industries ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -67,12 +80,13 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <label className="text-xs font-medium text-zinc-500">
           Claim type
           <select
             value={claimType}
             onChange={(e) => setClaimType(e.target.value)}
-            className={controlClass}
+            className={selectClass}
+            style={chevronStyle}
           >
             {(segments?.claim_types ?? []).map((entry) => (
               <option key={entry} value={entry}>
@@ -81,21 +95,22 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <label className="text-xs font-medium text-zinc-500">
           From
           <input
             type="month"
             value={fromMonth}
             onChange={(e) => setFromMonth(e.target.value)}
-            className={controlClass}
+            className={inputClass}
           />
         </label>
-        <label className="text-xs font-semibold uppercase tracking-wide text-white/90">
+        <label className="text-xs font-medium text-zinc-500">
           Forecast period
           <select
             value={forecastPeriod}
             onChange={(e) => setForecastPeriod(e.target.value)}
-            className={controlClass}
+            className={selectClass}
+            style={chevronStyle}
           >
             <option value="1">1 month</option>
             <option value="3">3 months</option>
@@ -104,6 +119,6 @@ export function DashboardHeader({
           </select>
         </label>
       </div>
-    </section>
+    </div>
   );
 }
