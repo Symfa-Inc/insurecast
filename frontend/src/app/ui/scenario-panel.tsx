@@ -21,6 +21,23 @@ const SEVERITY_TOOLTIP =
 const FREQUENCY_TOOLTIP =
   "Scales forecast claim counts up or down after you update the forecast. Charts and table reflect the adjusted outlook.";
 
+function InfoTooltip({ text }: { text: string }) {
+  return (
+    <span className="group relative ml-1 inline-block">
+      <span className="cursor-help select-none text-zinc-400 hover:text-zinc-500">
+        ⓘ
+      </span>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-52 -translate-x-1/2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-600 shadow-md opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+      >
+        {text}
+        <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-zinc-200" />
+      </span>
+    </span>
+  );
+}
+
 const rangeClass = [
   "w-full h-1 appearance-none rounded-full bg-zinc-200 cursor-pointer",
   "[&::-webkit-slider-thumb]:appearance-none",
@@ -66,11 +83,9 @@ export function ScenarioPanel({
           </p>
           <div className="mb-5">
             <div className="flex items-center justify-between mb-1.5">
-              <label
-                className="text-xs text-zinc-500 cursor-help"
-                title={SEVERITY_TOOLTIP}
-              >
+              <label className="flex items-center text-xs text-zinc-500">
                 Severity inflation
+                <InfoTooltip text={SEVERITY_TOOLTIP} />
               </label>
               <span className="text-sm font-semibold text-zinc-900">
                 {severityInflationPct}%
@@ -93,11 +108,9 @@ export function ScenarioPanel({
           </p>
           <div className="mb-5">
             <div className="flex items-center justify-between mb-1.5">
-              <label
-                className="text-xs text-zinc-500 cursor-help"
-                title={FREQUENCY_TOOLTIP}
-              >
+              <label className="flex items-center text-xs text-zinc-500">
                 Frequency shock
+                <InfoTooltip text={FREQUENCY_TOOLTIP} />
               </label>
               <span className="text-sm font-semibold text-zinc-900">
                 {frequencyShockPct}%
