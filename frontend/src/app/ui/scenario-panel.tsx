@@ -265,7 +265,7 @@ export function ScenarioPanel({
           whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
           onClick={onApplyChanges}
           disabled={!hasUnappliedChanges || isApplying}
-          className="h-10 w-full rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
+          className="h-10 w-full cursor-pointer rounded-md bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
         >
           {isApplying ? "Updating…" : "Update Forecast"}
         </motion.button>
@@ -273,7 +273,7 @@ export function ScenarioPanel({
           type="button"
           onClick={onResetChanges}
           disabled={!hasUnappliedChanges || isApplying}
-          className="mt-2 h-9 w-full rounded-md border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:border-zinc-100 disabled:text-zinc-400"
+          className="mt-2 h-9 w-full cursor-pointer rounded-md border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:border-zinc-100 disabled:text-zinc-400"
         >
           Reset Draft
         </button>
