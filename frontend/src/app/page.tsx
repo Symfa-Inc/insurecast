@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   getClaimsSeries,
   getCostsSeries,
@@ -26,7 +27,6 @@ import {
 } from "./utils/format";
 import { DashboardHeader } from "./ui/dashboard-header";
 import { ForecastSummaryPanel } from "./ui/forecast-summary-panel";
-import { motion } from "framer-motion";
 import {
   chartHasDisplayableData,
   ForecastChart,
@@ -64,6 +64,7 @@ function mergeClaimsWithScenario(
 }
 
 export default function Home() {
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [segments, setSegments] = useState<SegmentsResponse | null>(null);
   const [stateValue, setStateValue] = useState("FL");
   const [industry, setIndustry] = useState("Construction");
@@ -435,12 +436,19 @@ export default function Home() {
           error={error}
         />
       </aside>
-      <main className="flex-1 overflow-y-auto bg-zinc-50 px-6 py-6">
+      <main
+        id="main-content"
+        className="flex-1 overflow-y-auto bg-zinc-50 px-6 py-6"
+      >
         <div className="space-y-5">
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : { duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0 }
+            }
           >
             <ForecastSummaryPanel
               summary={forecastSummary}
@@ -448,9 +456,17 @@ export default function Home() {
             />
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.06 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.25,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: 0.06,
+                  }
+            }
           >
             <section className="flex flex-col gap-4">
               <ForecastChart
@@ -469,9 +485,17 @@ export default function Home() {
             </section>
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, y: 8 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1], delay: 0.12 }}
+            transition={
+              shouldReduceMotion
+                ? { duration: 0 }
+                : {
+                    duration: 0.25,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: 0.12,
+                  }
+            }
           >
             <MonthlyTable
               key={hasMonthlyTableData ? monthlyRows.length : 0}

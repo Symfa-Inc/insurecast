@@ -13,10 +13,12 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { motion, useReducedMotion } from "framer-motion";
 import type { TooltipContentProps } from "recharts/types/component/Tooltip";
-import type { ValueType, NameType } from "recharts/types/component/DefaultTooltipContent";
-import type { TooltipPayloadEntry } from "recharts";
-import { motion } from "framer-motion";
+import type {
+  NameType,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 
 /** Historical (actuals) + solidBridge — neutral zinc */
 const STROKE_HISTORICAL = "#71717a";
@@ -27,34 +29,60 @@ const STROKE_FORECAST_MARKER = "#d4d4d8";
 /** Confidence band (forecast only) — blue tint */
 const CI_FILL = "#dbeafe";
 
+type TooltipEntry = NonNullable<
+  TooltipContentProps<ValueType, NameType>["payload"]
+>[number];
+
 function CustomTooltip({
   active,
   payload,
   label,
-}: TooltipContentProps<ValueType, NameType>) {
+  valueFormatter,
+}: TooltipContentProps<ValueType, NameType> & {
+  valueFormatter: (value: number) => string;
+}) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
+
   if (!active || !payload?.length) return null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
+      initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97 }}
       animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.1 }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.1 }}
       className="bg-white border border-zinc-200 shadow-md rounded-lg p-3 min-w-[160px]"
     >
       <p className="text-xs font-semibold text-zinc-500 mb-2">{label}</p>
-      {payload.map((entry: TooltipPayloadEntry) => (
-        <div
-          key={entry.dataKey as string}
-          className="flex items-center justify-between gap-4 text-sm"
-        >
-          <span className="text-zinc-500">{entry.name}</span>
-          <span className="font-semibold text-zinc-900">
-            {typeof entry.value === "number"
-              ? entry.value.toLocaleString()
-              : entry.value}
-          </span>
-        </div>
-      ))}
+      {payload
+        .filter(
+          (entry: TooltipEntry) =>
+            entry.name && entry.dataKey !== "solidBridge",
+        )
+        .map((entry: TooltipEntry) => {
+          const formattedValue = Array.isArray(entry.value)
+            ? entry.value
+                .map((item: ValueType) =>
+                  typeof item === "number"
+                    ? valueFormatter(item)
+                    : String(item),
+                )
+                .join(" - ")
+            : typeof entry.value === "number"
+              ? valueFormatter(entry.value)
+              : String(entry.value ?? "");
+
+          return (
+            <div
+              key={entry.dataKey as string}
+              className="flex items-center justify-between gap-4 text-sm"
+            >
+              <span className="text-zinc-500">{entry.name}</span>
+              <span className="font-semibold text-zinc-900">
+                {formattedValue}
+              </span>
+            </div>
+          );
+        })}
     </motion.div>
   );
 }
@@ -273,11 +301,7 @@ export function ForecastChart({
       </div>
       <div className="relative w-full min-w-0">
         {hasData ? (
-          <ResponsiveContainer
-            width="100%"
-            height={320}
-            minHeight={280}
-          >
+          <ResponsiveContainer width="100%" height={320} minHeight={280}>
             <ComposedChart
               data={sanitizedData}
               margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
@@ -309,7 +333,11 @@ export function ForecastChart({
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip content={CustomTooltip} />
+              <Tooltip
+                content={(props) => (
+                  <CustomTooltip {...props} valueFormatter={valueFormatter} />
+                )}
+              />
               {/* CI in a lower z layer; all Line series share default line zIndex so SVG order matches children:
                 historical → bridge → forecast (later sibling paints on top). */}
               <Area
@@ -387,7 +415,10 @@ export function ForecastChart({
             </ComposedChart>
           </ResponsiveContainer>
         ) : (
-          <div className="flex items-center justify-center" style={{ height: 320 }}>
+          <div
+            className="flex items-center justify-center"
+            style={{ height: 320 }}
+          >
             <p className="text-sm font-medium text-zinc-400">No data</p>
           </div>
         )}

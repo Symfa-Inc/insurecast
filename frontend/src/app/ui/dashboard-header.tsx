@@ -53,6 +53,8 @@ export function DashboardHeader({
         <label className="text-xs font-medium text-zinc-500">
           State
           <select
+            name="state"
+            autoComplete="off"
             value={stateValue}
             onChange={(e) => setStateValue(e.target.value)}
             className={selectClass}
@@ -68,6 +70,8 @@ export function DashboardHeader({
         <label className="text-xs font-medium text-zinc-500">
           Industry
           <select
+            name="industry"
+            autoComplete="off"
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
             className={selectClass}
@@ -83,6 +87,8 @@ export function DashboardHeader({
         <label className="text-xs font-medium text-zinc-500">
           Claim type
           <select
+            name="claimType"
+            autoComplete="off"
             value={claimType}
             onChange={(e) => setClaimType(e.target.value)}
             className={selectClass}
@@ -99,6 +105,8 @@ export function DashboardHeader({
           From
           <input
             type="month"
+            name="fromMonth"
+            autoComplete="off"
             value={fromMonth}
             onChange={(e) => setFromMonth(e.target.value)}
             className={inputClass}
@@ -107,6 +115,8 @@ export function DashboardHeader({
         <label className="text-xs font-medium text-zinc-500">
           Forecast period
           <select
+            name="forecastPeriod"
+            autoComplete="off"
             value={forecastPeriod}
             onChange={(e) => setForecastPeriod(e.target.value)}
             className={selectClass}

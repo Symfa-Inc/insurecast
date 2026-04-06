@@ -37,13 +37,21 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="flex flex-col h-screen">
+          <a
+            href="#main-content"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-20 focus:rounded-md focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-zinc-900"
+          >
+            Skip to main content
+          </a>
           <header className="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10">
-            <span className="text-base font-semibold text-zinc-900">InsureCast</span>
-            <span className="text-xs text-zinc-400">Insurance claims forecasting</span>
+            <span className="text-base font-semibold text-zinc-900">
+              InsureCast
+            </span>
+            <span className="text-xs text-zinc-400">
+              Insurance claims forecasting
+            </span>
           </header>
-          <div className="flex flex-1 min-h-0 overflow-hidden">
-            {children}
-          </div>
+          <div className="flex flex-1 min-h-0 overflow-hidden">{children}</div>
         </div>
       </body>
     </html>

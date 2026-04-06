@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 type ScenarioPanelProps = {
   /** Called with current slider values when the user clicks Apply. */
@@ -34,6 +34,7 @@ const rangeClass = [
 ].join(" ");
 
 export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
+  const shouldReduceMotion = useReducedMotion() ?? false;
   const [severityInflation, setSeverityInflation] = useState(0);
   const [frequencyShock, setFrequencyShock] = useState(0);
 
@@ -61,6 +62,7 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
           </div>
           <input
             type="range"
+            name="severityInflation"
             min={0}
             max={20}
             value={severityInflation}
@@ -87,6 +89,7 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
           </div>
           <input
             type="range"
+            name="frequencyShock"
             min={-10}
             max={25}
             value={frequencyShock}
@@ -98,9 +101,11 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
 
         <motion.button
           type="button"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.97 }}
-          onClick={() => void onApplyScenario(severityInflation, frequencyShock)}
+          whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
+          whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+          onClick={() =>
+            void onApplyScenario(severityInflation, frequencyShock)
+          }
           className="mt-1 h-9 w-full rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700"
         >
           Apply scenario
