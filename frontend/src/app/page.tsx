@@ -36,6 +36,11 @@ import { MonthlyTable, type MonthlyRow } from "./ui/monthly-table";
 import { ScenarioPanel } from "./ui/scenario-panel";
 
 const MAX_SAFE_COST = 1e6;
+const DEFAULT_STATE = "NY";
+const DEFAULT_INDUSTRY = "Healthcare";
+const DEFAULT_CLAIM_TYPE = "Indemnity";
+const DEFAULT_FROM_MONTH = "2023-01";
+const DEFAULT_FORECAST_PERIOD = "12";
 
 /** Forecast months use scenario claims/CIs; historical actuals stay from baseline API. */
 function mergeClaimsWithScenario(
@@ -66,11 +71,11 @@ function mergeClaimsWithScenario(
 export default function Home() {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [segments, setSegments] = useState<SegmentsResponse | null>(null);
-  const [stateValue, setStateValue] = useState("FL");
-  const [industry, setIndustry] = useState("Construction");
-  const [claimType, setClaimType] = useState("LostTime");
-  const [fromMonth, setFromMonth] = useState("2019-01");
-  const [forecastPeriod, setForecastPeriod] = useState("3");
+  const [stateValue, setStateValue] = useState(DEFAULT_STATE);
+  const [industry, setIndustry] = useState(DEFAULT_INDUSTRY);
+  const [claimType, setClaimType] = useState(DEFAULT_CLAIM_TYPE);
+  const [fromMonth, setFromMonth] = useState(DEFAULT_FROM_MONTH);
+  const [forecastPeriod, setForecastPeriod] = useState(DEFAULT_FORECAST_PERIOD);
   const [claims, setClaims] = useState<ClaimsPoint[]>([]);
   const [costs, setCosts] = useState<CostsPoint[]>([]);
   /** Full scenario API series; drives adjusted costs + merged forecast claims. */
@@ -86,7 +91,10 @@ export default function Home() {
   >("idle");
   const [error, setError] = useState<string | null>(null);
 
-  const forecastMonths = Math.max(1, parseInt(forecastPeriod, 10) || 3);
+  const forecastMonths = Math.max(
+    1,
+    parseInt(forecastPeriod, 10) || Number(DEFAULT_FORECAST_PERIOD),
+  );
   const toMonth = useMemo(() => {
     if (metadata?.actual_end && metadata?.forecast_end) {
       const endWithForecast = addMonths(metadata.actual_end, forecastMonths);
@@ -111,10 +119,23 @@ export default function Home() {
   useEffect(() => {
     async function loadSegments() {
       const payload = await getSegments();
+      const availableStates = filterStatesForUi(payload.states);
       setSegments(payload);
-      setStateValue(filterStatesForUi(payload.states)[0] ?? "FL");
-      setIndustry(payload.industries[0] ?? "Construction");
-      setClaimType(payload.claim_types[0] ?? "LostTime");
+      setStateValue(
+        availableStates.includes(DEFAULT_STATE)
+          ? DEFAULT_STATE
+          : (availableStates[0] ?? DEFAULT_STATE),
+      );
+      setIndustry(
+        payload.industries.includes(DEFAULT_INDUSTRY)
+          ? DEFAULT_INDUSTRY
+          : (payload.industries[0] ?? DEFAULT_INDUSTRY),
+      );
+      setClaimType(
+        payload.claim_types.includes(DEFAULT_CLAIM_TYPE)
+          ? DEFAULT_CLAIM_TYPE
+          : (payload.claim_types[0] ?? DEFAULT_CLAIM_TYPE),
+      );
     }
 
     void loadSegments().catch((loadError: unknown) => {
@@ -138,7 +159,7 @@ export default function Home() {
         setMetadata(meta);
         const forecastMonthsNum = Math.max(
           1,
-          parseInt(forecastPeriod, 10) || 3,
+          parseInt(forecastPeriod, 10) || Number(DEFAULT_FORECAST_PERIOD),
         );
         const computedTo =
           meta?.actual_end && meta?.forecast_end
