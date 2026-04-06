@@ -496,6 +496,8 @@ export default function Home() {
       <aside className="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white">
         <DashboardHeader
           segments={segments}
+          actualStart={metadata?.actual_start ?? null}
+          actualEnd={metadata?.actual_end ?? null}
           stateValue={draftControls.stateValue}
           setStateValue={(value) =>
             setDraftControls((current) => ({ ...current, stateValue: value }))

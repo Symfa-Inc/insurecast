@@ -2,9 +2,12 @@
 
 import type { SegmentsResponse } from "@/app/utils/api";
 import { filterStatesForUi } from "@/app/utils/allowed-states";
+import { useMemo } from "react";
 
 type DashboardHeaderProps = {
   segments: SegmentsResponse | null;
+  actualStart: string | null;
+  actualEnd: string | null;
   stateValue: string;
   setStateValue: (value: string) => void;
   industry: string;
@@ -27,11 +30,15 @@ const chevronStyle = {
 const selectClass =
   "mt-1.5 h-9 w-full appearance-none rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 hover:border-zinc-300 transition-colors";
 
-const inputClass =
-  "mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 hover:border-zinc-300 transition-colors";
+const MONTH_NAMES = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
 
 export function DashboardHeader({
   segments,
+  actualStart,
+  actualEnd,
   stateValue,
   setStateValue,
   industry,
@@ -43,6 +50,41 @@ export function DashboardHeader({
   forecastPeriod,
   setForecastPeriod,
 }: DashboardHeaderProps) {
+  const [selectedYear, selectedMonth] = fromMonth.split("-");
+
+  const { years, monthsForYear } = useMemo(() => {
+    if (!actualStart || !actualEnd) return { years: [] as string[], monthsForYear: [] as number[] };
+
+    const [startY, startM] = actualStart.split("-").map(Number);
+    const [endY, endM] = actualEnd.split("-").map(Number);
+    const yrs: string[] = [];
+    for (let y = startY; y <= endY; y++) yrs.push(String(y));
+
+    const curY = Number(selectedYear);
+    const lo = curY === startY ? startM : 1;
+    const hi = curY === endY ? endM : 12;
+    const months: number[] = [];
+    for (let m = lo; m <= hi; m++) months.push(m);
+
+    return { years: yrs, monthsForYear: months };
+  }, [actualStart, actualEnd, selectedYear]);
+
+  function setYear(y: string) {
+    if (!actualStart || !actualEnd) return;
+    const [startY, startM] = actualStart.split("-").map(Number);
+    const [endY, endM] = actualEnd.split("-").map(Number);
+    const numY = Number(y);
+    const lo = numY === startY ? startM : 1;
+    const hi = numY === endY ? endM : 12;
+    const curM = Number(selectedMonth);
+    const clamped = Math.max(lo, Math.min(hi, curM));
+    setFromMonth(`${y}-${String(clamped).padStart(2, "0")}`);
+  }
+
+  function setMonth(m: string) {
+    setFromMonth(`${selectedYear}-${m.padStart(2, "0")}`);
+  }
+
   return (
     <div className="px-5 py-6">
       <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
@@ -101,17 +143,47 @@ export function DashboardHeader({
             ))}
           </select>
         </label>
-        <label className="text-xs font-medium text-zinc-500">
-          From
-          <input
-            type="month"
-            name="fromMonth"
-            autoComplete="off"
-            value={fromMonth}
-            onChange={(e) => setFromMonth(e.target.value)}
-            className={inputClass}
-          />
-        </label>
+        <fieldset className="text-xs font-medium text-zinc-500">
+          <legend className="text-xs font-medium text-zinc-500">From</legend>
+          <div className="mt-1.5 flex gap-2">
+            <select
+              name="fromYear"
+              autoComplete="off"
+              value={selectedYear}
+              onChange={(e) => setYear(e.target.value)}
+              className={`${selectClass} mt-0 flex-1`}
+              style={chevronStyle}
+            >
+              {years.length > 0 ? (
+                years.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))
+              ) : (
+                <option value={selectedYear}>{selectedYear}</option>
+              )}
+            </select>
+            <select
+              name="fromMonthNum"
+              autoComplete="off"
+              value={String(Number(selectedMonth))}
+              onChange={(e) => setMonth(e.target.value)}
+              className={`${selectClass} mt-0 flex-1`}
+              style={chevronStyle}
+            >
+              {monthsForYear.length > 0 ? (
+                monthsForYear.map((m) => (
+                  <option key={m} value={String(m)}>
+                    {MONTH_NAMES[m - 1]}
+                  </option>
+                ))
+              ) : (
+                <option value={String(Number(selectedMonth))}>
+                  {MONTH_NAMES[Number(selectedMonth) - 1]}
+                </option>
+              )}
+            </select>
+          </div>
+        </fieldset>
         <label className="text-xs font-medium text-zinc-500">
           Forecast period
           <select
