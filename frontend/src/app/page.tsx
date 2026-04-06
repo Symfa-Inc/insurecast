@@ -197,7 +197,6 @@ export default function Home() {
 
     async function loadData() {
       setError(null);
-      setForecastSummary(null);
       setSummaryLoadPhase("charts");
       try {
         const meta = await getModelMetadata();
@@ -270,7 +269,6 @@ export default function Home() {
             ? loadError.message
             : "Failed to load dashboard data.",
         );
-        setForecastSummary(null);
         setScenarioSeries(null);
       } finally {
         setSummaryLoadPhase("idle");
