@@ -24,9 +24,17 @@ const FREQUENCY_TOOLTIP =
 function InfoTooltip({ text }: { text: string }) {
   return (
     <span className="group relative ml-1 inline-block">
-      <span className="cursor-help select-none text-zinc-400 hover:text-zinc-500">
-        ⓘ
-      </span>
+      <svg
+        className="h-3.5 w-3.5 cursor-help text-zinc-400 hover:text-zinc-500"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden
+      >
+        <circle cx="12" cy="12" r="10" strokeWidth="1.5" />
+        <path strokeLinecap="round" strokeWidth="1.5" d="M12 11v5" />
+        <circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none" />
+      </svg>
       <span
         role="tooltip"
         className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-2 w-52 -translate-x-1/2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs leading-relaxed text-zinc-600 shadow-md opacity-0 transition-opacity duration-150 group-hover:opacity-100"
