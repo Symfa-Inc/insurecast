@@ -1,22 +1,25 @@
 "use client";
 
-import { useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 type ScenarioPanelProps = {
-  /** Called with current slider values when the user clicks Apply. */
-  onApplyScenario: (
-    severityInflationPct: number,
-    frequencyShockPct: number,
-  ) => void;
+  severityInflationPct: number;
+  setSeverityInflationPct: (value: number) => void;
+  frequencyShockPct: number;
+  setFrequencyShockPct: (value: number) => void;
+  pendingChangeCount: number;
+  hasUnappliedChanges: boolean;
+  isApplying: boolean;
+  onApplyChanges: () => void;
+  onResetChanges: () => void;
   error: string | null;
 };
 
 const SEVERITY_TOOLTIP =
-  "Scales the modeled average cost per claim (severity) for forecast months when you click Apply. Historical months on the chart keep real series values; only the forecast segment uses this adjustment.";
+  "Scales the modeled average cost per claim for forecast months after you update the forecast. Historical months keep the real series values.";
 
 const FREQUENCY_TOOLTIP =
-  "Scales forecast claim counts up or down by this percentage before paid totals and intervals are recalculated. Click Apply to refresh the charts and table.";
+  "Scales forecast claim counts up or down after you update the forecast. Charts and table reflect the adjusted outlook.";
 
 const rangeClass = [
   "w-full h-1 appearance-none rounded-full bg-zinc-200 cursor-pointer",
@@ -33,13 +36,25 @@ const rangeClass = [
   "[&::-moz-range-thumb]:border-0",
 ].join(" ");
 
-export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
+export function ScenarioPanel({
+  severityInflationPct,
+  setSeverityInflationPct,
+  frequencyShockPct,
+  setFrequencyShockPct,
+  pendingChangeCount,
+  hasUnappliedChanges,
+  isApplying,
+  onApplyChanges,
+  onResetChanges,
+  error,
+}: ScenarioPanelProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
-  const [severityInflation, setSeverityInflation] = useState(0);
-  const [frequencyShock, setFrequencyShock] = useState(0);
+  const statusLabel = hasUnappliedChanges
+    ? `${pendingChangeCount} unapplied ${pendingChangeCount === 1 ? "change" : "changes"}`
+    : "Forecast is up to date.";
 
   return (
-    <div className="px-5 py-6">
+    <div className="flex min-h-full flex-1 flex-col px-5 py-6">
       <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-4">
         Scenario
       </p>
@@ -57,7 +72,7 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
               Severity inflation
             </label>
             <span className="text-sm font-semibold text-zinc-900">
-              {severityInflation}%
+              {severityInflationPct}%
             </span>
           </div>
           <input
@@ -65,8 +80,8 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
             name="severityInflation"
             min={0}
             max={20}
-            value={severityInflation}
-            onChange={(e) => setSeverityInflation(Number(e.target.value))}
+            value={severityInflationPct}
+            onChange={(e) => setSeverityInflationPct(Number(e.target.value))}
             className={rangeClass}
             aria-describedby="scenario-tip-severity"
           />
@@ -84,7 +99,7 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
               Frequency shock
             </label>
             <span className="text-sm font-semibold text-zinc-900">
-              {frequencyShock}%
+              {frequencyShockPct}%
             </span>
           </div>
           <input
@@ -92,34 +107,52 @@ export function ScenarioPanel({ onApplyScenario, error }: ScenarioPanelProps) {
             name="frequencyShock"
             min={-10}
             max={25}
-            value={frequencyShock}
-            onChange={(e) => setFrequencyShock(Number(e.target.value))}
+            value={frequencyShockPct}
+            onChange={(e) => setFrequencyShockPct(Number(e.target.value))}
             className={rangeClass}
             aria-describedby="scenario-tip-frequency"
           />
         </div>
+      </div>
 
+      <div className="mt-auto border-t border-zinc-100 pt-4">
+        <div className="mb-3 space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-zinc-400">
+            Draft
+          </p>
+          <p className="text-sm text-zinc-700">{statusLabel}</p>
+          <p className="text-xs leading-relaxed text-zinc-500">
+            Sidebar changes stay local until you update the forecast.
+          </p>
+        </div>
         <motion.button
           type="button"
           whileHover={shouldReduceMotion ? undefined : { scale: 1.01 }}
           whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
-          onClick={() =>
-            void onApplyScenario(severityInflation, frequencyShock)
-          }
-          className="mt-1 h-9 w-full rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          onClick={onApplyChanges}
+          disabled={!hasUnappliedChanges || isApplying}
+          className="h-10 w-full rounded-md bg-zinc-900 px-4 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-500"
         >
-          Apply scenario
+          {isApplying ? "Updating…" : "Update Forecast"}
         </motion.button>
-      </div>
-
-      {error ? (
-        <div
-          className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
-          role="alert"
+        <button
+          type="button"
+          onClick={onResetChanges}
+          disabled={!hasUnappliedChanges || isApplying}
+          className="mt-2 h-9 w-full rounded-md border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:border-zinc-100 disabled:text-zinc-400"
         >
-          {error}
-        </div>
-      ) : null}
+          Reset Draft
+        </button>
+
+        {error ? (
+          <div
+            className="mt-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700"
+            role="alert"
+          >
+            {error}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -7,6 +7,7 @@ export type SummaryLoadPhase = "idle" | "charts" | "llm";
 type ForecastSummaryPanelProps = {
   summary: ForecastSummaryLLMResponse | null;
   loadPhase: SummaryLoadPhase;
+  supplementalNotice?: string | null;
 };
 
 /** Remove markdown heading markers (####, ###, etc.) from model output. */
@@ -90,6 +91,7 @@ function SummaryLoadingInline({
 export function ForecastSummaryPanel({
   summary,
   loadPhase,
+  supplementalNotice,
 }: ForecastSummaryPanelProps) {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const loadingCharts = loadPhase === "charts";
@@ -165,6 +167,11 @@ export function ForecastSummaryPanel({
                       role="status"
                     >
                       {summary.notice}
+                    </p>
+                  ) : null}
+                  {supplementalNotice ? (
+                    <p className="text-xs leading-relaxed text-zinc-500">
+                      {supplementalNotice}
                     </p>
                   ) : null}
                   <p className="text-sm leading-relaxed text-zinc-700">

@@ -41,6 +41,62 @@ const DEFAULT_INDUSTRY = "Healthcare";
 const DEFAULT_CLAIM_TYPE = "Indemnity";
 const DEFAULT_FROM_MONTH = "2023-01";
 const DEFAULT_FORECAST_PERIOD = "12";
+const SIDEBAR_CONTROL_KEYS = [
+  "stateValue",
+  "industry",
+  "claimType",
+  "fromMonth",
+  "forecastPeriod",
+  "severityInflationPct",
+  "frequencyShockPct",
+] as const;
+
+type SidebarControls = {
+  stateValue: string;
+  industry: string;
+  claimType: string;
+  fromMonth: string;
+  forecastPeriod: string;
+  severityInflationPct: number;
+  frequencyShockPct: number;
+};
+
+const DEFAULT_SIDEBAR_CONTROLS: SidebarControls = {
+  stateValue: DEFAULT_STATE,
+  industry: DEFAULT_INDUSTRY,
+  claimType: DEFAULT_CLAIM_TYPE,
+  fromMonth: DEFAULT_FROM_MONTH,
+  forecastPeriod: DEFAULT_FORECAST_PERIOD,
+  severityInflationPct: 0,
+  frequencyShockPct: 0,
+};
+
+function resolveSidebarDefaults(payload: SegmentsResponse): SidebarControls {
+  const availableStates = filterStatesForUi(payload.states);
+
+  return {
+    ...DEFAULT_SIDEBAR_CONTROLS,
+    stateValue: availableStates.includes(DEFAULT_STATE)
+      ? DEFAULT_STATE
+      : (availableStates[0] ?? DEFAULT_STATE),
+    industry: payload.industries.includes(DEFAULT_INDUSTRY)
+      ? DEFAULT_INDUSTRY
+      : (payload.industries[0] ?? DEFAULT_INDUSTRY),
+    claimType: payload.claim_types.includes(DEFAULT_CLAIM_TYPE)
+      ? DEFAULT_CLAIM_TYPE
+      : (payload.claim_types[0] ?? DEFAULT_CLAIM_TYPE),
+  };
+}
+
+function countChangedSidebarControls(
+  draftControls: SidebarControls,
+  appliedControls: SidebarControls,
+) {
+  return SIDEBAR_CONTROL_KEYS.reduce(
+    (count, key) => count + Number(draftControls[key] !== appliedControls[key]),
+    0,
+  );
+}
 
 /** Forecast months use scenario claims/CIs; historical actuals stay from baseline API. */
 function mergeClaimsWithScenario(
@@ -71,11 +127,12 @@ function mergeClaimsWithScenario(
 export default function Home() {
   const shouldReduceMotion = useReducedMotion() ?? false;
   const [segments, setSegments] = useState<SegmentsResponse | null>(null);
-  const [stateValue, setStateValue] = useState(DEFAULT_STATE);
-  const [industry, setIndustry] = useState(DEFAULT_INDUSTRY);
-  const [claimType, setClaimType] = useState(DEFAULT_CLAIM_TYPE);
-  const [fromMonth, setFromMonth] = useState(DEFAULT_FROM_MONTH);
-  const [forecastPeriod, setForecastPeriod] = useState(DEFAULT_FORECAST_PERIOD);
+  const [draftControls, setDraftControls] = useState<SidebarControls>(
+    DEFAULT_SIDEBAR_CONTROLS,
+  );
+  const [appliedControls, setAppliedControls] = useState<SidebarControls>(
+    DEFAULT_SIDEBAR_CONTROLS,
+  );
   const [claims, setClaims] = useState<ClaimsPoint[]>([]);
   const [costs, setCosts] = useState<CostsPoint[]>([]);
   /** Full scenario API series; drives adjusted costs + merged forecast claims. */
@@ -91,9 +148,16 @@ export default function Home() {
   >("idle");
   const [error, setError] = useState<string | null>(null);
 
+  const isApplying = summaryLoadPhase !== "idle";
+  const pendingChangeCount = useMemo(
+    () => countChangedSidebarControls(draftControls, appliedControls),
+    [draftControls, appliedControls],
+  );
+  const hasUnappliedChanges = pendingChangeCount > 0;
   const forecastMonths = Math.max(
     1,
-    parseInt(forecastPeriod, 10) || Number(DEFAULT_FORECAST_PERIOD),
+    parseInt(appliedControls.forecastPeriod, 10) ||
+      Number(DEFAULT_FORECAST_PERIOD),
   );
   const toMonth = useMemo(() => {
     if (metadata?.actual_end && metadata?.forecast_end) {
@@ -102,40 +166,21 @@ export default function Home() {
         ? endWithForecast
         : metadata.forecast_end;
     }
-    return addMonths(fromMonth, 24);
-  }, [metadata?.actual_end, metadata?.forecast_end, forecastMonths, fromMonth]);
-
-  const seriesParams = useMemo(
-    () => ({
-      from: fromMonth,
-      to: toMonth,
-      state: stateValue,
-      industry,
-      claim_type: claimType,
-    }),
-    [claimType, fromMonth, industry, stateValue, toMonth],
-  );
+    return addMonths(appliedControls.fromMonth, 24);
+  }, [
+    appliedControls.fromMonth,
+    metadata?.actual_end,
+    metadata?.forecast_end,
+    forecastMonths,
+  ]);
 
   useEffect(() => {
     async function loadSegments() {
       const payload = await getSegments();
-      const availableStates = filterStatesForUi(payload.states);
+      const resolvedControls = resolveSidebarDefaults(payload);
       setSegments(payload);
-      setStateValue(
-        availableStates.includes(DEFAULT_STATE)
-          ? DEFAULT_STATE
-          : (availableStates[0] ?? DEFAULT_STATE),
-      );
-      setIndustry(
-        payload.industries.includes(DEFAULT_INDUSTRY)
-          ? DEFAULT_INDUSTRY
-          : (payload.industries[0] ?? DEFAULT_INDUSTRY),
-      );
-      setClaimType(
-        payload.claim_types.includes(DEFAULT_CLAIM_TYPE)
-          ? DEFAULT_CLAIM_TYPE
-          : (payload.claim_types[0] ?? DEFAULT_CLAIM_TYPE),
-      );
+      setDraftControls(resolvedControls);
+      setAppliedControls(resolvedControls);
     }
 
     void loadSegments().catch((loadError: unknown) => {
@@ -159,7 +204,8 @@ export default function Home() {
         setMetadata(meta);
         const forecastMonthsNum = Math.max(
           1,
-          parseInt(forecastPeriod, 10) || Number(DEFAULT_FORECAST_PERIOD),
+          parseInt(appliedControls.forecastPeriod, 10) ||
+            Number(DEFAULT_FORECAST_PERIOD),
         );
         const computedTo =
           meta?.actual_end && meta?.forecast_end
@@ -169,20 +215,32 @@ export default function Home() {
               ) <= 0
               ? addMonths(meta.actual_end, forecastMonthsNum)
               : meta.forecast_end
-            : addMonths(fromMonth, 24);
+            : addMonths(appliedControls.fromMonth, 24);
         const params = {
-          from: fromMonth,
+          from: appliedControls.fromMonth,
           to: computedTo,
-          state: stateValue,
-          industry,
-          claim_type: claimType,
+          state: appliedControls.stateValue,
+          industry: appliedControls.industry,
+          claim_type: appliedControls.claimType,
         };
-        const [claimsPayload, costsPayload] = await Promise.all([
-          getClaimsSeries(params),
-          getCostsSeries(params),
-        ]);
+        const scenarioPromise =
+          appliedControls.severityInflationPct !== 0 ||
+          appliedControls.frequencyShockPct !== 0
+            ? recalculateScenario({
+                ...params,
+                severity_inflation_pct: appliedControls.severityInflationPct,
+                frequency_shock_pct: appliedControls.frequencyShockPct,
+              })
+            : Promise.resolve(null);
+        const [claimsPayload, costsPayload, scenarioPayload] =
+          await Promise.all([
+            getClaimsSeries(params),
+            getCostsSeries(params),
+            scenarioPromise,
+          ]);
         setClaims(claimsPayload);
         setCosts(costsPayload);
+        setScenarioSeries(scenarioPayload);
 
         if (!rawSeriesHasPlottableChartData(claimsPayload, costsPayload)) {
           setForecastSummary({
@@ -191,8 +249,8 @@ export default function Home() {
             source: "no_data",
             llm_model: null,
             notice: null,
-            segment_label: `${stateValue} · ${industry} · ${claimType}`,
-            chart_from: fromMonth,
+            segment_label: `${appliedControls.stateValue} · ${appliedControls.industry} · ${appliedControls.claimType}`,
+            chart_from: appliedControls.fromMonth,
             chart_to: computedTo,
             insurance_forecast_model: "SARIMAX (1,1,1)×(1,1,1,12)",
             train_window:
@@ -206,7 +264,6 @@ export default function Home() {
           const summaryPayload = await postForecastSummaryLLM(params);
           setForecastSummary(summaryPayload);
         }
-        setScenarioSeries(null);
       } catch (loadError: unknown) {
         setError(
           loadError instanceof Error
@@ -214,13 +271,14 @@ export default function Home() {
             : "Failed to load dashboard data.",
         );
         setForecastSummary(null);
+        setScenarioSeries(null);
       } finally {
         setSummaryLoadPhase("idle");
       }
     }
 
     void loadData();
-  }, [segments, claimType, fromMonth, forecastPeriod, industry, stateValue]);
+  }, [segments, appliedControls]);
 
   const displayedCosts = useMemo(() => {
     if (!scenarioSeries?.length) {
@@ -417,21 +475,22 @@ export default function Home() {
     return [...rows].reverse();
   }, [displayedClaims, displayedCosts]);
 
-  async function applyScenario(
-    severityInflationPct: number,
-    frequencyShockPct: number,
-  ) {
-    try {
-      const series = await recalculateScenario({
-        ...seriesParams,
-        severity_inflation_pct: severityInflationPct,
-        frequency_shock_pct: frequencyShockPct,
-      });
-      setScenarioSeries(series);
-      setError(null);
-    } catch {
-      setError("Scenario recalculation failed.");
+  const scenarioSummaryNotice =
+    appliedControls.severityInflationPct !== 0 ||
+    appliedControls.frequencyShockPct !== 0
+      ? `Scenario applied: severity ${appliedControls.severityInflationPct >= 0 ? "+" : ""}${appliedControls.severityInflationPct}% and frequency ${appliedControls.frequencyShockPct >= 0 ? "+" : ""}${appliedControls.frequencyShockPct}%. Charts and table reflect the adjustment.`
+      : null;
+
+  function applySidebarChanges() {
+    if (!hasUnappliedChanges || isApplying) {
+      return;
     }
+
+    setAppliedControls(draftControls);
+  }
+
+  function resetDraftControls() {
+    setDraftControls(appliedControls);
   }
 
   return (
@@ -439,21 +498,51 @@ export default function Home() {
       <aside className="w-72 shrink-0 bg-white border-r border-zinc-200 flex flex-col overflow-y-auto">
         <DashboardHeader
           segments={segments}
-          stateValue={stateValue}
-          setStateValue={setStateValue}
-          industry={industry}
-          setIndustry={setIndustry}
-          claimType={claimType}
-          setClaimType={setClaimType}
-          fromMonth={fromMonth}
-          setFromMonth={setFromMonth}
-          forecastPeriod={forecastPeriod}
-          setForecastPeriod={setForecastPeriod}
+          stateValue={draftControls.stateValue}
+          setStateValue={(value) =>
+            setDraftControls((current) => ({ ...current, stateValue: value }))
+          }
+          industry={draftControls.industry}
+          setIndustry={(value) =>
+            setDraftControls((current) => ({ ...current, industry: value }))
+          }
+          claimType={draftControls.claimType}
+          setClaimType={(value) =>
+            setDraftControls((current) => ({ ...current, claimType: value }))
+          }
+          fromMonth={draftControls.fromMonth}
+          setFromMonth={(value) =>
+            setDraftControls((current) => ({ ...current, fromMonth: value }))
+          }
+          forecastPeriod={draftControls.forecastPeriod}
+          setForecastPeriod={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              forecastPeriod: value,
+            }))
+          }
         />
         <div className="border-t border-zinc-100 mx-5" />
         <ScenarioPanel
-          key={`${stateValue}-${industry}-${claimType}-${fromMonth}-${forecastPeriod}`}
-          onApplyScenario={applyScenario}
+          severityInflationPct={draftControls.severityInflationPct}
+          setSeverityInflationPct={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              severityInflationPct: value,
+            }))
+          }
+          frequencyShockPct={draftControls.frequencyShockPct}
+          setFrequencyShockPct={(value) =>
+            setDraftControls((current) => ({
+              ...current,
+              frequencyShockPct: value,
+            }))
+          }
+          pendingChangeCount={pendingChangeCount}
+          hasUnappliedChanges={hasUnappliedChanges}
+          isApplying={isApplying}
+          onApplyChanges={applySidebarChanges}
+          onResetChanges={resetDraftControls}
           error={error}
         />
       </aside>
@@ -474,6 +563,7 @@ export default function Home() {
             <ForecastSummaryPanel
               summary={forecastSummary}
               loadPhase={summaryLoadPhase}
+              supplementalNotice={scenarioSummaryNotice}
             />
           </motion.div>
           <motion.div
