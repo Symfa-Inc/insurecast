@@ -1,0 +1,154 @@
+<div id="root" data-composition-id="app" data-width="1920" data-height="1080">
+  <div id="ic-ground"></div>
+  <div id="ic-cam" data-layout-allow-overflow>
+    <div id="ic-app">
+      <!-- header (layout.tsx) -->
+      <header class="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10" id="ic-header">
+        <span class="text-base font-semibold text-zinc-900">Insure<span class="text-blue-600">Cast</span></span>
+        <span class="text-xs text-zinc-400">Insurance claims forecasting</span>
+      </header>
+      <div class="flex" id="ic-body">
+        <!-- sidebar (dashboard-header.tsx + scenario-panel.tsx) -->
+        <aside class="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white" id="ic-aside">
+          <div class="px-5 py-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">Parameters</p>
+            <div class="flex flex-col gap-4">
+              <div class="text-xs font-medium text-zinc-500">State
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-state">
+                  <span class="ic-stack"><span id="sel-state-a">NY</span><span id="sel-state-b" class="ic-off">TX</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Industry
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-ind">
+                  <span class="ic-stack"><span id="sel-ind-a">Healthcare</span><span id="sel-ind-b" class="ic-off">Construction</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Claim type
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-ct">
+                  <span class="ic-stack"><span id="sel-ct-a">Indemnity</span><span id="sel-ct-b" class="ic-off">LostTime</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">From
+                <div class="mt-1.5 flex gap-2">
+                  <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 flex-1">2023</div>
+                  <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 flex-1">Jan</div>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Forecast period
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900">12 months</div>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-zinc-100 mx-5"></div>
+          <div class="flex min-h-0 flex-1 flex-col px-5 py-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">Scenario</p>
+            <div class="flex-1 pb-4">
+              <div class="flex flex-col gap-1">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="flex items-center text-xs text-zinc-500">Severity inflation<span class="ic-info">{{INFO_ICON}}</span></span>
+                    <span class="text-sm font-semibold tabular-nums text-zinc-900" id="sev-val">0%</span>
+                  </div>
+                  <div class="ic-track" id="sev-track"><div class="ic-fill" id="sev-fill"></div><div class="ic-thumb" id="sev-thumb"></div></div>
+                </div>
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="flex items-center text-xs text-zinc-500">Frequency shock<span class="ic-info">{{INFO_ICON}}</span></span>
+                    <span class="text-sm font-semibold tabular-nums text-zinc-900" id="freq-val">0%</span>
+                  </div>
+                  <div class="ic-track" id="freq-track"><div class="ic-fill" id="freq-fill"></div><div class="ic-thumb" id="freq-thumb"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="-mx-5 mt-auto border-t border-zinc-100 bg-white px-5 pb-6 pt-4">
+              <div class="mb-3 space-y-1">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600/60">Draft</p>
+                <div class="ic-stack text-sm text-zinc-700">
+                  <p class="flex items-center gap-1.5" id="draft-0"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>Forecast is up to date.</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-1"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>1 unapplied change</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-2"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>2 unapplied changes</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-3"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>3 unapplied changes</p>
+                </div>
+                <p class="text-xs leading-relaxed text-zinc-500">Sidebar changes stay local until you update the forecast.</p>
+              </div>
+              <div class="ic-btn h-10 w-full rounded-md px-4 text-sm font-medium" id="btn-update">
+                <span class="ic-stack"><span id="btn-update-a">Update Forecast</span><span id="btn-update-b" class="ic-off">Updating…</span></span>
+              </div>
+              <div class="ic-btn2 mt-2 h-9 w-full rounded-md border px-4 text-sm font-medium" id="btn-reset">Reset Draft</div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- main (page.tsx) -->
+        <main class="flex-1 bg-zinc-50 px-6 py-6" id="ic-main">
+          <div class="space-y-5" id="ic-scroll">
+            <!-- forecast-summary-panel.tsx -->
+            <section class="relative rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm border-l-2 border-l-blue-600" id="ic-summary">
+              <div class="space-y-2" id="sum-body">
+                <div>
+                  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600/70">Forecast conclusion</p>
+                  <h2 class="mb-1 text-sm font-semibold text-stone-700 ic-stack"><span id="sum-label-a">NY · Healthcare · Indemnity</span><span id="sum-label-b" class="ic-off">TX · Construction · LostTime</span></h2>
+                  <div id="sum-notice-wrap"><p class="text-xs leading-relaxed text-stone-500" id="sum-notice">{{NOTICE}}</p></div>
+                  <div class="ic-stack">
+                    <p class="text-[15px] leading-7 text-stone-600" id="narr-a">{{NARR_S0}}</p>
+                    <p class="text-[15px] leading-7 text-stone-600" id="narr-b">{{NARR_S1}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="ic-badge" id="sum-badge">
+                <div class="ic-spinner" id="sum-spinner"></div>
+                <div class="ic-stack">
+                  <div id="badge-a"><p class="text-xs font-semibold text-stone-700">Updating forecast…</p><p class="mt-0.5 text-[11px] leading-relaxed text-stone-500">Refreshing claims and cost series.</p></div>
+                  <div id="badge-b" class="ic-off"><p class="text-xs font-semibold text-stone-700">Writing conclusion…</p><p class="mt-0.5 text-[11px] leading-relaxed text-stone-500">Preparing the new explanation.</p></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- forecast-chart.tsx x2 -->
+            <section class="flex flex-col gap-4">
+              {{CHART1}}
+              {{CHART2}}
+            </section>
+
+            <!-- monthly-table.tsx -->
+            <section class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm" id="ic-table">
+              <div class="border-b border-zinc-200 px-4 py-3">
+                <h2 class="text-sm font-semibold text-zinc-800">Monthly values</h2>
+                <p class="mt-0.5 text-xs text-zinc-500">Forecast rows are highlighted in blue.</p>
+              </div>
+              <table class="w-full min-w-full table-fixed border-collapse text-sm">
+                {{COLGROUP}}
+                <thead class="bg-white">
+                  <tr>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Month</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Claims</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Paid amount</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Avg cost per claim</th>
+                  </tr>
+                </thead>
+                <tbody>{{ROWS_TOP}}</tbody>
+              </table>
+              <div id="tbl-more-wrap">
+                <table class="w-full min-w-full table-fixed border-collapse text-sm">{{COLGROUP}}<tbody>{{ROWS_MORE}}</tbody></table>
+              </div>
+              <div class="ic-more flex w-full items-center justify-center gap-1.5 border-t border-zinc-100 py-2.5 text-xs font-medium text-zinc-500" id="btn-more">
+                <span class="ic-stack"><span id="btn-more-a">Show 45 more rows</span><span id="btn-more-b" class="ic-off">Show less</span></span>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+
+      <!-- dropdown menus (the app uses native selects; drawn in the app's own popover styling) -->
+      {{MENUS}}
+
+      <!-- callouts, anchored to the element they talk about -->
+      {{CALLOUTS}}
+
+      <!-- cursor -->
+      <svg id="ic-cursor" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M5.5 2.5 L5.5 19.5 L9.6 15.6 L12.4 21.9 L15.3 20.6 L12.6 14.5 L18.4 14.5 Z" />
+      </svg>
+    </div>
+  </div>
+</div>

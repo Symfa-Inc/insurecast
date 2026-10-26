@@ -1,0 +1,37 @@
+<template>
+  <style>
+    @font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("assets/fonts/Geist-latin.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Geist", sans-serif; -webkit-font-smoothing: antialiased; }
+    #root h1, #root h2, #root p { margin: 0; padding: 0; }
+    #sw-sheet { position: absolute; inset: 0; background: #fafafa; }
+    #sw-line { position: absolute; left: 152px; top: 470px; font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; white-space: nowrap; display: flex; align-items: baseline; }
+    .sw-w { display: inline-block; opacity: 0; margin-right: 0.24em; }
+    #sw-slot { position: relative; display: inline-block; height: 1.02em; overflow: hidden; color: #2563eb; opacity: 0; font-variant-numeric: tabular-nums; }
+    #sw-reel { display: flex; flex-direction: column; }
+    #sw-reel span { height: 1.02em; display: block; }
+    #sw-q { display: inline-block; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="sheet-whatif" data-width="1920" data-height="1080">
+    <div id="sw-sheet">
+      <h2 id="sw-line" data-layout-allow-overlap data-layout-allow-occlusion><span class="sw-w">What</span><span class="sw-w">if</span><span class="sw-w">costs</span><span class="sw-w">rise</span><span id="sw-slot"><span id="sw-reel"><span>2%</span><span>5%</span><span>10%</span></span></span><span id="sw-q">?</span></h2>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#sw-sheet", { x: 2050, filter: "blur(10px)" }, { x: 0, duration: 0.45, ease: "power3.inOut" }, 0);
+      tl.to("#sw-sheet", { filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.25);
+      var w = document.querySelectorAll("#sw-line .sw-w");
+      for (var i = 0; i < w.length; i++) {
+        tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power2.out" }, 0.4 + i * 0.08);
+      }
+      tl.fromTo("#sw-slot", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.72);
+      tl.fromTo("#sw-reel", { yPercent: 0 }, { yPercent: -33.333, duration: 0.14, ease: "power2.inOut" }, 0.86);
+      tl.to("#sw-reel", { yPercent: -66.667, duration: 0.2, ease: "power3.out" }, 1.06);
+      tl.fromTo("#sw-q", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 1.2);
+      tl.to("#sw-sheet", { x: -2050, duration: 0.45, ease: "power3.inOut" }, 1.95);
+      tl.to("#sw-sheet", { filter: "blur(10px)", duration: 0.22, ease: "power2.in" }, 1.95);
+      window.__timelines["sheet-whatif"] = tl;
+    })();
+  </script>
+</template>

@@ -19,9 +19,7 @@ Time-series forecasting dashboard for monthly claims and paid amounts using SARI
 
 </div>
 
-<p align="center">
-<img src=".assets/insurecast.png" width="100%" alt="InsureCast Preview">
-</p>
+https://github.com/user-attachments/assets/93dd16a0-a0b8-4aa7-bfe7-96cfb4eb853e
 
 ## Features
 

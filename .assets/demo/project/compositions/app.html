@@ -1,0 +1,1101 @@
+<template>
+<style>
+@layer properties {
+  @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
+  *, ::before, ::after, ::backdrop { --tw-space-y-reverse: 0; --tw-border-style: solid; --tw-leading: initial; --tw-font-weight: initial; --tw-tracking: initial; --tw-ordinal: initial; --tw-slashed-zero: initial; --tw-numeric-figure: initial; --tw-numeric-spacing: initial; --tw-numeric-fraction: initial; --tw-shadow: 0 0 #0000; --tw-shadow-color: initial; --tw-shadow-alpha: 100%; --tw-inset-shadow: 0 0 #0000; --tw-inset-shadow-color: initial; --tw-inset-shadow-alpha: 100%; --tw-ring-color: initial; --tw-ring-shadow: 0 0 #0000; --tw-inset-ring-color: initial; --tw-inset-ring-shadow: 0 0 #0000; --tw-ring-inset: initial; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-offset-shadow: 0 0 #0000; --tw-backdrop-blur: initial; --tw-backdrop-brightness: initial; --tw-backdrop-contrast: initial; --tw-backdrop-grayscale: initial; --tw-backdrop-hue-rotate: initial; --tw-backdrop-invert: initial; --tw-backdrop-opacity: initial; --tw-backdrop-saturate: initial; --tw-backdrop-sepia: initial; --tw-duration: initial; --tw-ease: initial; }
+}
+}
+@layer theme {
+  :root, :host { --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; --color-red-50: #fef2f2; --color-red-200: #ffcaca; --color-red-700: #bf000f; --color-amber-500: #f99c00; --color-amber-700: #b75000; --color-emerald-500: #00bb7f; --color-blue-50: #eff6ff; --color-blue-100: #dbeafe; --color-blue-500: #3080ff; --color-blue-600: #155dfc; --color-blue-700: #1447e6; --color-zinc-50: #fafafa; --color-zinc-100: #f4f4f5; --color-zinc-200: #e4e4e7; --color-zinc-300: #d4d4d8; --color-zinc-400: #9f9fa9; --color-zinc-500: #71717b; --color-zinc-600: #52525c; --color-zinc-700: #3f3f46; --color-zinc-800: #27272a; --color-zinc-900: #18181b; --color-stone-400: #a6a09b; --color-stone-500: #79716b; --color-stone-600: #57534d; --color-stone-700: #44403b; --color-stone-800: #292524; --color-white: #fff; --spacing: .25rem; --text-xs: .75rem; --text-xs--line-height: calc(1 / .75); --text-sm: .875rem; --text-sm--line-height: calc(1.25 / .875); --text-base: 1rem; --text-base--line-height: calc(1.5 / 1); --font-weight-medium: 500; --font-weight-semibold: 600; --tracking-wide: .025em; --tracking-wider: .05em; --tracking-widest: .1em; --leading-relaxed: 1.625; --radius-sm: .25rem; --radius-md: .375rem; --radius-lg: .5rem; --radius-xl: .75rem; --ease-in-out: cubic-bezier(.4, 0, .2, 1); --blur-sm: 8px; --default-transition-duration: .15s; --default-transition-timing-function: cubic-bezier(.4, 0, .2, 1); --default-font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif; --default-mono-font-family: var(--font-geist-mono), ui-monospace, monospace; --color-background: #fafafa; --color-text-primary: #18181b; --color-accent: #2563eb; }
+  @supports (color: lab(0% 0 0)) {
+  :root, :host { --color-red-50: lab(96.5005% 4.18508 1.52328); --color-red-200: lab(86.017% 19.8815 7.75869); --color-red-700: lab(40.4273% 67.2623 53.7441); --color-amber-500: lab(72.7183% 31.8672 97.9407); --color-amber-700: lab(47.2709% 42.9082 69.2966); --color-emerald-500: lab(66.9756% -58.27 19.5419); --color-blue-50: lab(96.492% -1.14644 -5.11479); --color-blue-100: lab(92.0301% -2.24757 -11.6453); --color-blue-500: lab(54.1736% 13.3369 -74.6839); --color-blue-600: lab(44.0605% 29.0279 -86.0352); --color-blue-700: lab(36.9089% 35.0961 -85.6872); --color-zinc-50: lab(98.26% 0 0); --color-zinc-100: lab(96.1634% .0993311 -.364041); --color-zinc-200: lab(90.6853% .399232 -1.45452); --color-zinc-300: lab(84.9837% .601262 -2.17986); --color-zinc-400: lab(65.6464% 1.53497 -5.42429); --color-zinc-500: lab(47.8878% 1.65477 -5.77283); --color-zinc-600: lab(35.1166% 1.78212 -6.1173); --color-zinc-700: lab(26.8019% 1.35387 -4.68303); --color-zinc-800: lab(15.7305% .613764 -2.16959); --color-zinc-900: lab(8.30603% .618205 -2.16572); --color-stone-400: lab(66.2166% 1.88044 3.20326); --color-stone-500: lab(48.1164% 2.35701 4.26852); --color-stone-600: lab(35.5168% 1.08604 4.07829); --color-stone-700: lab(27.3812% 1.32917 3.57789); --color-stone-800: lab(15.0353% 1.96067 1.53427); }
+}
+}
+@layer base {
+  *, ::after, ::before, ::backdrop { box-sizing: border-box; border: 0px solid; margin: 0px; padding: 0px; }
+  ::file-selector-button { box-sizing: border-box; border: 0px solid; margin: 0px; padding: 0px; }
+  html, :host { text-size-adjust: 100%; tab-size: 4; line-height: 1.5; font-family: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"); font-feature-settings: var(--default-font-feature-settings, normal); font-variation-settings: var(--default-font-variation-settings, normal); -webkit-tap-highlight-color: transparent; }
+  hr { height: 0px; color: inherit; border-top-width: 1px; }
+  abbr:where([title]) { text-decoration: underline dotted; }
+  h1, h2, h3, h4, h5, h6 { font-size: inherit; font-weight: inherit; }
+  a { color: inherit; text-decoration: inherit; }
+  b, strong { font-weight: bolder; }
+  code, kbd, samp, pre { font-family: var(--default-mono-font-family, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace); font-feature-settings: var(--default-mono-font-feature-settings, normal); font-variation-settings: var(--default-mono-font-variation-settings, normal); font-size: 1em; }
+  small { font-size: 80%; }
+  sub, sup { vertical-align: baseline; font-size: 75%; line-height: 0; position: relative; }
+  sub { bottom: -0.25em; }
+  sup { top: -0.5em; }
+  table { text-indent: 0px; border-color: inherit; border-collapse: collapse; }
+  progress { vertical-align: baseline; }
+  summary { display: list-item; }
+  ol, ul, menu { list-style: none; }
+  img, svg, video, canvas, audio, iframe, embed, object { vertical-align: middle; display: block; }
+  img, video { max-width: 100%; height: auto; }
+  button, input, select, optgroup, textarea { font: inherit; letter-spacing: inherit; color: inherit; opacity: 1; background-color: rgba(0, 0, 0, 0); border-radius: 0px; }
+  ::file-selector-button { font: inherit; letter-spacing: inherit; color: inherit; opacity: 1; background-color: rgba(0, 0, 0, 0); border-radius: 0px; }
+  :where(select:is([multiple], [size])) optgroup { font-weight: bolder; }
+  :where(select:is([multiple], [size])) optgroup option { padding-inline-start: 20px; }
+  ::file-selector-button { margin-inline-end: 4px; }
+  ::placeholder { opacity: 1; }
+  @supports (not ((-webkit-appearance: -apple-pay-button))) or (contain-intrinsic-size: 1px) {
+  ::placeholder { color: currentcolor; }
+  @supports (color: color-mix(in lab, red, red)) {
+  ::placeholder { color: color-mix(currentcolor, transparent); }
+}
+}
+  textarea { resize: vertical; }
+  ::-webkit-search-decoration { appearance: none; }
+  ::-webkit-date-and-time-value { min-height: 1lh; text-align: inherit; }
+  ::-webkit-datetime-edit { display: inline-flex; }
+  ::-webkit-datetime-edit-fields-wrapper { padding: 0px; }
+  ::-webkit-datetime-edit { padding-block: 0px; }
+  ::-webkit-datetime-edit-year-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-month-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-day-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-hour-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-minute-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-second-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-millisecond-field { padding-block: 0px; }
+  ::-webkit-datetime-edit-meridiem-field { padding-block: 0px; }
+  ::-webkit-calendar-picker-indicator { line-height: 1; }
+  button, input:where([type="button"], [type="reset"], [type="submit"]) { appearance: button; }
+  ::file-selector-button { appearance: button; }
+  ::-webkit-inner-spin-button { height: auto; }
+  ::-webkit-outer-spin-button { height: auto; }
+  [hidden]:where(:not([hidden="until-found"])) { display: none !important; }
+}
+@layer components;
+@layer utilities {
+  .pointer-events-none { pointer-events: none; }
+  .collapse { visibility: collapse; }
+  .sr-only { clip-path: inset(50%); white-space: nowrap; border-width: 0px; width: 1px; height: 1px; margin: -1px; padding: 0px; position: absolute; overflow: hidden; }
+  .absolute { position: absolute; }
+  .fixed { position: fixed; }
+  .relative { position: relative; }
+  .start { inset-inline-start: var(--spacing); }
+  .top-4 { top: calc(var(--spacing) * 4); }
+  .right-5 { right: calc(var(--spacing) * 5); }
+  .z-10 { z-index: 10; }
+  .z-50 { z-index: 50; }
+  .container { width: 100%; }
+  @media (min-width: 40rem) {
+  .container { max-width: 40rem; }
+}
+  @media (min-width: 48rem) {
+  .container { max-width: 48rem; }
+}
+  @media (min-width: 64rem) {
+  .container { max-width: 64rem; }
+}
+  @media (min-width: 80rem) {
+  .container { max-width: 80rem; }
+}
+  @media (min-width: 96rem) {
+  .container { max-width: 96rem; }
+}
+  .-mx-5 { margin-inline: calc(var(--spacing) * -5); }
+  .mx-5 { margin-inline: calc(var(--spacing) * 5); }
+  .mt-0 { margin-top: calc(var(--spacing) * 0); }
+  .mt-0\.5 { margin-top: calc(var(--spacing) * .5); }
+  .mt-1 { margin-top: calc(var(--spacing) * 1); }
+  .mt-1\.5 { margin-top: calc(var(--spacing) * 1.5); }
+  .mt-2 { margin-top: calc(var(--spacing) * 2); }
+  .mt-3 { margin-top: calc(var(--spacing) * 3); }
+  .mt-auto { margin-top: auto; }
+  .mb-1 { margin-bottom: calc(var(--spacing) * 1); }
+  .mb-2 { margin-bottom: calc(var(--spacing) * 2); }
+  .mb-3 { margin-bottom: calc(var(--spacing) * 3); }
+  .mb-4 { margin-bottom: calc(var(--spacing) * 4); }
+  .mb-6 { margin-bottom: calc(var(--spacing) * 6); }
+  .ml-1\.5 { margin-left: calc(var(--spacing) * 1.5); }
+  .flex { display: flex; }
+  .inline { display: inline; }
+  .inline-block { display: inline-block; }
+  .inline-flex { display: inline-flex; }
+  .table { display: table; }
+  .h-0 { height: calc(var(--spacing) * 0); }
+  .h-1\.5 { height: calc(var(--spacing) * 1.5); }
+  .h-3\.5 { height: calc(var(--spacing) * 3.5); }
+  .h-4 { height: calc(var(--spacing) * 4); }
+  .h-5 { height: calc(var(--spacing) * 5); }
+  .h-9 { height: calc(var(--spacing) * 9); }
+  .h-10 { height: calc(var(--spacing) * 10); }
+  .h-14 { height: calc(var(--spacing) * 14); }
+  .h-screen { height: 100vh; }
+  .min-h-0 { min-height: calc(var(--spacing) * 0); }
+  .min-h-\[96px\] { min-height: 96px; }
+  .w-1\.5 { width: calc(var(--spacing) * 1.5); }
+  .w-3\.5 { width: calc(var(--spacing) * 3.5); }
+  .w-4 { width: calc(var(--spacing) * 4); }
+  .w-5 { width: calc(var(--spacing) * 5); }
+  .w-56 { width: calc(var(--spacing) * 56); }
+  .w-72 { width: calc(var(--spacing) * 72); }
+  .w-full { width: 100%; }
+  .max-w-\[220px\] { max-width: 220px; }
+  .min-w-0 { min-width: calc(var(--spacing) * 0); }
+  .min-w-\[160px\] { min-width: 160px; }
+  .min-w-full { min-width: 100%; }
+  .flex-1 { flex: 1 1 0%; }
+  .shrink-0 { flex-shrink: 0; }
+  .table-fixed { table-layout: fixed; }
+  .border-collapse { border-collapse: collapse; }
+  .cursor-pointer { cursor: pointer; }
+  .appearance-none { appearance: none; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .items-start { align-items: flex-start; }
+  .justify-between { justify-content: space-between; }
+  .justify-center { justify-content: center; }
+  .justify-start { justify-content: flex-start; }
+  .gap-0\.5 { gap: calc(var(--spacing) * .5); }
+  .gap-1 { gap: calc(var(--spacing) * 1); }
+  .gap-1\.5 { gap: calc(var(--spacing) * 1.5); }
+  .gap-2 { gap: calc(var(--spacing) * 2); }
+  .gap-3 { gap: calc(var(--spacing) * 3); }
+  .gap-4 { gap: calc(var(--spacing) * 4); }
+  :where(.space-y-1 > :not(:last-child)) { --tw-space-y-reverse: 0; margin-block-start: calc(calc(var(--spacing) * 1) * var(--tw-space-y-reverse)); margin-block-end: calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-y-reverse))); }
+  :where(.space-y-2 > :not(:last-child)) { --tw-space-y-reverse: 0; margin-block-start: calc(calc(var(--spacing) * 2) * var(--tw-space-y-reverse)); margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse))); }
+  :where(.space-y-5 > :not(:last-child)) { --tw-space-y-reverse: 0; margin-block-start: calc(calc(var(--spacing) * 5) * var(--tw-space-y-reverse)); margin-block-end: calc(calc(var(--spacing) * 5) * calc(1 - var(--tw-space-y-reverse))); }
+  .overflow-hidden { overflow: hidden; }
+  .overflow-x-auto { overflow-x: auto; }
+  .overflow-y-auto { overflow-y: auto; }
+  .rounded { border-radius: 0.25rem; }
+  .rounded-full { border-radius: 3.40282e+38px; }
+  .rounded-lg { border-radius: var(--radius-lg); }
+  .rounded-md { border-radius: var(--radius-md); }
+  .rounded-sm { border-radius: var(--radius-sm); }
+  .rounded-xl { border-radius: var(--radius-xl); }
+  .border { border-style: var(--tw-border-style); border-width: 1px; }
+  .border-2 { border-style: var(--tw-border-style); border-width: 2px; }
+  .border-t { border-top-style: var(--tw-border-style); border-top-width: 1px; }
+  .border-t-2 { border-top-style: var(--tw-border-style); border-top-width: 2px; }
+  .border-r { border-right-style: var(--tw-border-style); border-right-width: 1px; }
+  .border-b { border-bottom-style: var(--tw-border-style); border-bottom-width: 1px; }
+  .border-l-2 { border-left-style: var(--tw-border-style); border-left-width: 2px; }
+  .border-dashed { --tw-border-style: dashed; border-style: dashed; }
+  .border-blue-500 { border-color: var(--color-blue-500); }
+  .border-red-200 { border-color: var(--color-red-200); }
+  .border-zinc-100 { border-color: var(--color-zinc-100); }
+  .border-zinc-200 { border-color: var(--color-zinc-200); }
+  .border-zinc-400 { border-color: var(--color-zinc-400); }
+  .border-t-blue-600 { border-top-color: var(--color-blue-600); }
+  .border-t-blue-600\/40 { border-top-color: rgba(21, 93, 252, 0.4); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .border-t-blue-600\/40 { border-top-color: color-mix(in oklab, var(--color-blue-600) 40%, transparent); }
+}
+  .border-l-blue-600 { border-left-color: var(--color-blue-600); }
+  .bg-amber-500 { background-color: var(--color-amber-500); }
+  .bg-blue-50 { background-color: var(--color-blue-50); }
+  .bg-blue-50\/40 { background-color: rgba(239, 246, 255, 0.4); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .bg-blue-50\/40 { background-color: color-mix(in oklab, var(--color-blue-50) 40%, transparent); }
+}
+  .bg-blue-50\/90 { background-color: rgba(239, 246, 255, 0.9); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .bg-blue-50\/90 { background-color: color-mix(in oklab, var(--color-blue-50) 90%, transparent); }
+}
+  .bg-blue-100\/80 { background-color: rgba(219, 234, 254, 0.8); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .bg-blue-100\/80 { background-color: color-mix(in oklab, var(--color-blue-100) 80%, transparent); }
+}
+  .bg-blue-600 { background-color: var(--color-blue-600); }
+  .bg-emerald-500 { background-color: var(--color-emerald-500); }
+  .bg-red-50 { background-color: var(--color-red-50); }
+  .bg-white { background-color: var(--color-white); }
+  .bg-white\/95 { background-color: rgba(255, 255, 255, 0.95); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .bg-white\/95 { background-color: color-mix(in oklab, var(--color-white) 95%, transparent); }
+}
+  .bg-zinc-50 { background-color: var(--color-zinc-50); }
+  .p-0\.5 { padding: calc(var(--spacing) * .5); }
+  .p-3 { padding: calc(var(--spacing) * 3); }
+  .p-5 { padding: calc(var(--spacing) * 5); }
+  .px-1 { padding-inline: calc(var(--spacing) * 1); }
+  .px-1\.5 { padding-inline: calc(var(--spacing) * 1.5); }
+  .px-2 { padding-inline: calc(var(--spacing) * 2); }
+  .px-3 { padding-inline: calc(var(--spacing) * 3); }
+  .px-4 { padding-inline: calc(var(--spacing) * 4); }
+  .px-5 { padding-inline: calc(var(--spacing) * 5); }
+  .px-6 { padding-inline: calc(var(--spacing) * 6); }
+  .py-0\.5 { padding-block: calc(var(--spacing) * .5); }
+  .py-2 { padding-block: calc(var(--spacing) * 2); }
+  .py-2\.5 { padding-block: calc(var(--spacing) * 2.5); }
+  .py-3 { padding-block: calc(var(--spacing) * 3); }
+  .py-3\.5 { padding-block: calc(var(--spacing) * 3.5); }
+  .py-4 { padding-block: calc(var(--spacing) * 4); }
+  .py-6 { padding-block: calc(var(--spacing) * 6); }
+  .py-8 { padding-block: calc(var(--spacing) * 8); }
+  .pt-0\.5 { padding-top: calc(var(--spacing) * .5); }
+  .pt-4 { padding-top: calc(var(--spacing) * 4); }
+  .pb-4 { padding-bottom: calc(var(--spacing) * 4); }
+  .pb-6 { padding-bottom: calc(var(--spacing) * 6); }
+  .text-center { text-align: center; }
+  .align-middle { vertical-align: middle; }
+  .text-base { font-size: var(--text-base); line-height: var(--tw-leading, var(--text-base--line-height)); }
+  .text-sm { font-size: var(--text-sm); line-height: var(--tw-leading, var(--text-sm--line-height)); }
+  .text-xs { font-size: var(--text-xs); line-height: var(--tw-leading, var(--text-xs--line-height)); }
+  .text-\[10px\] { font-size: 10px; }
+  .text-\[11px\] { font-size: 11px; }
+  .text-\[15px\] { font-size: 15px; }
+  .leading-7 { --tw-leading: calc(var(--spacing) * 7); line-height: calc(var(--spacing) * 7); }
+  .leading-relaxed { --tw-leading: var(--leading-relaxed); line-height: var(--leading-relaxed); }
+  .font-medium { --tw-font-weight: var(--font-weight-medium); font-weight: var(--font-weight-medium); }
+  .font-semibold { --tw-font-weight: var(--font-weight-semibold); font-weight: var(--font-weight-semibold); }
+  .tracking-\[0\.18em\] { --tw-tracking: .18em; letter-spacing: 0.18em; }
+  .tracking-wide { --tw-tracking: var(--tracking-wide); letter-spacing: var(--tracking-wide); }
+  .tracking-wider { --tw-tracking: var(--tracking-wider); letter-spacing: var(--tracking-wider); }
+  .tracking-widest { --tw-tracking: var(--tracking-widest); letter-spacing: var(--tracking-widest); }
+  .text-amber-700 { color: var(--color-amber-700); }
+  .text-blue-600 { color: var(--color-blue-600); }
+  .text-blue-600\/60 { color: rgba(21, 93, 252, 0.6); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .text-blue-600\/60 { color: color-mix(in oklab, var(--color-blue-600) 60%, transparent); }
+}
+  .text-blue-600\/70 { color: rgba(21, 93, 252, 0.7); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .text-blue-600\/70 { color: color-mix(in oklab, var(--color-blue-600) 70%, transparent); }
+}
+  .text-red-700 { color: var(--color-red-700); }
+  .text-stone-400 { color: var(--color-stone-400); }
+  .text-stone-500 { color: var(--color-stone-500); }
+  .text-stone-600 { color: var(--color-stone-600); }
+  .text-stone-700 { color: var(--color-stone-700); }
+  .text-stone-800 { color: var(--color-stone-800); }
+  .text-white { color: var(--color-white); }
+  .text-zinc-400 { color: var(--color-zinc-400); }
+  .text-zinc-500 { color: var(--color-zinc-500); }
+  .text-zinc-600 { color: var(--color-zinc-600); }
+  .text-zinc-700 { color: var(--color-zinc-700); }
+  .text-zinc-800 { color: var(--color-zinc-800); }
+  .text-zinc-900 { color: var(--color-zinc-900); }
+  .uppercase { text-transform: uppercase; }
+  .tabular-nums { --tw-numeric-spacing: tabular-nums; font-variant-numeric: var(--tw-ordinal, ) var(--tw-slashed-zero, ) var(--tw-numeric-figure, ) var(--tw-numeric-spacing, ) var(--tw-numeric-fraction, ); }
+  .antialiased { -webkit-font-smoothing: antialiased; }
+  .opacity-75 { opacity: 0.75; }
+  .opacity-100 { opacity: 1; }
+  .shadow-lg { --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .shadow-md { --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, #0000001a), 0 2px 4px -2px var(--tw-shadow-color, #0000001a); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .shadow-sm { --tw-shadow: 0 1px 3px 0 var(--tw-shadow-color, #0000001a), 0 1px 2px -1px var(--tw-shadow-color, #0000001a); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .ring { --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .backdrop-blur-sm { --tw-backdrop-blur: blur(var(--blur-sm)); backdrop-filter: var(--tw-backdrop-blur, ) var(--tw-backdrop-brightness, ) var(--tw-backdrop-contrast, ) var(--tw-backdrop-grayscale, ) var(--tw-backdrop-hue-rotate, ) var(--tw-backdrop-invert, ) var(--tw-backdrop-opacity, ) var(--tw-backdrop-saturate, ) var(--tw-backdrop-sepia, ); }
+  @media (hover: hover) {
+  .hover\:border-zinc-300:hover { border-color: var(--color-zinc-300); }
+}
+  @media (hover: hover) {
+  .hover\:bg-blue-100\/40:hover { background-color: rgba(219, 234, 254, 0.4); }
+  @supports (color: color-mix(in lab, red, red)) {
+  .hover\:bg-blue-100\/40:hover { background-color: color-mix(in oklab, var(--color-blue-100) 40%, transparent); }
+}
+}
+  @media (hover: hover) {
+  .hover\:bg-blue-700:hover { background-color: var(--color-blue-700); }
+}
+  @media (hover: hover) {
+  .hover\:bg-zinc-50:hover { background-color: var(--color-zinc-50); }
+}
+  @media (hover: hover) {
+  .hover\:bg-zinc-100:hover { background-color: var(--color-zinc-100); }
+}
+  @media (hover: hover) {
+  .hover\:text-zinc-600:hover { color: var(--color-zinc-600); }
+}
+  @media (hover: hover) {
+  .hover\:text-zinc-700:hover { color: var(--color-zinc-700); }
+}
+  .focus\:not-sr-only:focus { clip-path: none; white-space: normal; width: auto; height: auto; margin: 0px; padding: 0px; position: static; overflow: visible; }
+  .focus\:absolute:focus { position: absolute; }
+  .focus\:top-3:focus { top: calc(var(--spacing) * 3); }
+  .focus\:left-4:focus { left: calc(var(--spacing) * 4); }
+  .focus\:z-20:focus { z-index: 20; }
+  .focus\:rounded-md:focus { border-radius: var(--radius-md); }
+  .focus\:bg-white:focus { background-color: var(--color-white); }
+  .focus\:px-3:focus { padding-inline: calc(var(--spacing) * 3); }
+  .focus\:py-2:focus { padding-block: calc(var(--spacing) * 2); }
+  .focus\:text-sm:focus { font-size: var(--text-sm); line-height: var(--tw-leading, var(--text-sm--line-height)); }
+  .focus\:font-medium:focus { --tw-font-weight: var(--font-weight-medium); font-weight: var(--font-weight-medium); }
+  .focus\:text-zinc-900:focus { color: var(--color-zinc-900); }
+  .focus-visible\:ring-2:focus-visible { --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .focus-visible\:ring-blue-600:focus-visible { --tw-ring-color: var(--color-blue-600); }
+  .focus-visible\:ring-offset-2:focus-visible { --tw-ring-offset-width: 2px; --tw-ring-offset-shadow: var(--tw-ring-inset, ) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color); }
+  .focus-visible\:outline-none:focus-visible { --tw-outline-style: none; outline-style: none; }
+  .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+  .disabled\:border-zinc-100:disabled { border-color: var(--color-zinc-100); }
+  .disabled\:bg-zinc-200:disabled { background-color: var(--color-zinc-200); }
+  .disabled\:text-zinc-400:disabled { color: var(--color-zinc-400); }
+  .disabled\:text-zinc-500:disabled { color: var(--color-zinc-500); }
+  @media (min-width: 40rem) {
+  .sm\:px-3 { padding-inline: calc(var(--spacing) * 3); }
+}
+  @media (min-width: 48rem) {
+  .md\:px-4 { padding-inline: calc(var(--spacing) * 4); }
+}
+  .\[\&\:\:-webkit-slider-thumb\]\:h-4::-webkit-slider-thumb { height: calc(var(--spacing) * 4); }
+  .\[\&\:\:-webkit-slider-thumb\]\:w-4::-webkit-slider-thumb { width: calc(var(--spacing) * 4); }
+  .\[\&\:\:-webkit-slider-thumb\]\:appearance-none::-webkit-slider-thumb { appearance: none; }
+  .\[\&\:\:-webkit-slider-thumb\]\:rounded-full::-webkit-slider-thumb { border-radius: 3.40282e+38px; }
+  .\[\&\:\:-webkit-slider-thumb\]\:border-2::-webkit-slider-thumb { border-style: var(--tw-border-style); border-width: 2px; }
+  .\[\&\:\:-webkit-slider-thumb\]\:border-blue-600::-webkit-slider-thumb { border-color: var(--color-blue-600); }
+  .\[\&\:\:-webkit-slider-thumb\]\:bg-white::-webkit-slider-thumb { background-color: var(--color-white); }
+  .\[\&\:\:-webkit-slider-thumb\]\:shadow-\[0_1px_4px_rgba\(0\,0\,0\,0\.18\)\]::-webkit-slider-thumb { --tw-shadow: 0 1px 4px var(--tw-shadow-color, #0000002e); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .\[\&\:\:-webkit-slider-thumb\:active\]\:shadow-\[0_0_0_6px_rgba\(37\,99\,235\,0\.15\)\,0_1px_4px_rgba\(0\,0\,0\,0\.18\)\]::-webkit-slider-thumb:active { --tw-shadow: 0 0 0 6px var(--tw-shadow-color, #2563eb26), 0 1px 4px var(--tw-shadow-color, #0000002e); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+  .\[\&\:\:-webkit-slider-thumb\:hover\]\:shadow-\[0_0_0_4px_rgba\(37\,99\,235\,0\.12\)\,0_1px_4px_rgba\(0\,0\,0\,0\.18\)\]::-webkit-slider-thumb:hover { --tw-shadow: 0 0 0 4px var(--tw-shadow-color, #2563eb1f), 0 1px 4px var(--tw-shadow-color, #0000002e); box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow); }
+}
+*, ::before, ::after { box-sizing: border-box; }
+html, body { background-color: var(--color-background); height: 100%; color: var(--color-text-primary); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+@property --tw-space-y-reverse { syntax: "*"; inherits: false; initial-value: 0; }
+@property --tw-border-style { syntax: "*"; inherits: false; initial-value: solid; }
+@property --tw-leading { syntax: "*"; inherits: false; }
+@property --tw-font-weight { syntax: "*"; inherits: false; }
+@property --tw-tracking { syntax: "*"; inherits: false; }
+@property --tw-ordinal { syntax: "*"; inherits: false; }
+@property --tw-slashed-zero { syntax: "*"; inherits: false; }
+@property --tw-numeric-figure { syntax: "*"; inherits: false; }
+@property --tw-numeric-spacing { syntax: "*"; inherits: false; }
+@property --tw-numeric-fraction { syntax: "*"; inherits: false; }
+@property --tw-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
+@property --tw-shadow-color { syntax: "*"; inherits: false; }
+@property --tw-shadow-alpha { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@property --tw-inset-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
+@property --tw-inset-shadow-color { syntax: "*"; inherits: false; }
+@property --tw-inset-shadow-alpha { syntax: "<percentage>"; inherits: false; initial-value: 100%; }
+@property --tw-ring-color { syntax: "*"; inherits: false; }
+@property --tw-ring-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
+@property --tw-inset-ring-color { syntax: "*"; inherits: false; }
+@property --tw-inset-ring-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
+@property --tw-ring-inset { syntax: "*"; inherits: false; }
+@property --tw-ring-offset-width { syntax: "<length>"; inherits: false; initial-value: 0; }
+@property --tw-ring-offset-color { syntax: "*"; inherits: false; initial-value: #fff; }
+@property --tw-ring-offset-shadow { syntax: "*"; inherits: false; initial-value: 0 0 #0000; }
+@property --tw-backdrop-blur { syntax: "*"; inherits: false; }
+@property --tw-backdrop-brightness { syntax: "*"; inherits: false; }
+@property --tw-backdrop-contrast { syntax: "*"; inherits: false; }
+@property --tw-backdrop-grayscale { syntax: "*"; inherits: false; }
+@property --tw-backdrop-hue-rotate { syntax: "*"; inherits: false; }
+@property --tw-backdrop-invert { syntax: "*"; inherits: false; }
+@property --tw-backdrop-opacity { syntax: "*"; inherits: false; }
+@property --tw-backdrop-saturate { syntax: "*"; inherits: false; }
+@property --tw-backdrop-sepia { syntax: "*"; inherits: false; }
+@property --tw-duration { syntax: "*"; inherits: false; }
+@property --tw-ease { syntax: "*"; inherits: false; }
+
+/* ---- scene frame ---- */
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("assets/fonts/Geist-latin.woff2") format("woff2"); }
+#root { position: absolute; inset: 0; overflow: hidden; background: #fafafa; font-family: "Geist", ui-sans-serif, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+#ic-ground { position: absolute; inset: 0; background: #fafafa; }
+#ic-cam { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; transform-origin: 0 0; } /* no will-change: a promoted layer is rasterized once at 1x and upscaled by the camera */
+#ic-app { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; background: #fafafa; color: #18181b; font-family: "Geist", ui-sans-serif, system-ui, sans-serif; overflow: hidden; }
+#ic-app * { box-sizing: border-box; }
+#ic-header { position: relative; display: flex; }
+#ic-body { position: absolute; left: 0; top: 56px; width: 1440px; height: 1024px; }
+#ic-aside { height: 1024px; }
+#ic-main { position: relative; height: 1024px; overflow: hidden; }
+
+/* stacked variants: every state lives in the DOM, swapped by opacity only */
+.ic-stack { display: grid; }
+.ic-stack > * { grid-area: 1 / 1; }
+.ic-off { opacity: 0; }
+
+/* select look (native select replaced by a div with the same classes + chevron) */
+.ic-select { position: relative; display: flex; align-items: center; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M2.5 4.5 6 8l3.5-3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+.ic-info { display: inline-flex; margin-left: 6px; padding: 2px; color: #a1a1aa; }
+.ic-info svg { width: 14px; height: 14px; }
+
+/* slider (scenario-panel.tsx Slider) */
+.ic-track { position: relative; height: 6px; margin-top: 23px; margin-bottom: 7px; /* collapses with the label row mb-3: matches the native range input box */ border-radius: 9999px; background: #e4e4e7; }
+.ic-fill { position: absolute; left: 0; top: 0; height: 6px; width: 247px; border-radius: 9999px; background: #2563eb; transform-origin: 0 50%; }
+.ic-thumb { position: absolute; left: 0; top: -5px; width: 16px; height: 16px; border-radius: 9999px; border: 2px solid #2563eb; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+
+/* buttons */
+.ic-btn { display: flex; align-items: center; justify-content: center; background: #e4e4e7; color: #71717a; }
+.ic-btn2 { display: flex; align-items: center; justify-content: center; border-color: #f4f4f5; color: #a1a1aa; }
+.ic-more { position: relative; }
+
+/* summary */
+#sum-notice-wrap { height: 0; overflow: hidden; }
+#narr-b .w { opacity: 0; }
+.ic-badge { position: absolute; right: 20px; top: 16px; z-index: 10; max-width: 220px; display: flex; align-items: flex-start; gap: 8px; border-radius: 6px; border: 1px solid #e4e4e7; background: rgba(255,255,255,0.95); padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); opacity: 0; }
+.ic-spinner { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; border-radius: 9999px; border: 2px solid #e4e4e7; border-top-color: #2563eb; }
+
+/* charts */
+.ic-chart svg { display: block; overflow: visible; }
+.ic-chart text { font-family: "Geist", ui-sans-serif, system-ui, sans-serif; }
+
+/* table */
+#tbl-more-wrap { height: 0; overflow: hidden; }
+#tbl-more-wrap tr { opacity: 0; }
+
+/* dropdown menu (the app's popover styling: white, zinc-200 border, rounded-lg, shadow-lg) */
+.ic-menu { position: absolute; z-index: 40; padding: 4px; border-radius: 8px; border: 1px solid #e4e4e7; background: #fff; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); opacity: 0; transform-origin: 50% 0; }
+.ic-menu-hl { position: absolute; left: 4px; right: 4px; top: 4px; height: 32px; border-radius: 6px; background: #eff6ff; opacity: 0; }
+.ic-item { position: relative; height: 32px; padding: 0 12px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #18181b; border-radius: 6px; }
+.ic-item svg { width: 14px; height: 14px; color: #2563eb; }
+
+/* Recharts tooltip (forecast-chart.tsx CustomTooltip) */
+.ic-tip { position: absolute; z-index: 30; min-width: 160px; border-radius: 8px; border: 1px solid #e4e4e7; background: #fff; padding: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); opacity: 0; }
+
+/* callouts: anchored, short, gone when they stop mattering */
+.ic-call { position: absolute; z-index: 50; opacity: 0; }
+.ic-call-box { position: absolute; white-space: nowrap; background: #fff; border: 1px solid #e4e4e7; border-left: 3px solid #2563eb; border-radius: 10px; box-shadow: 0 12px 32px rgba(24,24,27,0.12); color: #18181b; font-weight: 600; letter-spacing: -0.01em; }
+.ic-call-dot { position: absolute; border-radius: 9999px; background: #2563eb; box-shadow: 0 0 0 3px #fff; }
+.ic-call-line { position: absolute; background: #2563eb; transform-origin: 0 50%; }
+
+/* cursor */
+#ic-cursor { position: absolute; left: 0; top: 0; z-index: 100; transform-origin: 5.5px 2.5px; overflow: visible; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.28)); }
+#ic-cursor path { fill: #111; stroke: #fff; stroke-width: 1.5; stroke-linejoin: round; }
+
+</style>
+<div id="root" data-composition-id="app" data-width="1920" data-height="1080">
+  <div id="ic-ground"></div>
+  <div id="ic-cam" data-layout-allow-overflow>
+    <div id="ic-app">
+      <!-- header (layout.tsx) -->
+      <header class="h-14 shrink-0 border-b border-zinc-200 bg-white px-6 flex items-center justify-between z-10" id="ic-header">
+        <span class="text-base font-semibold text-zinc-900">Insure<span class="text-blue-600">Cast</span></span>
+        <span class="text-xs text-zinc-400">Insurance claims forecasting</span>
+      </header>
+      <div class="flex" id="ic-body">
+        <!-- sidebar (dashboard-header.tsx + scenario-panel.tsx) -->
+        <aside class="flex w-72 shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-white" id="ic-aside">
+          <div class="px-5 py-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">Parameters</p>
+            <div class="flex flex-col gap-4">
+              <div class="text-xs font-medium text-zinc-500">State
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-state">
+                  <span class="ic-stack"><span id="sel-state-a">NY</span><span id="sel-state-b" class="ic-off">TX</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Industry
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-ind">
+                  <span class="ic-stack"><span id="sel-ind-a">Healthcare</span><span id="sel-ind-b" class="ic-off">Construction</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Claim type
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900" id="sel-ct">
+                  <span class="ic-stack"><span id="sel-ct-a">Indemnity</span><span id="sel-ct-b" class="ic-off">LostTime</span></span>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">From
+                <div class="mt-1.5 flex gap-2">
+                  <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 flex-1">2023</div>
+                  <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900 flex-1">Jan</div>
+                </div>
+              </div>
+              <div class="text-xs font-medium text-zinc-500">Forecast period
+                <div class="ic-select mt-1.5 h-9 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm text-zinc-900">12 months</div>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-zinc-100 mx-5"></div>
+          <div class="flex min-h-0 flex-1 flex-col px-5 py-6">
+            <p class="text-xs font-semibold uppercase tracking-widest text-blue-600/60 mb-4">Scenario</p>
+            <div class="flex-1 pb-4">
+              <div class="flex flex-col gap-1">
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="flex items-center text-xs text-zinc-500">Severity inflation<span class="ic-info"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-width="1.5"></circle><path stroke-linecap="round" stroke-width="1.5" d="M12 11v5"></path><circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none"></circle></svg></span></span>
+                    <span class="text-sm font-semibold tabular-nums text-zinc-900" id="sev-val">0%</span>
+                  </div>
+                  <div class="ic-track" id="sev-track"><div class="ic-fill" id="sev-fill"></div><div class="ic-thumb" id="sev-thumb"></div></div>
+                </div>
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-3">
+                    <span class="flex items-center text-xs text-zinc-500">Frequency shock<span class="ic-info"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke-width="1.5"></circle><path stroke-linecap="round" stroke-width="1.5" d="M12 11v5"></path><circle cx="12" cy="7.5" r="0.75" fill="currentColor" stroke="none"></circle></svg></span></span>
+                    <span class="text-sm font-semibold tabular-nums text-zinc-900" id="freq-val">0%</span>
+                  </div>
+                  <div class="ic-track" id="freq-track"><div class="ic-fill" id="freq-fill"></div><div class="ic-thumb" id="freq-thumb"></div></div>
+                </div>
+              </div>
+            </div>
+            <div class="-mx-5 mt-auto border-t border-zinc-100 bg-white px-5 pb-6 pt-4">
+              <div class="mb-3 space-y-1">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600/60">Draft</p>
+                <div class="ic-stack text-sm text-zinc-700">
+                  <p class="flex items-center gap-1.5" id="draft-0"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500"></span>Forecast is up to date.</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-1"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>1 unapplied change</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-2"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>2 unapplied changes</p>
+                  <p class="flex items-center gap-1.5 ic-off" id="draft-3"><span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500"></span>3 unapplied changes</p>
+                </div>
+                <p class="text-xs leading-relaxed text-zinc-500">Sidebar changes stay local until you update the forecast.</p>
+              </div>
+              <div class="ic-btn h-10 w-full rounded-md px-4 text-sm font-medium" id="btn-update">
+                <span class="ic-stack"><span id="btn-update-a">Update Forecast</span><span id="btn-update-b" class="ic-off">Updating…</span></span>
+              </div>
+              <div class="ic-btn2 mt-2 h-9 w-full rounded-md border px-4 text-sm font-medium" id="btn-reset">Reset Draft</div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- main (page.tsx) -->
+        <main class="flex-1 bg-zinc-50 px-6 py-6" id="ic-main">
+          <div class="space-y-5" id="ic-scroll">
+            <!-- forecast-summary-panel.tsx -->
+            <section class="relative rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm border-l-2 border-l-blue-600" id="ic-summary">
+              <div class="space-y-2" id="sum-body">
+                <div>
+                  <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600/70">Forecast conclusion</p>
+                  <h2 class="mb-1 text-sm font-semibold text-stone-700 ic-stack"><span id="sum-label-a">NY · Healthcare · Indemnity</span><span id="sum-label-b" class="ic-off">TX · Construction · LostTime</span></h2>
+                  <div id="sum-notice-wrap"><p class="text-xs leading-relaxed text-stone-500" id="sum-notice">Scenario applied: severity +10% and frequency +15%. Charts and table reflect the adjustment.</p></div>
+                  <div class="ic-stack">
+                    <p class="text-[15px] leading-7 text-stone-600" id="narr-a">The data covers the period from January <strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2023</strong> to December <strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2026</strong>, with the most recent observed claim count in December <strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2025</strong> at <strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">6</strong></strong>. Looking ahead, the average projected monthly claims are approximately <strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">4.77</strong></strong>, with expected aggregate paid amounts of around <strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">$1,268,983</strong></strong> over the next year.</p>
+                    <p class="text-[15px] leading-7 text-stone-600" id="narr-b"><span class="w">The</span> <span class="w">data</span> <span class="w">covers</span> <span class="w">the</span> <span class="w">period</span> <span class="w">from</span> <span class="w">January</span> <span class="w"><strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2023</strong></span> <span class="w">to</span> <span class="w">December</span> <span class="w"><strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2026</strong>,</span> <span class="w">with</span> <span class="w">the</span> <span class="w">most</span> <span class="w">recent</span> <span class="w">observed</span> <span class="w">claim</span> <span class="w">count</span> <span class="w">in</span> <span class="w">December</span> <span class="w"><strong class="rounded-sm bg-blue-50/90 px-1 py-0.5 font-semibold text-stone-700">2025</strong></span> <span class="w">at</span> <span class="w"><strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">59</strong></strong>.</span> <span class="w">Looking</span> <span class="w">ahead,</span> <span class="w">the</span> <span class="w">average</span> <span class="w">monthly</span> <span class="w">forecast</span> <span class="w">indicates</span> <span class="w">approximately</span> <span class="w"><strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">61</strong></strong></span> <span class="w">claims,</span> <span class="w">with</span> <span class="w">projected</span> <span class="w">aggregate</span> <span class="w">paid</span> <span class="w">amounts</span> <span class="w">reaching</span> <span class="w">around</span> <span class="w"><strong class="font-semibold text-stone-800"><strong class="rounded-sm bg-blue-100/80 px-1 py-0.5 font-semibold text-stone-800">$1,331,177</strong></strong></span> <span class="w">per</span> <span class="w">month.</span></p>
+                  </div>
+                </div>
+              </div>
+              <div class="ic-badge" id="sum-badge">
+                <div class="ic-spinner" id="sum-spinner"></div>
+                <div class="ic-stack">
+                  <div id="badge-a"><p class="text-xs font-semibold text-stone-700">Updating forecast…</p><p class="mt-0.5 text-[11px] leading-relaxed text-stone-500">Refreshing claims and cost series.</p></div>
+                  <div id="badge-b" class="ic-off"><p class="text-xs font-semibold text-stone-700">Writing conclusion…</p><p class="mt-0.5 text-[11px] leading-relaxed text-stone-500">Preparing the new explanation.</p></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- forecast-chart.tsx x2 -->
+            <section class="flex flex-col gap-4">
+              <article class="ic-chart rounded-xl border border-zinc-200 border-t-blue-600/40 bg-white p-5 shadow-sm" id="c1">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-zinc-800">Amount of Claims per Month</h3>
+    <div class="flex items-center gap-4">
+      <span class="inline-flex items-center gap-1.5 text-xs text-zinc-500"><span class="inline-block w-5 h-0 border-t-2 border-zinc-400"></span>Historical</span>
+      <span class="inline-flex items-center gap-1.5 text-xs text-zinc-500"><span class="inline-block w-5 h-0 border-t-2 border-dashed border-blue-500"></span>Forecast</span>
+    </div>
+  </div>
+  <div class="relative w-full min-w-0" style="height:320px"><svg id="c1-svg" width="1062" height="320" viewBox="0 0 1062 320">
+  <defs>
+    <linearGradient id="c1-ci" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbeafe" stop-opacity="0.65"/><stop offset="100%" stop-color="#dbeafe" stop-opacity="0.35"/></linearGradient>
+    <clipPath id="c1-clip"><rect x="60" y="8" width="994" height="282"/></clipPath>
+  </defs>
+  <g><line id="c1-g0" x1="60" x2="1054" y1="290" y2="290" stroke="#E4E4E7" /><line id="c1-g1" x1="60" x2="1054" y1="216.20088433323284" y2="216.20088433323284" stroke="#E4E4E7" /><line id="c1-g2" x1="60" x2="1054" y1="142.4017686664657" y2="142.4017686664657" stroke="#E4E4E7" /><line id="c1-g3" x1="60" x2="1054" y1="68.60265299969855" y2="68.60265299969855" stroke="#E4E4E7" /><line id="c1-g4" x1="60" x2="1054" y1="8" y2="8" stroke="#E4E4E7" /></g>
+  <g clip-path="url(#c1-clip)">
+    <path id="c1-area" d="M821.362,223.876C828.411,219.762,835.461,215.647,842.511,212.599C849.56,209.552,856.61,210.223,863.66,205.589C870.709,200.954,877.759,191.468,884.809,184.792C891.858,178.116,898.908,171.71,905.957,165.53C913.007,159.351,920.057,153.029,927.106,147.715C934.156,142.402,941.206,138.392,948.255,133.649C955.305,128.906,962.355,123.517,969.404,119.258C976.454,115,983.504,112.843,990.553,108.1C997.603,103.357,1004.652,90.801,1011.702,90.801C1018.752,90.801,1025.801,100.262,1032.851,100.262C1039.901,100.262,1046.95,81.422,1054,62.581L1054,290C1046.95,290,1039.901,290,1032.851,290C1025.801,290,1018.752,290,1011.702,290C1004.652,290,997.603,290,990.553,290C983.504,290,976.454,290,969.404,290C962.355,290,955.305,290,948.255,290C941.206,290,934.156,290,927.106,290C920.057,290,913.007,290,905.957,290C898.908,290,891.858,290,884.809,290C877.759,290,870.709,290,863.66,290C856.61,290,849.56,290,842.511,290C835.461,290,828.411,290,821.362,290Z" fill="url(#c1-ci)" fill-opacity="0.6" stroke="none"/>
+    <path id="c1-hist" d="M60,238.341C67.05,242.646,74.099,246.951,81.149,253.1C88.199,259.25,95.248,275.24,102.298,275.24C109.348,275.24,116.397,267.86,123.447,267.86C130.496,267.86,137.546,275.24,144.596,275.24C151.645,275.24,158.695,230.961,165.745,230.961C172.794,230.961,179.844,253.1,186.894,253.1C193.943,253.1,200.993,245.721,208.043,245.721C215.092,245.721,222.142,262.94,229.191,267.86C236.241,272.78,243.291,275.24,250.34,275.24C257.39,275.24,264.44,260.48,271.489,260.48C278.539,260.48,285.589,275.24,292.638,275.24C299.688,275.24,306.738,275.24,313.787,275.24C320.837,275.24,327.887,267.86,334.936,267.86C341.986,267.86,349.035,275.24,356.085,275.24C363.135,275.24,370.184,272.78,377.234,267.86C384.284,262.94,391.333,245.721,398.383,245.721C405.433,245.721,412.482,245.721,419.532,245.721C426.582,245.721,433.631,245.721,440.681,245.721C447.73,245.721,454.78,223.581,461.83,223.581C468.879,223.581,475.929,260.48,482.979,260.48C490.028,260.48,497.078,253.1,504.128,253.1C511.177,253.1,518.227,275.24,525.277,275.24C532.326,275.24,539.376,262.94,546.426,253.1C553.475,243.261,560.525,216.201,567.574,216.201C574.624,216.201,581.674,255.56,588.723,260.48C595.773,265.4,602.823,267.86,609.872,267.86C616.922,267.86,623.972,260.48,631.021,260.48C638.071,260.48,645.121,265.4,652.17,267.86C659.22,270.32,666.27,275.24,673.319,275.24C680.369,275.24,687.418,216.201,694.468,216.201C701.518,216.201,708.567,253.1,715.617,253.1C722.667,253.1,729.716,230.961,736.766,230.961C743.816,230.961,750.865,267.86,757.915,267.86C764.965,267.86,772.014,238.341,779.064,238.341C786.113,238.341,793.163,242.031,800.213,245.721" fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="c1-bridge" d="M800.213,245.721L821.362,259.373" fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="c1-fc" d="M821.362,259.373C828.411,259.73,835.461,260.087,842.511,261.071C849.56,262.055,856.61,265.277,863.66,265.277C870.709,265.277,877.759,261.292,884.809,259.816C891.858,258.34,898.908,258.586,905.957,256.421C913.007,254.257,920.057,247.369,927.106,246.828C934.156,246.286,941.206,246.557,948.255,246.016C955.305,245.475,962.355,239.89,969.404,239.89C976.454,239.89,983.504,255.61,990.553,255.61C997.603,255.61,1004.652,251.034,1011.702,251.034C1018.752,251.034,1025.801,262.325,1032.851,262.325C1039.901,262.325,1046.95,258.266,1054,254.207" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="8 4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="821.3617021276596" x2="821.3617021276596" y1="290" y2="8" stroke="#d4d4d8" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="816.3617021276596" y="13" dy="0.71em" text-anchor="end" style="font-size:10px;fill:#a1a1aa">Forecast starts</text>
+  <g id="c1-hover" opacity="0"></g>
+  <g id="c1-yt-s0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">0</text><text x="52" y="216.20088433323284" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">10</text><text x="52" y="142.4017686664657" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">20</text><text x="52" y="68.60265299969855" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">30</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">38</text></g><g id="c1-yt-s1" opacity="0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">0</text><text x="52" y="216.50215440045514" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">95</text><text x="52" y="143.00430880091022" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">190</text><text x="52" y="69.50646320136535" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">285</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">365</text></g><g id="c1-yt-s2" opacity="0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">0</text><text x="52" y="215.13936819750467" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">40</text><text x="52" y="140.2787363950093" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">80</text><text x="52" y="65.41810459251394" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">120</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">151</text></g>
+  <g><text x="59.99999999999994" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2023</text><text x="123.44680851063825" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2023</text><text x="186.89361702127655" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2023</text><text x="250.34042553191486" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2023</text><text x="313.78723404255317" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2024</text><text x="377.23404255319144" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2024</text><text x="440.6808510638298" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2024</text><text x="504.12765957446805" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2024</text><text x="567.5744680851064" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2025</text><text x="631.0212765957447" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2025</text><text x="694.4680851063829" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2025</text><text x="757.9148936170213" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2025</text><text x="821.3617021276596" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2026</text><text x="884.8085106382978" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2026</text><text x="948.2553191489362" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2026</text><text x="1040.765625" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Dec 2026</text></g>
+</svg></div>
+</article>
+              <article class="ic-chart rounded-xl border border-zinc-200 border-t-blue-600/40 bg-white p-5 shadow-sm" id="c2">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-zinc-800">Average Cost per Claim per Month</h3>
+    <div class="flex items-center gap-4">
+      <span class="inline-flex items-center gap-1.5 text-xs text-zinc-500"><span class="inline-block w-5 h-0 border-t-2 border-zinc-400"></span>Historical</span>
+      <span class="inline-flex items-center gap-1.5 text-xs text-zinc-500"><span class="inline-block w-5 h-0 border-t-2 border-dashed border-blue-500"></span>Forecast</span>
+    </div>
+  </div>
+  <div class="relative w-full min-w-0" style="height:320px"><svg id="c2-svg" width="1062" height="320" viewBox="0 0 1062 320">
+  <defs>
+    <linearGradient id="c2-ci" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbeafe" stop-opacity="0.65"/><stop offset="100%" stop-color="#dbeafe" stop-opacity="0.35"/></linearGradient>
+    <clipPath id="c2-clip"><rect x="60" y="8" width="994" height="282"/></clipPath>
+  </defs>
+  <g><line id="c2-g0" x1="60" x2="1054" y1="290" y2="290" stroke="#E4E4E7" /><line id="c2-g1" x1="60" x2="1054" y1="209.89003745193588" y2="209.89003745193588" stroke="#E4E4E7" /><line id="c2-g2" x1="60" x2="1054" y1="129.78007490387176" y2="129.78007490387176" stroke="#E4E4E7" /><line id="c2-g3" x1="60" x2="1054" y1="49.67011235580768" y2="49.67011235580768" stroke="#E4E4E7" /><line id="c2-g4" x1="60" x2="1054" y1="8" y2="8" stroke="#E4E4E7" /></g>
+  <g clip-path="url(#c2-clip)">
+    <path id="c2-area" d="M821.362,101.93C828.411,107.956,835.461,113.981,842.511,113.981C849.56,113.981,856.61,112.05,863.66,108.188C870.709,104.326,877.759,94.61,884.809,90.514C891.858,86.417,898.908,85.774,905.957,83.609C913.007,81.443,920.057,77.519,927.106,77.519C934.156,77.519,941.206,82.01,948.255,82.01C955.305,82.01,962.355,79.64,969.404,74.926C976.454,70.213,983.504,53.73,990.553,53.73C997.603,53.73,1004.652,78.887,1011.702,78.887C1018.752,78.887,1025.801,63.936,1032.851,61.492C1039.901,59.047,1046.95,58.436,1054,57.825L1054,244.27C1046.95,241.793,1039.901,239.316,1032.851,239.316C1025.801,239.316,1018.752,243.685,1011.702,243.685C1004.652,243.685,997.603,218.852,990.553,218.852C983.504,218.852,976.454,226.048,969.404,226.048C962.355,226.048,955.305,225.204,948.255,223.515C941.206,221.826,934.156,214.704,927.106,212.504C920.057,210.305,913.007,210.192,905.957,209.205C898.908,208.218,891.858,206.582,884.809,206.582C877.759,206.582,870.709,212.498,863.66,212.498C856.61,212.498,849.56,211.435,842.511,209.311C835.461,207.187,828.411,199.38,821.362,191.572Z" fill="url(#c2-ci)" fill-opacity="0.6" stroke="none"/>
+    <path id="c2-hist" d="M60,152.59C67.05,159.792,74.099,166.994,81.149,166.994C88.199,166.994,95.248,166.459,102.298,165.388C109.348,164.316,116.397,151.52,123.447,151.52C130.496,151.52,137.546,162.272,144.596,162.272C151.645,162.272,158.695,158.391,165.745,157.209C172.794,156.026,179.844,155.177,186.894,155.177C193.943,155.177,200.993,173.879,208.043,173.879C215.092,173.879,222.142,159.973,229.191,159.973C236.241,159.973,243.291,160.354,250.34,161.115C257.39,161.876,264.44,169.693,271.489,170.46C278.539,171.228,285.589,171.611,292.638,171.611C299.688,171.611,306.738,156.03,313.787,156.03C320.837,156.03,327.887,161.915,334.936,162.672C341.986,163.429,349.035,163.051,356.085,163.808C363.135,164.565,370.184,165.848,377.234,167.589C384.284,169.329,391.333,174.253,398.383,174.253C405.433,174.253,412.482,154.328,419.532,154.328C426.582,154.328,433.631,170.798,440.681,171.563C447.73,172.328,454.78,172.71,461.83,172.71C468.879,172.71,475.929,164.472,482.979,164.472C490.028,164.472,497.078,164.854,504.128,165.617C511.177,166.38,518.227,171.268,525.277,171.268C532.326,171.268,539.376,162.492,546.426,162.492C553.475,162.492,560.525,163.789,567.574,163.789C574.624,163.789,581.674,152.294,588.723,152.294C595.773,152.294,602.823,174.219,609.872,174.219C616.922,174.219,623.972,166.436,631.021,163.131C638.071,159.826,645.121,154.388,652.17,154.388C659.22,154.388,666.27,154.455,673.319,154.587C680.369,154.72,687.418,159.402,694.468,161.149C701.518,162.897,708.567,165.07,715.617,165.07C722.667,165.07,729.716,155.229,736.766,154.045C743.816,152.86,750.865,152.791,757.915,152.268C764.965,151.745,772.014,150.906,779.064,150.906C786.113,150.906,793.163,153.859,800.213,156.812" fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="c2-bridge" d="M800.213,156.812L821.362,146.751" fill="none" stroke="#71717a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path id="c2-fc" d="M821.362,146.751C828.411,154.199,835.461,161.646,842.511,161.646C849.56,161.646,856.61,161.212,863.66,160.343C870.709,159.474,877.759,149.975,884.809,148.548C891.858,147.12,898.908,146.996,905.957,146.407C913.007,145.817,920.057,145.012,927.106,145.012C934.156,145.012,941.206,152.762,948.255,152.762C955.305,152.762,962.355,152.004,969.404,150.487C976.454,148.97,983.504,136.291,990.553,136.291C997.603,136.291,1004.652,161.286,1011.702,161.286C1018.752,161.286,1025.801,150.404,1032.851,150.404C1039.901,150.404,1046.95,150.726,1054,151.048" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-dasharray="8 4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <line x1="821.3617021276596" x2="821.3617021276596" y1="290" y2="8" stroke="#d4d4d8" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="816.3617021276596" y="13" dy="0.71em" text-anchor="end" style="font-size:10px;fill:#a1a1aa">Forecast starts</text>
+  <g id="c2-hover" opacity="0"><path d="M948.255,8L948.255,290" stroke="#ccc"/><circle cx="948.255" cy="86.80" r="4" fill="url(#c2-ci)" stroke="#fff" stroke-width="2"/><circle cx="948.255" cy="229.11" r="4" fill="url(#c2-ci)" stroke="#fff" stroke-width="2"/><circle cx="948.255" cy="157.965" r="4" fill="#2563eb" stroke="#fff" stroke-width="2"/></g>
+  <g id="c2-yt-s0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$15,227</text><text x="52" y="209.89003745193588" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$19,227</text><text x="52" y="129.78007490387176" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$23,227</text><text x="52" y="49.67011235580768" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$27,227</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$29,308</text></g><g id="c2-yt-s1" opacity="0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$15,034</text><text x="52" y="217.21151578989128" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$18,534</text><text x="52" y="144.4230315797826" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$22,034</text><text x="52" y="71.63454736967387" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$25,534</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$28,594</text></g><g id="c2-yt-s2" opacity="0"><text x="52" y="290" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$16,538</text><text x="52" y="214.37559766910468" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$20,538</text><text x="52" y="138.75119533820938" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$24,538</text><text x="52" y="63.12679300731404" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$28,538</text><text x="52" y="8.25" dy="0.355em" text-anchor="end" font-size="11" fill="#a1a1aa">$31,454</text></g>
+  <g><text x="59.99999999999994" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2023</text><text x="123.44680851063825" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2023</text><text x="186.89361702127655" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2023</text><text x="250.34042553191486" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2023</text><text x="313.78723404255317" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2024</text><text x="377.23404255319144" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2024</text><text x="440.6808510638298" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2024</text><text x="504.12765957446805" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2024</text><text x="567.5744680851064" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2025</text><text x="631.0212765957447" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2025</text><text x="694.4680851063829" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2025</text><text x="757.9148936170213" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Oct 2025</text><text x="821.3617021276596" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jan 2026</text><text x="884.8085106382978" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Apr 2026</text><text x="948.2553191489362" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Jul 2026</text><text x="1040.765625" y="298" dy="0.71em" text-anchor="middle" font-size="11" fill="#a1a1aa">Dec 2026</text></g>
+</svg><div class="ic-tip" data-layout-allow-overlap data-layout-allow-occlusion id="c2-tip" style="right:123.7px; top:8.0px; white-space:nowrap">
+  <p class="text-xs font-semibold text-zinc-500 mb-2">Jul 2026</p>
+  <div class="flex items-center justify-between gap-4 text-sm"><span class="text-zinc-500">Forecast CI</span><span class="font-semibold text-zinc-900">$17,962 - $24,805</span></div>
+  <div class="flex items-center justify-between gap-4 text-sm"><span class="text-zinc-500">Forecast</span><span class="font-semibold text-zinc-900">$21,383</span></div>
+</div></div>
+</article>
+            </section>
+
+            <!-- monthly-table.tsx -->
+            <section class="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm" id="ic-table">
+              <div class="border-b border-zinc-200 px-4 py-3">
+                <h2 class="text-sm font-semibold text-zinc-800">Monthly values</h2>
+                <p class="mt-0.5 text-xs text-zinc-500">Forecast rows are highlighted in blue.</p>
+              </div>
+              <table class="w-full min-w-full table-fixed border-collapse text-sm">
+                <colgroup><col style="width:25%"><col style="width:18.75%"><col style="width:28.125%"><col style="width:28.125%"></colgroup>
+                <thead class="bg-white">
+                  <tr>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Month</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Claims</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Paid amount</th>
+                    <th class="border-b border-zinc-200 px-2 py-3.5 text-center text-xs font-semibold uppercase tracking-wider text-zinc-500 sm:px-3 md:px-4">Avg cost per claim</th>
+                  </tr>
+                </thead>
+                <tbody><tr class="bg-blue-50/40" style="height:65.3px" id="row-0">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Dec 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r0-c">57</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r0-p">$1,234,477</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r0-a">$21,814</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="row-1">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Nov 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r1-c">51</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r1-p">$1,124,391</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r1-a">$21,871</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="row-2">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Oct 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r2-c">56</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r2-p">$1,245,738</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800" id="r2-a">$22,119</td></tr></tbody>
+              </table>
+              <div id="tbl-more-wrap">
+                <table class="w-full min-w-full table-fixed border-collapse text-sm"><colgroup><col style="width:25%"><col style="width:18.75%"><col style="width:28.125%"><col style="width:28.125%"></colgroup><tbody><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-0">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Sep 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">73</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,783,845</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$24,393</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-1">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Aug 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">82</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,902,060</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$23,106</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-2">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Jul 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">90</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$2,106,367</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$23,522</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-3">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Jun 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">77</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,867,123</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$24,312</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-4">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">May 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">64</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,551,295</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$24,266</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-5">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Apr 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">69</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,675,594</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$24,154</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-6">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Mar 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">79</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,829,950</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$23,044</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-7">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Feb 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">67</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,596,348</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$23,984</td></tr><tr class="bg-blue-50/40" style="height:65.3px" id="mrow-8">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Jan 2026</span><span class="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">forecast</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">56</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,335,064</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$23,815</td></tr><tr class="bg-white" style="height:65.3px" id="mrow-9">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Dec 2025</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">59</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,246,078</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$21,120</td></tr><tr class="bg-white" style="height:65.3px" id="mrow-10">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Nov 2025</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">41</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$861,894</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$21,022</td></tr><tr class="bg-white" style="height:65.3px" id="mrow-11">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Oct 2025</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">55</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,125,544</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$20,464</td></tr><tr class="bg-white" style="height:65.3px" id="mrow-12">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Sep 2025</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">92</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$1,879,053</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$20,424</td></tr><tr class="bg-white" style="height:65.3px" id="mrow-13">
+  <td class="px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800"><div class="flex flex-col items-center gap-0.5"><span class="font-medium text-zinc-800">Aug 2025</span></div></td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">125</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$2,590,215</td>
+  <td class="tabular-nums px-2 py-3 align-middle text-center sm:px-3 md:px-4 border-b border-zinc-100 text-zinc-800">$20,722</td></tr></tbody></table>
+              </div>
+              <div class="ic-more flex w-full items-center justify-center gap-1.5 border-t border-zinc-100 py-2.5 text-xs font-medium text-zinc-500" id="btn-more">
+                <span class="ic-stack"><span id="btn-more-a">Show 45 more rows</span><span id="btn-more-b" class="ic-off">Show less</span></span>
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
+
+      <!-- dropdown menus (the app uses native selects; drawn in the app's own popover styling) -->
+      <div class="ic-menu" data-layout-allow-overlap data-layout-allow-occlusion id="menu-state" style="left:20px; top:174px; width:247px">
+  <div class="ic-menu-hl" id="menu-state-hl"></div>
+  <div class="ic-item" id="menu-state-i0"><span>FL</span></div><div class="ic-item" id="menu-state-i1"><span>NY</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></div><div class="ic-item" id="menu-state-i2"><span>HI</span></div><div class="ic-item" id="menu-state-i3"><span>LA</span></div><div class="ic-item" id="menu-state-i4"><span>TX</span></div>
+</div>
+<div class="ic-menu" data-layout-allow-overlap data-layout-allow-occlusion id="menu-ind" style="left:20px; top:248px; width:247px">
+  <div class="ic-menu-hl" id="menu-ind-hl"></div>
+  <div class="ic-item" id="menu-ind-i0"><span>Construction</span></div><div class="ic-item" id="menu-ind-i1"><span>Healthcare</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></div><div class="ic-item" id="menu-ind-i2"><span>Manufacturing</span></div>
+</div>
+<div class="ic-menu" data-layout-allow-overlap data-layout-allow-occlusion id="menu-ct" style="left:20px; top:322px; width:247px">
+  <div class="ic-menu-hl" id="menu-ct-hl"></div>
+  <div class="ic-item" id="menu-ct-i0"><span>Indemnity</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8.5l3 3 6-7"/></svg></div><div class="ic-item" id="menu-ct-i1"><span>LostTime</span></div><div class="ic-item" id="menu-ct-i2"><span>MedicalOnly</span></div>
+</div>
+
+      <!-- callouts, anchored to the element they talk about -->
+      <div class="ic-call" data-layout-allow-overlap data-layout-allow-occlusion id="call-a" style="left:0;top:0">
+  <div class="ic-call-line" id="call-a-line" style="left:1133.213px; top:534.758761904762px; width:130.8px; height:1.1904761904761905px; transform:rotate(-57.83deg)"></div>
+  <div class="ic-call-dot" style="left:1130.5344285714286px; top:532.6754285714286px; width:5.357142857142858px; height:5.357142857142858px"></div>
+  <div class="ic-call-box" id="call-a-box" style="left:907.0px; top:386.5px; font-size:17.86px; line-height:1.2; padding:8.3px 13.1px">Actual claims through Dec 2025</div>
+</div>
+<div class="ic-call" data-layout-allow-overlap data-layout-allow-occlusion id="call-b" style="left:0;top:0">
+  <div class="ic-call-line" id="call-b-line" style="left:1281.255px; top:520.1597619047619px; width:121.4px; height:1.1904761904761905px; transform:rotate(-134.30deg)"></div>
+  <div class="ic-call-dot" style="left:1278.5764285714288px; top:518.0764285714286px; width:5.357142857142858px; height:5.357142857142858px"></div>
+  <div class="ic-call-box" id="call-b-box" style="left:947.9px; top:395.8px; font-size:17.86px; line-height:1.2; padding:8.3px 13.1px">12-month SARIMAX forecast</div>
+</div>
+<div class="ic-call" data-layout-allow-overlap data-layout-allow-occlusion id="call-c" style="left:0;top:0">
+  <div class="ic-call-line" id="call-c-line" style="left:1365.851px; top:367.3147619047619px; width:71.9px; height:1.1904761904761905px; transform:rotate(168.54deg)"></div>
+  <div class="ic-call-dot" style="left:1363.1724285714288px; top:365.2314285714285px; width:5.357142857142858px; height:5.357142857142858px"></div>
+  <div class="ic-call-box" id="call-c-box" style="left:1056.3px; top:344.1px; font-size:17.86px; line-height:1.2; padding:8.3px 13.1px">Range widens further out</div>
+</div>
+<div class="ic-call" data-layout-allow-overlap data-layout-allow-occlusion id="call-d" style="left:0;top:0">
+  <div class="ic-call-line" id="call-d-line" style="left:1217.809px; top:846.4067619047619px; width:75.6px; height:1.1904761904761905px; transform:rotate(-96.92deg)"></div>
+  <div class="ic-call-dot" style="left:1215.1304285714286px; top:844.3234285714285px; width:5.357142857142858px; height:5.357142857142858px"></div>
+  <div class="ic-call-box" id="call-d-box" style="left:884.5px; top:733.9px; font-size:17.86px; line-height:1.2; padding:8.3px 13.1px">Average cost per claim, projected</div>
+</div>
+<div class="ic-call" data-layout-allow-overlap data-layout-allow-occlusion id="call-e" style="left:0;top:0">
+  <div class="ic-call-line" id="call-e-line" style="left:1154.362px; top:503.6708124531133px; width:71.0px; height:1.5003750937734435px; transform:rotate(-114.61deg)"></div>
+  <div class="ic-call-dot" style="left:1150.9861560390098px; top:501.0451560390097px; width:6.751687921980495px; height:6.751687921980495px"></div>
+  <div class="ic-call-box" id="call-e-box" style="left:704.2px; top:391.9px; font-size:22.51px; line-height:1.2; padding:10.5px 16.5px">Severity +10% lifts cost per claim</div>
+</div>
+
+      <!-- cursor -->
+      <svg id="ic-cursor" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+        <path d="M5.5 2.5 L5.5 19.5 L9.6 15.6 L12.4 21.9 L15.3 20.6 L12.6 14.5 L18.4 14.5 Z" />
+      </svg>
+    </div>
+  </div>
+</div>
+
+<script>
+window.__IC_DATA = {"geom":{"aside":{"x":0,"y":56,"w":288,"h":1024},"main":{"x":288,"y":56,"w":1152,"h":1024},"header":{"x":0,"y":0,"w":1440,"h":56},"state":{"x":20,"y":134,"w":247,"h":36},"industry":{"x":20,"y":208,"w":247,"h":36},"claimType":{"x":20,"y":282,"w":247,"h":36},"fromYear":{"x":20,"y":362,"w":119.5,"h":36},"fromMonth":{"x":147.5,"y":362,"w":119.5,"h":36},"period":{"x":20,"y":436,"w":247,"h":36},"sev":{"x":20,"y":596,"w":247,"h":6},"freq":{"x":20,"y":680,"w":247,"h":6},"sevVal":{"x":246.8,"y":553,"w":20.2,"h":20},"freqVal":{"x":246.8,"y":637,"w":20.2,"h":20},"update":{"x":20,"y":948,"w":247,"h":40},"reset":{"x":20,"y":996,"w":247,"h":36},"summary":{"x":312,"y":80,"w":1104,"h":138},"chart1":{"x":312,"y":238,"w":1104,"h":394},"chart2":{"x":312,"y":648,"w":1104,"h":394},"svg1":{"x":333,"y":291,"w":1062,"h":320},"svg2":{"x":333,"y":701,"w":1062,"h":320},"table":{"x":312,"y":1062,"w":1104,"h":342.9},"more":{"x":313,"y":1366.9,"w":1102,"h":37},"mainScroll":1373,"row0":{"x":313,"y":1170.5,"w":1102,"h":65.3}},"charts":{"s0":[{"grid":[290,216.20088433323284,142.4017686664657,68.60265299969855,8],"area":"M821.362,223.876C828.411,219.762,835.461,215.647,842.511,212.599C849.56,209.552,856.61,210.223,863.66,205.589C870.709,200.954,877.759,191.468,884.809,184.792C891.858,178.116,898.908,171.71,905.957,165.53C913.007,159.351,920.057,153.029,927.106,147.715C934.156,142.402,941.206,138.392,948.255,133.649C955.305,128.906,962.355,123.517,969.404,119.258C976.454,115,983.504,112.843,990.553,108.1C997.603,103.357,1004.652,90.801,1011.702,90.801C1018.752,90.801,1025.801,100.262,1032.851,100.262C1039.901,100.262,1046.95,81.422,1054,62.581L1054,290C1046.95,290,1039.901,290,1032.851,290C1025.801,290,1018.752,290,1011.702,290C1004.652,290,997.603,290,990.553,290C983.504,290,976.454,290,969.404,290C962.355,290,955.305,290,948.255,290C941.206,290,934.156,290,927.106,290C920.057,290,913.007,290,905.957,290C898.908,290,891.858,290,884.809,290C877.759,290,870.709,290,863.66,290C856.61,290,849.56,290,842.511,290C835.461,290,828.411,290,821.362,290Z","hist":"M60,238.341C67.05,242.646,74.099,246.951,81.149,253.1C88.199,259.25,95.248,275.24,102.298,275.24C109.348,275.24,116.397,267.86,123.447,267.86C130.496,267.86,137.546,275.24,144.596,275.24C151.645,275.24,158.695,230.961,165.745,230.961C172.794,230.961,179.844,253.1,186.894,253.1C193.943,253.1,200.993,245.721,208.043,245.721C215.092,245.721,222.142,262.94,229.191,267.86C236.241,272.78,243.291,275.24,250.34,275.24C257.39,275.24,264.44,260.48,271.489,260.48C278.539,260.48,285.589,275.24,292.638,275.24C299.688,275.24,306.738,275.24,313.787,275.24C320.837,275.24,327.887,267.86,334.936,267.86C341.986,267.86,349.035,275.24,356.085,275.24C363.135,275.24,370.184,272.78,377.234,267.86C384.284,262.94,391.333,245.721,398.383,245.721C405.433,245.721,412.482,245.721,419.532,245.721C426.582,245.721,433.631,245.721,440.681,245.721C447.73,245.721,454.78,223.581,461.83,223.581C468.879,223.581,475.929,260.48,482.979,260.48C490.028,260.48,497.078,253.1,504.128,253.1C511.177,253.1,518.227,275.24,525.277,275.24C532.326,275.24,539.376,262.94,546.426,253.1C553.475,243.261,560.525,216.201,567.574,216.201C574.624,216.201,581.674,255.56,588.723,260.48C595.773,265.4,602.823,267.86,609.872,267.86C616.922,267.86,623.972,260.48,631.021,260.48C638.071,260.48,645.121,265.4,652.17,267.86C659.22,270.32,666.27,275.24,673.319,275.24C680.369,275.24,687.418,216.201,694.468,216.201C701.518,216.201,708.567,253.1,715.617,253.1C722.667,253.1,729.716,230.961,736.766,230.961C743.816,230.961,750.865,267.86,757.915,267.86C764.965,267.86,772.014,238.341,779.064,238.341C786.113,238.341,793.163,242.031,800.213,245.721","bridge":"M800.213,245.721L821.362,259.373","fc":"M821.362,259.373C828.411,259.73,835.461,260.087,842.511,261.071C849.56,262.055,856.61,265.277,863.66,265.277C870.709,265.277,877.759,261.292,884.809,259.816C891.858,258.34,898.908,258.586,905.957,256.421C913.007,254.257,920.057,247.369,927.106,246.828C934.156,246.286,941.206,246.557,948.255,246.016C955.305,245.475,962.355,239.89,969.404,239.89C976.454,239.89,983.504,255.61,990.553,255.61C997.603,255.61,1004.652,251.034,1011.702,251.034C1018.752,251.034,1025.801,262.325,1032.851,262.325C1039.901,262.325,1046.95,258.266,1054,254.207"},{"grid":[290,209.89003745193588,129.78007490387176,49.67011235580768,8],"area":"M821.362,101.93C828.411,107.956,835.461,113.981,842.511,113.981C849.56,113.981,856.61,112.05,863.66,108.188C870.709,104.326,877.759,94.61,884.809,90.514C891.858,86.417,898.908,85.774,905.957,83.609C913.007,81.443,920.057,77.519,927.106,77.519C934.156,77.519,941.206,82.01,948.255,82.01C955.305,82.01,962.355,79.64,969.404,74.926C976.454,70.213,983.504,53.73,990.553,53.73C997.603,53.73,1004.652,78.887,1011.702,78.887C1018.752,78.887,1025.801,63.936,1032.851,61.492C1039.901,59.047,1046.95,58.436,1054,57.825L1054,244.27C1046.95,241.793,1039.901,239.316,1032.851,239.316C1025.801,239.316,1018.752,243.685,1011.702,243.685C1004.652,243.685,997.603,218.852,990.553,218.852C983.504,218.852,976.454,226.048,969.404,226.048C962.355,226.048,955.305,225.204,948.255,223.515C941.206,221.826,934.156,214.704,927.106,212.504C920.057,210.305,913.007,210.192,905.957,209.205C898.908,208.218,891.858,206.582,884.809,206.582C877.759,206.582,870.709,212.498,863.66,212.498C856.61,212.498,849.56,211.435,842.511,209.311C835.461,207.187,828.411,199.38,821.362,191.572Z","hist":"M60,152.59C67.05,159.792,74.099,166.994,81.149,166.994C88.199,166.994,95.248,166.459,102.298,165.388C109.348,164.316,116.397,151.52,123.447,151.52C130.496,151.52,137.546,162.272,144.596,162.272C151.645,162.272,158.695,158.391,165.745,157.209C172.794,156.026,179.844,155.177,186.894,155.177C193.943,155.177,200.993,173.879,208.043,173.879C215.092,173.879,222.142,159.973,229.191,159.973C236.241,159.973,243.291,160.354,250.34,161.115C257.39,161.876,264.44,169.693,271.489,170.46C278.539,171.228,285.589,171.611,292.638,171.611C299.688,171.611,306.738,156.03,313.787,156.03C320.837,156.03,327.887,161.915,334.936,162.672C341.986,163.429,349.035,163.051,356.085,163.808C363.135,164.565,370.184,165.848,377.234,167.589C384.284,169.329,391.333,174.253,398.383,174.253C405.433,174.253,412.482,154.328,419.532,154.328C426.582,154.328,433.631,170.798,440.681,171.563C447.73,172.328,454.78,172.71,461.83,172.71C468.879,172.71,475.929,164.472,482.979,164.472C490.028,164.472,497.078,164.854,504.128,165.617C511.177,166.38,518.227,171.268,525.277,171.268C532.326,171.268,539.376,162.492,546.426,162.492C553.475,162.492,560.525,163.789,567.574,163.789C574.624,163.789,581.674,152.294,588.723,152.294C595.773,152.294,602.823,174.219,609.872,174.219C616.922,174.219,623.972,166.436,631.021,163.131C638.071,159.826,645.121,154.388,652.17,154.388C659.22,154.388,666.27,154.455,673.319,154.587C680.369,154.72,687.418,159.402,694.468,161.149C701.518,162.897,708.567,165.07,715.617,165.07C722.667,165.07,729.716,155.229,736.766,154.045C743.816,152.86,750.865,152.791,757.915,152.268C764.965,151.745,772.014,150.906,779.064,150.906C786.113,150.906,793.163,153.859,800.213,156.812","bridge":"M800.213,156.812L821.362,146.751","fc":"M821.362,146.751C828.411,154.199,835.461,161.646,842.511,161.646C849.56,161.646,856.61,161.212,863.66,160.343C870.709,159.474,877.759,149.975,884.809,148.548C891.858,147.12,898.908,146.996,905.957,146.407C913.007,145.817,920.057,145.012,927.106,145.012C934.156,145.012,941.206,152.762,948.255,152.762C955.305,152.762,962.355,152.004,969.404,150.487C976.454,148.97,983.504,136.291,990.553,136.291C997.603,136.291,1004.652,161.286,1011.702,161.286C1018.752,161.286,1025.801,150.404,1032.851,150.404C1039.901,150.404,1046.95,150.726,1054,151.048"}],"s1":[{"grid":[290,216.50215440045514,143.00430880091022,69.50646320136535,8],"area":"M821.362,216.858C828.411,212.313,835.461,207.767,842.511,202.802C849.56,197.837,856.61,191.407,863.66,187.069C870.709,182.731,877.759,180.86,884.809,176.773C891.858,172.687,898.908,167.294,905.957,162.55C913.007,157.807,920.057,153.06,927.106,148.312C934.156,143.563,941.206,138.812,948.255,134.058C955.305,129.304,962.355,124.547,969.404,119.788C976.454,115.029,983.504,110.264,990.553,105.503C997.603,100.743,1004.652,95.99,1011.702,91.225C1018.752,86.459,1025.801,81.684,1032.851,76.91C1039.901,72.136,1046.95,67.359,1054,62.581L1054,290C1046.95,290,1039.901,290,1032.851,290C1025.801,290,1018.752,290,1011.702,290C1004.652,290,997.603,290,990.553,290C983.504,290,976.454,290,969.404,290C962.355,290,955.305,290,948.255,290C941.206,290,934.156,290,927.106,290C920.057,290,913.007,290,905.957,290C898.908,290,891.858,290,884.809,290C877.759,290,870.709,286.088,863.66,286.088C856.61,286.088,849.56,287.591,842.511,287.639C835.461,287.686,828.411,287.698,821.362,287.71Z","hist":"M60,238.165C67.05,235.844,74.099,233.523,81.149,233.523C88.199,233.523,95.248,240.357,102.298,243.58C109.348,246.804,116.397,252.864,123.447,252.864C130.496,252.864,137.546,220.37,144.596,220.37C151.645,220.37,158.695,246.675,165.745,246.675C172.794,246.675,179.844,224.239,186.894,224.239C193.943,224.239,200.993,227.591,208.043,234.296C215.092,241.001,222.142,266.016,229.191,266.016C236.241,266.016,243.291,248.222,250.34,248.222C257.39,248.222,264.44,257.506,271.489,257.506C278.539,257.506,285.589,234.296,292.638,234.296C299.688,234.296,306.738,266.79,313.787,266.79C320.837,266.79,327.887,225.786,334.936,225.786C341.986,225.786,349.035,257.506,356.085,257.506C363.135,257.506,370.184,252.091,377.234,252.091C384.284,252.091,391.333,276.074,398.383,276.074C405.433,276.074,412.482,252.606,419.532,241.259C426.582,229.912,433.631,207.992,440.681,207.992C447.73,207.992,454.78,259.827,461.83,259.827C468.879,259.827,475.929,245.643,482.979,243.58C490.028,241.517,497.078,242.162,504.128,240.486C511.177,238.809,518.227,233.523,525.277,233.523C532.326,233.523,539.376,241.388,546.426,246.675C553.475,251.962,560.525,265.243,567.574,265.243C574.624,265.243,581.674,242.807,588.723,242.807C595.773,242.807,602.823,252.091,609.872,252.091C616.922,252.091,623.972,228.881,631.021,228.881C638.071,228.881,645.121,245.901,652.17,245.901C659.22,245.901,666.27,244.354,673.319,244.354C680.369,244.354,687.418,244.354,694.468,244.354C701.518,244.354,708.567,193.292,715.617,193.292C722.667,193.292,729.716,209.797,736.766,218.823C743.816,227.849,750.865,240.872,757.915,247.449C764.965,254.025,772.014,258.28,779.064,258.28C786.113,258.28,793.163,251.317,800.213,244.354","bridge":"M800.213,244.354L821.362,252.284","fc":"M821.362,252.284C828.411,250.061,835.461,247.838,842.511,245.22C849.56,242.603,856.61,236.579,863.66,236.579C870.709,236.579,877.759,241.597,884.809,243.333C891.858,245.068,898.908,246.992,905.957,246.992C913.007,246.992,920.057,241.208,927.106,238.335C934.156,235.462,941.206,229.755,948.255,229.755C955.305,229.755,962.355,232.78,969.404,234.621C976.454,236.463,983.504,238.835,990.553,240.803C997.603,242.771,1004.652,244.857,1011.702,246.427C1018.752,247.998,1025.801,250.226,1032.851,250.226C1039.901,250.226,1046.95,248.222,1054,246.218"},{"grid":[290,217.21151578989128,144.4230315797826,71.63454736967387,8],"area":"M821.362,107.396C828.411,103.375,835.461,99.354,842.511,99.354C849.56,99.354,856.61,114.708,863.66,114.708C870.709,114.708,877.759,91.275,884.809,86.635C891.858,81.994,898.908,81.765,905.957,79.674C913.007,77.583,920.057,74.087,927.106,74.087C934.156,74.087,941.206,83.899,948.255,86.812C955.305,89.725,962.355,91.567,969.404,91.567C976.454,91.567,983.504,60.629,990.553,58.484C997.603,56.339,1004.652,55.267,1011.702,55.267C1018.752,55.267,1025.801,56.853,1032.851,56.853C1039.901,56.853,1046.95,55.291,1054,53.73L1054,244.27C1046.95,242.714,1039.901,241.158,1032.851,238.791C1025.801,236.424,1018.752,232.448,1011.702,230.067C1004.652,227.686,997.603,224.506,990.553,224.506C983.504,224.506,976.454,240.092,969.404,240.092C962.355,240.092,955.305,233.803,948.255,229.117C941.206,224.431,934.156,214.544,927.106,211.978C920.057,209.412,913.007,209.23,905.957,208.129C898.908,207.027,891.858,205.368,884.809,205.368C877.759,205.368,870.709,219.271,863.66,219.271C856.61,219.271,849.56,200.219,842.511,199.11C835.461,198,828.411,197.723,821.362,197.445Z","hist":"M60,167.117C67.05,166.18,74.099,165.242,81.149,165.242C88.199,165.242,95.248,169.302,102.298,171.132C109.348,172.963,116.397,175.808,123.447,176.225C130.496,176.643,137.546,176.851,144.596,176.851C151.645,176.851,158.695,156.966,165.745,156.966C172.794,156.966,179.844,160.13,186.894,160.889C193.943,161.649,200.993,161.269,208.043,162.028C215.092,162.788,222.142,165.848,229.191,166.612C236.241,167.376,243.291,166.994,250.34,167.758C257.39,168.521,264.44,177.132,271.489,177.132C278.539,177.132,285.589,169.89,292.638,169.819C299.688,169.747,306.738,169.783,313.787,169.711C320.837,169.64,327.887,160.959,334.936,160.959C341.986,160.959,349.035,161.163,356.085,161.573C363.135,161.982,370.184,181.736,377.234,181.736C384.284,181.736,391.333,172.039,398.383,172.039C405.433,172.039,412.482,178.623,419.532,178.623C426.582,178.623,433.631,159.248,440.681,159.248C447.73,159.248,454.78,178.944,461.83,178.944C468.879,178.944,475.929,169.742,482.979,169.742C490.028,169.742,497.078,170.124,504.128,170.889C511.177,171.654,518.227,174.743,525.277,175.512C532.326,176.281,539.376,176.666,546.426,176.666C553.475,176.666,560.525,172.879,567.574,169.919C574.624,166.959,581.674,158.908,588.723,158.908C595.773,158.908,602.823,162.82,609.872,162.82C616.922,162.82,623.972,160.94,631.021,160.94C638.071,160.94,645.121,162.076,652.17,162.076C659.22,162.076,666.27,160.819,673.319,160.819C680.369,160.819,687.418,175.736,694.468,175.736C701.518,175.736,708.567,171.724,715.617,171.724C722.667,171.724,729.716,177.906,736.766,177.906C743.816,177.906,750.865,177.629,757.915,177.075C764.965,176.521,772.014,166.844,779.064,165.483C786.113,164.123,793.163,163.782,800.213,163.442","bridge":"M800.213,163.442L821.362,152.421","fc":"M821.362,152.421C828.411,150.826,835.461,149.232,842.511,149.232C849.56,149.232,856.61,166.99,863.66,166.99C870.709,166.99,877.759,147.402,884.809,146.002C891.858,144.601,898.908,144.396,905.957,143.901C913.007,143.407,920.057,143.032,927.106,143.032C934.156,143.032,941.206,154.165,948.255,157.965C955.305,161.764,962.355,165.83,969.404,165.83C976.454,165.83,983.504,141.495,990.553,141.495C997.603,141.495,1004.652,141.886,1011.702,142.667C1018.752,143.448,1025.801,147.036,1032.851,147.822C1039.901,148.607,1046.95,148.804,1054,149"}],"s2":[{"grid":[290,215.13936819750467,140.2787363950093,65.41810459251394,8],"area":"M821.362,172.488C828.411,164.661,835.461,156.834,842.511,147.488C849.56,138.142,856.61,116.413,863.66,116.413C870.709,116.413,877.759,130.576,884.809,135.259C891.858,139.943,898.908,144.516,905.957,144.516C913.007,144.516,920.057,122.819,927.106,111.757C934.156,100.695,941.206,78.144,948.255,78.144C955.305,78.144,962.355,86.181,969.404,91.559C976.454,96.938,983.504,104.329,990.553,110.413C997.603,116.497,1004.652,123.209,1011.702,128.065C1018.752,132.921,1025.801,139.549,1032.851,139.549C1039.901,139.549,1046.95,130.489,1054,121.429L1054,214.975C1046.95,217.069,1039.901,219.163,1032.851,219.163C1025.801,219.163,1018.752,213.383,1011.702,209.499C1004.652,205.615,997.603,200.723,990.553,195.859C983.504,190.995,976.454,185.18,969.404,180.314C962.355,175.449,955.305,166.667,948.255,166.667C941.206,166.667,934.156,175.857,927.106,180.778C920.057,185.699,913.007,196.192,905.957,196.192C898.908,196.192,891.858,190.06,884.809,185.087C877.759,180.113,870.709,166.353,863.66,166.353C856.61,166.353,849.56,178.155,842.511,183.376C835.461,188.597,828.411,193.138,821.362,197.678Z","hist":"M60,164.608C67.05,158.994,74.099,153.379,81.149,153.379C88.199,153.379,95.248,169.911,102.298,177.709C109.348,185.507,116.397,200.167,123.447,200.167C130.496,200.167,137.546,121.564,144.596,121.564C151.645,121.564,158.695,185.195,165.745,185.195C172.794,185.195,179.844,130.921,186.894,130.921C193.943,130.921,200.993,139.031,208.043,155.251C215.092,171.471,222.142,231.983,229.191,231.983C236.241,231.983,243.291,188.938,250.34,188.938C257.39,188.938,264.44,211.396,271.489,211.396C278.539,211.396,285.589,155.251,292.638,155.251C299.688,155.251,306.738,233.855,313.787,233.855C320.837,233.855,327.887,134.664,334.936,134.664C341.986,134.664,349.035,211.396,356.085,211.396C363.135,211.396,370.184,198.296,377.234,198.296C384.284,198.296,391.333,256.313,398.383,256.313C405.433,256.313,412.482,199.543,419.532,172.095C426.582,144.646,433.631,91.619,440.681,91.619C447.73,91.619,454.78,217.011,461.83,217.011C468.879,217.011,475.929,182.7,482.979,177.709C490.028,172.718,497.078,174.278,504.128,170.223C511.177,166.168,518.227,153.379,525.277,153.379C532.326,153.379,539.376,172.406,546.426,185.195C553.475,197.984,560.525,230.111,567.574,230.111C574.624,230.111,581.674,175.838,588.723,175.838C595.773,175.838,602.823,198.296,609.872,198.296C616.922,198.296,623.972,142.15,631.021,142.15C638.071,142.15,645.121,183.324,652.17,183.324C659.22,183.324,666.27,179.581,673.319,179.581C680.369,179.581,687.418,179.581,694.468,179.581C701.518,179.581,708.567,56.061,715.617,56.061C722.667,56.061,729.716,95.986,736.766,117.821C743.816,139.655,750.865,171.159,757.915,187.067C764.965,202.975,772.014,213.268,779.064,213.268C786.113,213.268,793.163,196.424,800.213,179.581","bridge":"M800.213,179.581L821.362,185.083","fc":"M821.362,185.083C828.411,178.899,835.461,172.715,842.511,165.432C849.56,158.149,856.61,141.383,863.66,141.383C870.709,141.383,877.759,155.344,884.809,160.173C891.858,165.001,898.908,170.354,905.957,170.354C913.007,170.354,920.057,154.259,927.106,146.268C934.156,138.276,941.206,122.406,948.255,122.406C955.305,122.406,962.355,130.815,969.404,135.937C976.454,141.059,983.504,147.662,990.553,153.136C997.603,158.61,1004.652,164.412,1011.702,168.782C1018.752,173.152,1025.801,179.356,1032.851,179.356C1039.901,179.356,1046.95,173.779,1054,168.202"},{"grid":[290,214.37559766910468,138.75119533820938,63.12679300731404,8],"area":"M821.362,107.396C828.411,103.375,835.461,99.354,842.511,99.354C849.56,99.354,856.61,114.708,863.66,114.708C870.709,114.708,877.759,91.275,884.809,86.635C891.858,81.994,898.908,81.765,905.957,79.674C913.007,77.583,920.057,74.087,927.106,74.087C934.156,74.087,941.206,83.899,948.255,86.812C955.305,89.725,962.355,91.567,969.404,91.567C976.454,91.567,983.504,60.629,990.553,58.484C997.603,56.339,1004.652,55.267,1011.702,55.267C1018.752,55.267,1025.801,56.853,1032.851,56.853C1039.901,56.853,1046.95,55.291,1054,53.73L1054,244.27C1046.95,242.714,1039.901,241.158,1032.851,238.791C1025.801,236.424,1018.752,232.448,1011.702,230.067C1004.652,227.686,997.603,224.506,990.553,224.506C983.504,224.506,976.454,240.092,969.404,240.092C962.355,240.092,955.305,233.803,948.255,229.117C941.206,224.431,934.156,214.544,927.106,211.978C920.057,209.412,913.007,209.23,905.957,208.129C898.908,207.027,891.858,205.368,884.809,205.368C877.759,205.368,870.709,219.271,863.66,219.271C856.61,219.271,849.56,200.219,842.511,199.11C835.461,198,828.411,197.723,821.362,197.445Z","hist":"M60,206.713C67.05,205.86,74.099,205.008,81.149,205.008C88.199,205.008,95.248,208.699,102.298,210.363C109.348,212.027,116.397,214.614,123.447,214.993C130.496,215.372,137.546,215.562,144.596,215.562C151.645,215.562,158.695,197.485,165.745,197.485C172.794,197.485,179.844,200.36,186.894,201.051C193.943,201.741,200.993,201.396,208.043,202.086C215.092,202.777,222.142,205.559,229.191,206.254C236.241,206.948,243.291,206.601,250.34,207.295C257.39,207.989,264.44,215.817,271.489,215.817C278.539,215.817,285.589,209.234,292.638,209.169C299.688,209.104,306.738,209.136,313.787,209.071C320.837,209.006,327.887,201.114,334.936,201.114C341.986,201.114,349.035,201.3,356.085,201.672C363.135,202.044,370.184,220.003,377.234,220.003C384.284,220.003,391.333,211.187,398.383,211.187C405.433,211.187,412.482,217.173,419.532,217.173C426.582,217.173,433.631,199.559,440.681,199.559C447.73,199.559,454.78,217.464,461.83,217.464C468.879,217.464,475.929,209.099,482.979,209.099C490.028,209.099,497.078,209.447,504.128,210.142C511.177,210.837,518.227,213.645,525.277,214.345C532.326,215.044,539.376,215.393,546.426,215.393C553.475,215.393,560.525,211.95,567.574,209.26C574.624,206.569,581.674,199.25,588.723,199.25C595.773,199.25,602.823,202.806,609.872,202.806C616.922,202.806,623.972,201.097,631.021,201.097C638.071,201.097,645.121,202.13,652.17,202.13C659.22,202.13,666.27,200.987,673.319,200.987C680.369,200.987,687.418,214.548,694.468,214.548C701.518,214.548,708.567,210.901,715.617,210.901C722.667,210.901,729.716,216.52,736.766,216.52C743.816,216.52,750.865,216.269,757.915,215.765C764.965,215.262,772.014,206.465,779.064,205.227C786.113,203.99,793.163,203.681,800.213,203.372","bridge":"M800.213,203.372L821.362,152.421","fc":"M821.362,152.421C828.411,150.826,835.461,149.232,842.511,149.232C849.56,149.232,856.61,166.99,863.66,166.99C870.709,166.99,877.759,147.402,884.809,146.001C891.858,144.601,898.908,144.396,905.957,143.901C913.007,143.407,920.057,143.032,927.106,143.032C934.156,143.032,941.206,154.165,948.255,157.965C955.305,161.764,962.355,165.83,969.404,165.83C976.454,165.83,983.504,141.495,990.553,141.495C997.603,141.495,1004.652,141.886,1011.702,142.667C1018.752,143.448,1025.801,147.036,1032.851,147.822C1039.901,148.607,1046.95,148.804,1054,149"}]},"rows":{"s1":[{"month":"Dec 2026","fc":true,"claims":"57","paid":"$1,234,477","avg":"$21,814"},{"month":"Nov 2026","fc":true,"claims":"51","paid":"$1,124,391","avg":"$21,871"},{"month":"Oct 2026","fc":true,"claims":"56","paid":"$1,245,738","avg":"$22,119"}],"s2":[{"month":"Dec 2026","fc":true,"claims":"65","paid":"$1,561,650","avg":"$23,996"},{"month":"Nov 2026","fc":true,"claims":"59","paid":"$1,422,319","avg":"$24,058"},{"month":"Oct 2026","fc":true,"claims":"65","paid":"$1,575,907","avg":"$24,331"}]},"menus":{"state":{"top":174,"n":5},"ind":{"top":248,"n":3},"ct":{"top":322,"n":3}},"moreN":14,"tip":{"x":1281.255,"y":858.965},"noticeH":19.5};
+(function () {
+  "use strict";
+  var D = window.__IC_DATA;
+  // Keep every transform 2D: GSAP's force3D:"auto" switches to translate3d mid-tween, which promotes the
+  // camera to a compositor layer that is rasterized at one scale and stretched (soft text, frame-to-frame flicker).
+  gsap.config({ force3D: false });
+  var tl = gsap.timeline({ paused: true });
+  var NI = { immediateRender: false };
+  function fromTo(t, a, b, pos) {
+    b.immediateRender = false;
+    var r = tl.fromTo(t, a, b, pos);
+    if (b.filter === "blur(0px)") tl.set(t, { filter: "none" }, pos + (b.duration || 0.5) + 0.001);
+    return r;
+  }
+  var APP0 = 5.9; // this scene's host data-start in index.html; all times below are GLOBAL seconds
+  var T = function (g) { return Math.max(0, g - APP0); };
+  var FPS = 30;
+  var $ = function (id) { return document.getElementById(id); };
+
+  // ---------------- camera ----------------
+  function camAt(cx, cy, s) {
+    var hw = 960 / s, hh = 540 / s;
+    cx = Math.min(Math.max(cx, hw), 1440 - hw);
+    cy = Math.min(Math.max(cy, hh), 1080 - hh);
+    return { x: 960 - cx * s, y: 540 - cy * s, scale: s };
+  }
+  var CAM = "#ic-cam";
+  function camSet(g, cx, cy, s) { tl.set(CAM, camAt(cx, cy, s), T(g)); }
+  function cam(g, cx, cy, s, d) {
+    var v = camAt(cx, cy, s);
+    v.duration = d || 1.0; v.ease = "power2.inOut";
+    tl.to(CAM, v, T(g));
+  }
+
+  // ---------------- cursor ----------------
+  var CUR = "#ic-cursor";
+  var HX = 5.5, HY = 2.5; // hotspot inside the 24px svg
+  var cur = { x: 900, y: 600 };
+  function curSet(g, x, y, op) { cur = { x: x, y: y }; tl.set(CUR, { x: x - HX, y: y - HY, opacity: op == null ? 1 : op }, T(g)); }
+  function curMove(g, x, y, d, ease) {
+    tl.to(CUR, { x: x - HX, y: y - HY, duration: d || 0.7, ease: ease || "power3.inOut" }, T(g));
+    var from = cur; cur = { x: x, y: y };
+    return { from: from, to: cur, g: g, d: d || 0.7, ease: ease || "power3.inOut" };
+  }
+  function click(g) {
+    tl.to(CUR, { scale: 0.86, duration: 0.07, ease: "power2.out" }, T(g));
+    tl.to(CUR, { scale: 1, duration: 0.14, ease: "power2.out" }, T(g + 0.1));
+  }
+  function swap(a, b, g, d) {
+    d = d || 0.16;
+    fromTo(a, { opacity: 1, filter: "blur(0px)" }, { opacity: 0, filter: "blur(3px)", duration: d * 0.8, ease: "power2.in" }, T(g));
+    fromTo(b, { opacity: 0, filter: "blur(3px)" }, { opacity: 1, filter: "blur(0px)", duration: d, ease: "power2.out" }, T(g + d * 0.35));
+  }
+
+  // per-frame text sets (seek-safe counters)
+  function countText(el, g, d, fn, ease) {
+    var e = gsap.parseEase(ease || "power2.out");
+    var n = Math.max(1, Math.round(d * FPS));
+    var last = null;
+    for (var f = 0; f <= n; f++) {
+      var s = fn(e(f / n));
+      if (s !== last) { tl.set(el, { textContent: s }, T(g + f / FPS)); last = s; }
+    }
+  }
+
+  // ---------------- dropdowns ----------------
+  function menuOpen(k, g) {
+    fromTo("#menu-" + k, { opacity: 0, scaleY: 0.96, y: -4 }, { opacity: 1, scaleY: 1, y: 0, duration: 0.2, ease: "power2.out" }, T(g));
+  }
+  function menuClose(k, g) {
+    tl.to("#menu-" + k, { opacity: 0, scaleY: 0.98, y: -2, duration: 0.14, ease: "power2.in" }, T(g));
+  }
+  // highlight follows the cursor tip across menu rows, frame by frame
+  function menuTrack(k, mv) {
+    var m = D.menus[k], e = gsap.parseEase(mv.ease), n = Math.round(mv.d * FPS), prev = -1;
+    var hl = "#menu-" + k + "-hl";
+    for (var f = 0; f <= n; f++) {
+      var y = mv.from.y + (mv.to.y - mv.from.y) * e(f / n);
+      var idx = Math.floor((y - (m.top + 4)) / 32);
+      if (idx < 0 || idx >= m.n) idx = -1;
+      if (idx !== prev) {
+        var tt = T(mv.g + f / FPS);
+        if (prev >= 0) tl.set("#menu-" + k + "-i" + prev, { color: "#18181b" }, tt);
+        if (idx >= 0) {
+          tl.set("#menu-" + k + "-i" + idx, { color: "#1d4ed8" }, tt);
+          tl.set(hl, { y: idx * 32, opacity: 1 }, tt);
+        } else tl.set(hl, { opacity: 0 }, tt);
+        prev = idx;
+      }
+    }
+  }
+  function pick(k, g) { // press flash on the chosen row
+    tl.to("#menu-" + k + "-hl", { backgroundColor: "#dbeafe", duration: 0.06 }, T(g));
+  }
+  function hoverSel(sel, g) { tl.to(sel, { borderColor: "#d4d4d8", duration: 0.12 }, T(g)); }
+  function unhoverSel(sel, g) { tl.to(sel, { borderColor: "#e4e4e7", duration: 0.2 }, T(g)); }
+  function pressSel(sel, g) {
+    tl.to(sel, { backgroundColor: "#f4f4f5", duration: 0.06 }, T(g));
+    tl.to(sel, { backgroundColor: "#ffffff", duration: 0.18 }, T(g + 0.1));
+  }
+
+  // ---------------- draft + buttons ----------------
+  var draftNow = 0;
+  function draft(n, g) { if (n === draftNow) return; swap("#draft-" + draftNow, "#draft-" + n, g, 0.18); draftNow = n; }
+  function btnEnable(g) {
+    tl.to("#btn-update", { backgroundColor: "#2563eb", color: "#ffffff", duration: 0.25, ease: "power1.out" }, T(g));
+    tl.to("#btn-reset", { borderColor: "#e4e4e7", color: "#3f3f46", duration: 0.25 }, T(g));
+  }
+  function btnUpdating(g) {
+    tl.to("#btn-update", { backgroundColor: "#e4e4e7", color: "#71717a", duration: 0.15 }, T(g));
+    swap("#btn-update-a", "#btn-update-b", g, 0.14);
+    tl.to("#btn-reset", { borderColor: "#f4f4f5", color: "#a1a1aa", duration: 0.15 }, T(g));
+  }
+  function btnIdle(g) { swap("#btn-update-b", "#btn-update-a", g, 0.14); }
+  function pressBtn(sel, g) {
+    tl.to(sel, { scale: 0.97, duration: 0.07, ease: "power2.out" }, T(g));
+    tl.to(sel, { scale: 1, duration: 0.16, ease: "power2.out" }, T(g + 0.09));
+  }
+
+  // ---------------- charts ----------------
+  function morph(from, to, g) {
+    ["c1", "c2"].forEach(function (c, i) {
+      var A = D.charts[from][i], B = D.charts[to][i];
+      ["area", "hist", "bridge", "fc"].forEach(function (k) {
+        fromTo("#" + c + "-" + k, { attr: { d: A[k] } }, { attr: { d: B[k] }, duration: 1.0, ease: "sine.inOut" }, T(g));
+      });
+      A.grid.forEach(function (y, j) {
+        fromTo("#" + c + "-g" + j, { attr: { y1: y, y2: y } }, { attr: { y1: B.grid[j], y2: B.grid[j] }, duration: 1.0, ease: "sine.inOut" }, T(g));
+      });
+      fromTo("#" + c + "-yt-" + from, { opacity: 1 }, { opacity: 0, duration: 0.25, ease: "power1.in" }, T(g + 0.1));
+      fromTo("#" + c + "-yt-" + to, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, T(g + 0.35));
+    });
+  }
+  function busy(g, until) {
+    tl.to("#sum-body", { opacity: 0.75, duration: 0.2 }, T(g));
+    fromTo("#sum-badge", { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.18, ease: "power2.out" }, T(g));
+    fromTo("#sum-spinner", { rotation: 0 }, { rotation: 360 * ((until - g) / 0.8), duration: until - g, ease: "none" }, T(g));
+    tl.to("#sum-badge", { opacity: 0, y: -6, duration: 0.15, ease: "power2.in" }, T(until));
+    tl.to("#sum-body", { opacity: 1, duration: 0.2 }, T(until));
+  }
+
+  // ---------------- callouts ----------------
+  function callout(id, g, hold) {
+    var el = "#" + id;
+    tl.set(el, { opacity: 1 }, T(g));
+    fromTo(el + " .ic-call-dot", { scale: 0 }, { scale: 1, duration: 0.22, ease: "back.out(2)" }, T(g));
+    fromTo(el + "-line", { scaleX: 0 }, { scaleX: 1, duration: 0.28, ease: "power3.out" }, T(g + 0.08));
+    fromTo(el + "-box", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, T(g + 0.18));
+    tl.to(el, { opacity: 0, duration: 0.2, ease: "power2.in" }, T(g + hold));
+  }
+
+  // ---------------- scroll ----------------
+  function scrollTo(g, y, d) { tl.to("#ic-scroll", { y: -y, duration: d || 1.0, ease: "power2.inOut" }, T(g)); }
+
+  // =============== initial state ===============
+  gsap.set(CUR, { x: 1000, y: 640, opacity: 0, scale: 1 });
+  gsap.set(CAM, camAt(720, 405, 4 / 3));
+  gsap.set("#sev-fill", { scaleX: 0 });
+  gsap.set("#freq-fill", { scaleX: 10 / 35 });
+  gsap.set("#freq-thumb", { x: (10 / 35) * 231 });
+  camSet(APP0, 720, 405, 4 / 3);
+  tl.set(CUR, { x: 1000, y: 640, opacity: 0, scale: 1 }, 0);
+  tl.set("#ic-scroll", { y: 0 }, 0);
+  tl.set("#sev-fill", { scaleX: 0 }, 0);
+  tl.set("#sev-thumb", { x: 0 }, 0);
+  tl.set("#freq-fill", { scaleX: 10 / 35 }, 0);
+  tl.set("#freq-thumb", { x: (10 / 35) * 231 }, 0);
+  tl.set("#c2-tip", { opacity: 0 }, 0);
+
+  // =============== 1. segment: State, Industry, Claim type ===============
+  var S = D.geom.state, I = D.geom.industry, C = D.geom.claimType;
+  cam(6.55, 436, 300, 2.2, 1.0);
+  curSet(6.85, 860, 560, 1);
+  curMove(6.9, 205, S.y + 18, 0.8);
+  hoverSel("#sel-state", 7.62);
+  click(7.95); pressSel("#sel-state", 7.95);
+  menuOpen("state", 8.0);
+  menuTrack("state", curMove(8.35, 185, D.menus.state.top + 4 + 4 * 32 + 16, 0.7, "power2.inOut"));
+  click(9.2); pick("state", 9.2);
+  menuClose("state", 9.3); unhoverSel("#sel-state", 9.3);
+  swap("#sel-state-a", "#sel-state-b", 9.32);
+  draft(1, 9.36); btnEnable(9.36);
+
+  curMove(9.6, 205, I.y + 18, 0.6);
+  hoverSel("#sel-ind", 10.15);
+  click(10.4); pressSel("#sel-ind", 10.4);
+  menuOpen("ind", 10.45);
+  menuTrack("ind", curMove(10.75, 190, D.menus.ind.top + 4 + 16, 0.45, "power2.inOut"));
+  click(11.35); pick("ind", 11.35);
+  menuClose("ind", 11.45); unhoverSel("#sel-ind", 11.45);
+  swap("#sel-ind-a", "#sel-ind-b", 11.47);
+  draft(2, 11.5);
+
+  curMove(11.7, 205, C.y + 18, 0.45);
+  hoverSel("#sel-ct", 12.1);
+  click(12.3); pressSel("#sel-ct", 12.3);
+  menuOpen("ct", 12.35);
+  menuTrack("ct", curMove(12.65, 190, D.menus.ct.top + 4 + 32 + 16, 0.45, "power2.inOut"));
+  click(13.25); pick("ct", 13.25);
+  menuClose("ct", 13.35); unhoverSel("#sel-ct", 13.35);
+  swap("#sel-ct-a", "#sel-ct-b", 13.37);
+  draft(3, 13.4);
+
+  // Update Forecast
+  var U = D.geom.update;
+  cam(13.55, 436, 835, 2.2, 1.0);
+  curMove(13.95, U.x + U.w / 2 + 6, U.y + U.h / 2 + 4, 0.75);
+  tl.to("#btn-update", { backgroundColor: "#1d4ed8", duration: 0.12 }, T(14.7));
+  click(14.95); pressBtn("#btn-update", 14.95);
+  btnUpdating(15.05); draft(0, 15.05);
+  tl.to(CUR, { opacity: 0, duration: 0.2 }, T(15.6));
+
+  // results
+  busy(15.1, 17.9);
+  fromTo("#badge-a", { opacity: 1 }, { opacity: 0, duration: 0.12 }, T(17.15));
+  fromTo("#badge-b", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T(17.22));
+  cam(15.3, 840, 400, 1.6, 1.0);
+  morph("s0", "s1", 16.35);
+  btnIdle(17.4);
+  swap("#sum-label-a", "#sum-label-b", 17.95, 0.2);
+  tl.to("#narr-a", { opacity: 0, filter: "blur(3px)", duration: 0.15 }, T(17.95));
+  cam(17.6, 864, 314, 1.72, 1.0);
+  // stream the real conclusion word by word, in uneven bursts (seeded)
+  (function () {
+    var seed = 7; var rnd = function () { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+    var words = document.querySelectorAll("#narr-b .w"), t = 18.15;
+    for (var i = 0; i < words.length; i++) {
+      fromTo(words[i], { opacity: 0, filter: "blur(4px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.14, ease: "power2.out" }, T(t));
+      var burst = rnd() < 0.72;
+      t += burst ? 0.03 + rnd() * 0.03 : 0.08 + rnd() * 0.05;
+    }
+  })();
+
+  // =============== 2. reading the forecast (sheet covers 22.0-24.4) ===============
+  camSet(22.6, 864, 435, 1.68);
+  callout("call-a", 24.7, 1.6);
+  callout("call-b", 26.55, 1.6);
+  callout("call-c", 28.4, 1.6);
+  cam(30.15, 864, 845, 1.68, 1.0);
+  // hover Jul 2026 on the cost chart: the real Recharts tooltip
+  curSet(30.9, 1500, 1120, 1);
+  curMove(30.95, D.tip.x, D.tip.y + 4, 0.85);
+  fromTo("#c2-hover", { opacity: 0 }, { opacity: 1, duration: 0.1 }, T(31.82));
+  fromTo("#c2-tip", { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.12, ease: "power2.out" }, T(31.85));
+  tl.to("#c2-hover", { opacity: 0, duration: 0.1 }, T(33.45));
+  tl.to("#c2-tip", { opacity: 0, duration: 0.1 }, T(33.45));
+  curMove(33.4, D.tip.x + 120, D.tip.y + 150, 0.5, "power2.in");
+  tl.to(CUR, { opacity: 0, duration: 0.15 }, T(33.75));
+  callout("call-d", 33.75, 1.8);
+
+  // =============== 3. scenario (sheet covers 36.4-38.8) ===============
+  camSet(37.0, 436, 640, 2.2);
+  var SV = D.geom.sev, FQ = D.geom.freq;
+  function thumbX(v, min, max) { return ((v - min) / (max - min)) * 231; }
+  function drag(name, track, v0, v1, min, max, g, d, valId) {
+    var e = gsap.parseEase("power2.inOut");
+    var y = track.y + 3;
+    var x0 = track.x + thumbX(v0, min, max) + 8, x1 = track.x + thumbX(v1, min, max) + 8;
+    tl.to("#" + name + "-thumb", { x: thumbX(v1, min, max), duration: d, ease: "power2.inOut" }, T(g));
+    tl.to("#" + name + "-fill", { scaleX: (v1 - min) / (max - min), duration: d, ease: "power2.inOut" }, T(g));
+    tl.to(CUR, { x: x1 + 2 - HX, y: y + 4 - HY, duration: d, ease: "power2.inOut" }, T(g));
+    cur = { x: x1 + 2, y: y + 4 };
+    countText("#" + valId, g, d, function (p) { return Math.round(v0 + (v1 - v0) * p) + "%"; }, "power2.inOut");
+  }
+  function thumbHover(name, g) { tl.to("#" + name + "-thumb", { boxShadow: "0 0 0 4px rgba(37,99,235,0.12), 0 1px 4px rgba(0,0,0,0.18)", duration: 0.12 }, T(g)); }
+  function thumbPress(name, g) {
+    tl.to("#" + name + "-thumb", { boxShadow: "0 0 0 6px rgba(37,99,235,0.15), 0 1px 4px rgba(0,0,0,0.18)", duration: 0.08 }, T(g));
+    tl.to(CUR, { scale: 0.86, duration: 0.07 }, T(g));
+  }
+  function thumbRelease(name, g) {
+    tl.to("#" + name + "-thumb", { boxShadow: "0 0 0 0px rgba(37,99,235,0), 0 1px 4px rgba(0,0,0,0.18)", duration: 0.2 }, T(g));
+    tl.to(CUR, { scale: 1, duration: 0.14 }, T(g));
+  }
+  curSet(38.7, 900, 760, 1);
+  curMove(38.85, SV.x + 8 + 2, SV.y + 3 + 4, 0.85);
+  thumbHover("sev", 39.7);
+  thumbPress("sev", 39.9);
+  drag("sev", SV, 0, 10, 0, 20, 40.0, 1.1, "sev-val");
+  draft(1, 40.12); btnEnable(40.12);
+  thumbRelease("sev", 41.2);
+
+  curMove(41.45, FQ.x + thumbX(0, -10, 25) + 8 + 2, FQ.y + 3 + 4, 0.55);
+  thumbHover("freq", 42.0);
+  thumbPress("freq", 42.15);
+  drag("freq", FQ, 0, 15, -10, 25, 42.25, 1.1, "freq-val");
+  draft(2, 42.35);
+  thumbRelease("freq", 43.45);
+
+  cam(43.6, 436, 835, 2.2, 0.95);
+  curMove(43.95, U.x + U.w / 2 + 6, U.y + U.h / 2 + 4, 0.65);
+  tl.to("#btn-update", { backgroundColor: "#1d4ed8", duration: 0.12 }, T(44.6));
+  click(44.85); pressBtn("#btn-update", 44.85);
+  btnUpdating(44.95); draft(0, 44.95);
+  tl.to(CUR, { opacity: 0, duration: 0.2 }, T(45.4));
+
+  // pull back over charts + table; the scenario notice opens above (scroll compensates the push-down)
+  cam(45.15, 720, 600, 4 / 3, 1.05);
+  scrollTo(45.15, 349, 1.05);
+  tl.to("#sum-notice-wrap", { height: D.noticeH, duration: 0.3, ease: "power2.out" }, T(46.2));
+  tl.to("#ic-scroll", { y: -(349 + D.noticeH), duration: 0.3, ease: "power2.out" }, T(46.2));
+  busy(45.0, 47.6);
+  morph("s1", "s2", 46.45);
+  btnIdle(46.9);
+  // table: the first rows count to the scenario values
+  [0, 1, 2].forEach(function (i) {
+    var a = D.rows.s1[i], b = D.rows.s2[i];
+    var num = function (s) { return Number(String(s).replace(/[$,]/g, "")); };
+    var fmtN = function (v) { return Math.round(v).toLocaleString("en-US"); };
+    var fmt$ = function (v) { return "$" + Math.round(v).toLocaleString("en-US"); };
+    countText("#r" + i + "-c", 46.45, 1.15, function (p) { return fmtN(num(a.claims) + (num(b.claims) - num(a.claims)) * p); });
+    countText("#r" + i + "-p", 46.45, 1.15, function (p) { return fmt$(num(a.paid) + (num(b.paid) - num(a.paid)) * p); });
+    countText("#r" + i + "-a", 46.45, 1.15, function (p) { return fmt$(num(a.avg) + (num(b.avg) - num(a.avg)) * p); });
+  });
+  callout("call-e", 47.75, 1.8);
+
+  // =============== 4. every month ===============
+  cam(49.75, 840, 743, 1.6, 0.95);
+  var moreY = 1366.8 + D.noticeH - (349 + D.noticeH) + 18.5; // centre of the button after scroll
+  curSet(50.05, 1250, 1130, 1);
+  curMove(50.1, 880, moreY + 4, 0.7);
+  tl.to("#btn-more", { backgroundColor: "#fafafa", color: "#3f3f46", duration: 0.12 }, T(50.8));
+  click(51.0);
+  swap("#btn-more-a", "#btn-more-b", 51.08, 0.14);
+  tl.to("#tbl-more-wrap", { height: D.moreN * 65.3, duration: 0.55, ease: "power2.out" }, T(51.1));
+  tl.to("#tbl-more-wrap tr", { opacity: 1, duration: 0.25, ease: "power2.out", stagger: 0.05 }, T(51.12));
+  tl.to("#btn-more", { backgroundColor: "#ffffff", color: "#71717a", duration: 0.2 }, T(51.3));
+  tl.to(CUR, { opacity: 0, duration: 0.2 }, T(51.35));
+  scrollTo(51.4, 349 + D.noticeH + 430, 1.4);
+  // pull back to context: the whole dashboard with the scenario applied
+  cam(53.0, 720, 540, 4 / 3, 1.1);
+  tl.to({}, { duration: 0.01 }, T(56.5)); // hold to the end of the slot
+
+  window.__timelines["app"] = tl;
+})();
+
+</script>
+</template>
