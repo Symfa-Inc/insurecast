@@ -1,0 +1,29 @@
+<template>
+  <style>
+    @font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("assets/fonts/Geist-latin.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Geist", sans-serif; -webkit-font-smoothing: antialiased; }
+    #root h1, #root h2, #root p { margin: 0; padding: 0; }
+    #sr-sheet { position: absolute; inset: 0; background: #fafafa; }
+    #sr-line { position: absolute; left: 152px; top: 470px; font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; white-space: nowrap; }
+    .sr-w { display: inline-block; color: #e4e4e7; }
+  </style>
+  <div id="root" data-composition-id="sheet-read" data-width="1920" data-height="1080">
+    <div id="sr-sheet">
+      <h2 id="sr-line" data-layout-allow-overlap data-layout-allow-occlusion><span class="sr-w">Read</span> <span class="sr-w">the</span> <span class="sr-w" id="sr-acc">forecast</span> <span class="sr-w">and</span> <span class="sr-w">its</span> <span class="sr-w">range</span></h2>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#sr-sheet", { x: 2050, filter: "blur(10px)" }, { x: 0, duration: 0.45, ease: "power3.inOut" }, 0);
+      tl.to("#sr-sheet", { filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.25);
+      var w = document.querySelectorAll("#sr-line .sr-w");
+      for (var i = 0; i < w.length; i++) {
+        tl.fromTo(w[i], { color: "#e4e4e7" }, { color: w[i].id === "sr-acc" ? "#2563eb" : "#18181b", duration: 0.2, ease: "power1.out" }, 0.4 + i * 0.09);
+      }
+      tl.to("#sr-sheet", { x: -2050, duration: 0.45, ease: "power3.inOut" }, 1.95);
+      tl.to("#sr-sheet", { filter: "blur(10px)", duration: 0.22, ease: "power2.in" }, 1.95);
+      window.__timelines["sheet-read"] = tl;
+    })();
+  </script>
+</template>

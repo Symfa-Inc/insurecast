@@ -1,0 +1,75 @@
+<template>
+  <style>
+    @font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("assets/fonts/Geist-latin.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Geist", sans-serif; -webkit-font-smoothing: antialiased; }
+    #root h1, #root h2, #root p { margin: 0; padding: 0; }
+    #in-sheet { position: absolute; inset: 0; background: #fafafa; }
+    #in-lockup { position: absolute; left: 160px; top: 118px; display: flex; align-items: center; gap: 20px; }
+    #in-mark { width: 92px; height: 92px; }
+    #in-word { font-size: 48px; font-weight: 600; letter-spacing: -0.025em; color: #18181b; }
+    #in-word b { font-weight: 600; color: #2563eb; }
+    #in-head { position: absolute; left: 152px; top: 282px; font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; }
+    #in-head .acc { color: #2563eb; }
+    #in-sub { position: absolute; left: 160px; top: 536px; font-size: 36px; line-height: 1.3; font-weight: 400; color: #71717a; letter-spacing: -0.01em; }
+    #in-chart { position: absolute; left: 160px; top: 650px; width: 1600px; height: 320px; overflow: visible; }
+    .in-ax { position: absolute; top: 980px; font-size: 28px; color: #71717a; }
+    #in-ref-t { position: absolute; top: 646px; left: 1105px; width: 270px; text-align: right; font-size: 28px; color: #71717a; }
+    #in-chart text { font-family: "Geist", sans-serif; }
+    #in-ref, #in-ref-t { opacity: 0; }
+    #in-c1 { position: absolute; left: 152px; top: 470px; font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; white-space: nowrap; }
+    #in-c1 .acc { color: #2563eb; }
+    .in-w { display: inline-block; opacity: 0; }
+  </style>
+  <div id="root" data-composition-id="intro" data-width="1920" data-height="1080">
+    <div id="in-sheet">
+      <div id="in-lockup">
+        <img id="in-mark" src="assets/brand/insurecast-mark.png" alt="" />
+        <div id="in-word">Insure<b>Cast</b></div>
+      </div>
+      <h1 id="in-head">Next year’s claims,<br /><span class="acc">forecast</span> today</h1>
+      <p id="in-sub">Monthly claims and cost per claim, for the segment you cover.</p>
+      <svg id="in-chart" viewBox="60 150 994 142" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="in-ci" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#dbeafe" stop-opacity="0.9" /><stop offset="100%" stop-color="#dbeafe" stop-opacity="0.45" /></linearGradient>
+          <clipPath id="in-plot"><rect x="60" y="150" width="994" height="142" /></clipPath>
+          <clipPath id="in-reveal"><rect id="in-reveal-r" x="60" y="0" width="741" height="400" /></clipPath>
+        </defs>
+        <line x1="60" x2="1054" y1="290" y2="290" stroke="#e4e4e7" stroke-width="1" vector-effect="non-scaling-stroke" />
+        <g clip-path="url(#in-plot)">
+          <g clip-path="url(#in-reveal)">
+            <path d="M821.362,216.858C828.411,212.313,835.461,207.767,842.511,202.802C849.56,197.837,856.61,191.407,863.66,187.069C870.709,182.731,877.759,180.86,884.809,176.773C891.858,172.687,898.908,167.294,905.957,162.55C913.007,157.807,920.057,153.06,927.106,148.312C934.156,143.563,941.206,138.812,948.255,134.058C955.305,129.304,962.355,124.547,969.404,119.788C976.454,115.029,983.504,110.264,990.553,105.503C997.603,100.743,1004.652,95.99,1011.702,91.225C1018.752,86.459,1025.801,81.684,1032.851,76.91C1039.901,72.136,1046.95,67.359,1054,62.581L1054,290C1046.95,290,1039.901,290,1032.851,290C1025.801,290,1018.752,290,1011.702,290C1004.652,290,997.603,290,990.553,290C983.504,290,976.454,290,969.404,290C962.355,290,955.305,290,948.255,290C941.206,290,934.156,290,927.106,290C920.057,290,913.007,290,905.957,290C898.908,290,891.858,290,884.809,290C877.759,290,870.709,286.088,863.66,286.088C856.61,286.088,849.56,287.591,842.511,287.639C835.461,287.686,828.411,287.698,821.362,287.71Z" fill="url(#in-ci)" />
+            <path d="M60,238.165C67.05,235.844,74.099,233.523,81.149,233.523C88.199,233.523,95.248,240.357,102.298,243.58C109.348,246.804,116.397,252.864,123.447,252.864C130.496,252.864,137.546,220.37,144.596,220.37C151.645,220.37,158.695,246.675,165.745,246.675C172.794,246.675,179.844,224.239,186.894,224.239C193.943,224.239,200.993,227.591,208.043,234.296C215.092,241.001,222.142,266.016,229.191,266.016C236.241,266.016,243.291,248.222,250.34,248.222C257.39,248.222,264.44,257.506,271.489,257.506C278.539,257.506,285.589,234.296,292.638,234.296C299.688,234.296,306.738,266.79,313.787,266.79C320.837,266.79,327.887,225.786,334.936,225.786C341.986,225.786,349.035,257.506,356.085,257.506C363.135,257.506,370.184,252.091,377.234,252.091C384.284,252.091,391.333,276.074,398.383,276.074C405.433,276.074,412.482,252.606,419.532,241.259C426.582,229.912,433.631,207.992,440.681,207.992C447.73,207.992,454.78,259.827,461.83,259.827C468.879,259.827,475.929,245.643,482.979,243.58C490.028,241.517,497.078,242.162,504.128,240.486C511.177,238.809,518.227,233.523,525.277,233.523C532.326,233.523,539.376,241.388,546.426,246.675C553.475,251.962,560.525,265.243,567.574,265.243C574.624,265.243,581.674,242.807,588.723,242.807C595.773,242.807,602.823,252.091,609.872,252.091C616.922,252.091,623.972,228.881,631.021,228.881C638.071,228.881,645.121,245.901,652.17,245.901C659.22,245.901,666.27,244.354,673.319,244.354C680.369,244.354,687.418,244.354,694.468,244.354C701.518,244.354,708.567,193.292,715.617,193.292C722.667,193.292,729.716,209.797,736.766,218.823C743.816,227.849,750.865,240.872,757.915,247.449C764.965,254.025,772.014,258.28,779.064,258.28C786.113,258.28,793.163,251.317,800.213,244.354" fill="none" stroke="#71717a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+            <path d="M800.213,244.354L821.362,252.284" fill="none" stroke="#71717a" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+            <path d="M821.362,252.284C828.411,250.061,835.461,247.838,842.511,245.22C849.56,242.603,856.61,236.579,863.66,236.579C870.709,236.579,877.759,241.597,884.809,243.333C891.858,245.068,898.908,246.992,905.957,246.992C913.007,246.992,920.057,241.208,927.106,238.335C934.156,235.462,941.206,229.755,948.255,229.755C955.305,229.755,962.355,232.78,969.404,234.621C976.454,236.463,983.504,238.835,990.553,240.803C997.603,242.771,1004.652,244.857,1011.702,246.427C1018.752,247.998,1025.801,250.226,1032.851,250.226C1039.901,250.226,1046.95,248.222,1054,246.218" fill="none" stroke="#2563eb" stroke-width="3.5" stroke-dasharray="12 6" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
+          </g>
+        </g>
+        <line id="in-ref" x1="821.36" x2="821.36" y1="290" y2="150" stroke="#d4d4d8" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke" />
+      </svg>
+      <div id="in-ref-t">Forecast starts</div>
+      <div class="in-ax" style="left:160px">Jan 2023</div>
+      <div class="in-ax" style="left:1560px; width:200px; text-align:right">Dec 2026</div>
+      <h2 id="in-c1" data-layout-allow-overlap data-layout-allow-occlusion><span class="in-w">Pick</span> <span class="in-w">the</span> <span class="in-w acc">segment</span> <span class="in-w">you</span> <span class="in-w">cover</span></h2>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      // poster at frame 0: history drawn, forecast tail still to come
+      tl.to(["#in-ref", "#in-ref-t"], { opacity: 1, duration: 0.3, ease: "power1.out" }, 0.35);
+      tl.to("#in-reveal-r", { attr: { width: 1000 }, duration: 2.1, ease: "power2.inOut" }, 0.45);
+      // the poster leaves: blur out, word by word for the headline
+      tl.to(["#in-chart", "#in-sub", ".in-ax", "#in-ref-t"], { opacity: 0, filter: "blur(8px)", duration: 0.3, ease: "power2.in" }, 3.75);
+      tl.to("#in-head", { opacity: 0, filter: "blur(8px)", duration: 0.3, ease: "power2.in" }, 3.85);
+      tl.to("#in-lockup", { opacity: 0, filter: "blur(6px)", duration: 0.3, ease: "power2.in" }, 3.95);
+      // chapter 1 line lands word by word
+      var w = document.querySelectorAll("#in-c1 .in-w");
+      for (var i = 0; i < w.length; i++) {
+        tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power2.out" }, 4.25 + i * 0.08);
+      }
+      // sheet whips out to the left, revealing the app
+      tl.to("#in-sheet", { x: -2050, duration: 0.45, ease: "power3.inOut" }, 6.0);
+      tl.to("#in-sheet", { filter: "blur(10px)", duration: 0.22, ease: "power2.in" }, 6.0);
+      window.__timelines["intro"] = tl;
+    })();
+  </script>
+</template>

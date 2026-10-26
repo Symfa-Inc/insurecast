@@ -1,0 +1,44 @@
+<template>
+  <style>
+    @font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; src: url("assets/fonts/Geist-latin.woff2") format("woff2"); }
+    #root { position: absolute; inset: 0; overflow: hidden; font-family: "Geist", sans-serif; -webkit-font-smoothing: antialiased; }
+    #root h1, #root h2, #root p { margin: 0; padding: 0; }
+    #ou-sheet { position: absolute; inset: 0; background: #fafafa; }
+    #ou-lock { position: absolute; left: 0; right: 0; top: 330px; display: flex; align-items: center; justify-content: center; gap: 40px; }
+    #ou-mark-wrap { width: 230px; height: 230px; }
+    #ou-mark { width: 230px; height: 230px; display: block; }
+    #ou-word { font-size: 150px; font-weight: 600; letter-spacing: -0.04em; color: #18181b; line-height: 1; }
+    #ou-word .b { color: #2563eb; }
+    .ou-l { display: inline-block; opacity: 0; }
+    #ou-tag { position: absolute; left: 0; right: 0; top: 640px; text-align: center; font-size: 46px; font-weight: 500; letter-spacing: -0.015em; color: #52525b; opacity: 0; }
+    #ou-url { position: absolute; left: 0; right: 0; top: 728px; text-align: center; font-size: 36px; font-weight: 500; color: #2563eb; opacity: 0; letter-spacing: -0.005em; }
+  </style>
+  <div id="root" data-composition-id="outro" data-width="1920" data-height="1080">
+    <div id="ou-sheet">
+      <div id="ou-lock">
+        <div id="ou-mark-wrap"><img id="ou-mark" src="assets/brand/insurecast-mark.png" alt="InsureCast" /></div>
+        <div id="ou-word"><span class="ou-l">I</span><span class="ou-l">n</span><span class="ou-l">s</span><span class="ou-l">u</span><span class="ou-l">r</span><span class="ou-l">e</span><span class="ou-l b">C</span><span class="ou-l b">a</span><span class="ou-l b">s</span><span class="ou-l b">t</span></div>
+      </div>
+      <p id="ou-tag">Forecast claims. Test the what-ifs.</p>
+      <p id="ou-url">insurecast.symfa.ai</p>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var tl = gsap.timeline({ paused: true });
+      tl.fromTo("#ou-sheet", { x: 2050, filter: "blur(10px)" }, { x: 0, duration: 0.45, ease: "power3.inOut" }, 0);
+      tl.to("#ou-sheet", { filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.25);
+      // the mark is drawn in along its own arrow: a diagonal wipe from bottom-left to top-right
+      tl.fromTo("#ou-mark", { clipPath: "polygon(0% 100%, 0% 100%, 0% 100%)", opacity: 1 },
+        { clipPath: "polygon(0% 100%, 0% -100%, 200% 100%)", duration: 0.75, ease: "power2.inOut" }, 0.55);
+      var l = document.querySelectorAll("#ou-word .ou-l");
+      for (var i = 0; i < l.length; i++) {
+        tl.fromTo(l[i], { opacity: 0.0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.95 + i * 0.05);
+      }
+      tl.fromTo("#ou-tag", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" }, 1.75);
+      tl.fromTo("#ou-url", { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.3, ease: "power2.out" }, 2.15);
+      tl.to({}, { duration: 0.01 }, 7.4);
+      window.__timelines["outro"] = tl;
+    })();
+  </script>
+</template>
