@@ -1,0 +1,326 @@
+[
+ {
+  "kind": "text",
+  "col": "header",
+  "id": "InsureCast",
+  "x0": 24,
+  "y0": 15.5,
+  "x1": 106.2,
+  "y1": 39.5
+ },
+ {
+  "kind": "text",
+  "col": "header",
+  "id": "Insurance claims forecasting",
+  "x0": 1254.3,
+  "y0": 19.5,
+  "x1": 1416,
+  "y1": 35.5
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Parameters",
+  "x0": 20,
+  "y0": 80,
+  "x1": 267,
+  "y1": 96
+ },
+ {
+  "kind": "label",
+  "col": "side",
+  "id": "State",
+  "x0": 20,
+  "y0": 112,
+  "x1": 267,
+  "y1": 128
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "sel-state",
+  "x0": 20,
+  "y0": 134,
+  "x1": 267,
+  "y1": 170
+ },
+ {
+  "kind": "label",
+  "col": "side",
+  "id": "Industry",
+  "x0": 20,
+  "y0": 186,
+  "x1": 267,
+  "y1": 202
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "sel-ind",
+  "x0": 20,
+  "y0": 208,
+  "x1": 267,
+  "y1": 244
+ },
+ {
+  "kind": "label",
+  "col": "side",
+  "id": "Claim type",
+  "x0": 20,
+  "y0": 260,
+  "x1": 267,
+  "y1": 276
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "sel-ct",
+  "x0": 20,
+  "y0": 282,
+  "x1": 267,
+  "y1": 318
+ },
+ {
+  "kind": "label",
+  "col": "side",
+  "id": "From",
+  "x0": 20,
+  "y0": 334,
+  "x1": 267,
+  "y1": 350
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "2023",
+  "x0": 20,
+  "y0": 362,
+  "x1": 139.5,
+  "y1": 398
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Jan",
+  "x0": 147.5,
+  "y0": 362,
+  "x1": 267,
+  "y1": 398
+ },
+ {
+  "kind": "label",
+  "col": "side",
+  "id": "Forecast period",
+  "x0": 20,
+  "y0": 414,
+  "x1": 267,
+  "y1": 430
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "12 months",
+  "x0": 20,
+  "y0": 436,
+  "x1": 267,
+  "y1": 472
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Scenario",
+  "x0": 20,
+  "y0": 521,
+  "x1": 267,
+  "y1": 537
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Severity inflation\n         ",
+  "x0": 20,
+  "y0": 553,
+  "x1": 267,
+  "y1": 573
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "sev-track",
+  "x0": 20,
+  "y0": 596,
+  "x1": 267,
+  "y1": 602
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Frequency shock\n            ",
+  "x0": 20,
+  "y0": 637,
+  "x1": 267,
+  "y1": 657
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "freq-track",
+  "x0": 20,
+  "y0": 680,
+  "x1": 267,
+  "y1": 686
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Draft",
+  "x0": 20,
+  "y0": 853,
+  "x1": 267,
+  "y1": 869
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "draft-0",
+  "x0": 20,
+  "y0": 873,
+  "x1": 267,
+  "y1": 893
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "draft-1",
+  "x0": 20,
+  "y0": 873,
+  "x1": 267,
+  "y1": 893
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "draft-2",
+  "x0": 20,
+  "y0": 873,
+  "x1": 267,
+  "y1": 893
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "draft-3",
+  "x0": 20,
+  "y0": 873,
+  "x1": 267,
+  "y1": 893
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "Sidebar changes stay local u",
+  "x0": 20,
+  "y0": 897,
+  "x1": 267,
+  "y1": 936
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "btn-update",
+  "x0": 20,
+  "y0": 948,
+  "x1": 267,
+  "y1": 988
+ },
+ {
+  "kind": "ctl",
+  "col": "side",
+  "id": "btn-reset",
+  "x0": 20,
+  "y0": 996,
+  "x1": 267,
+  "y1": 1032
+ },
+ {
+  "kind": "card",
+  "col": "main",
+  "id": "ic-summary",
+  "x0": 312,
+  "y0": 80,
+  "x1": 1416,
+  "y1": 218
+ },
+ {
+  "kind": "card",
+  "col": "main",
+  "id": "c1",
+  "x0": 312,
+  "y0": 238,
+  "x1": 1416,
+  "y1": 632
+ },
+ {
+  "kind": "card",
+  "col": "main",
+  "id": "c2",
+  "x0": 312,
+  "y0": 648,
+  "x1": 1416,
+  "y1": 1042
+ },
+ {
+  "kind": "card",
+  "col": "main",
+  "id": "Monthly values\n             ",
+  "x0": 313,
+  "y0": 1063,
+  "x1": 1415,
+  "y1": 1126
+ },
+ {
+  "kind": "row",
+  "col": "main",
+  "id": "Month\n                    Cl",
+  "x0": 313,
+  "y0": 1126,
+  "x1": 1415,
+  "y1": 1170.5
+ },
+ {
+  "kind": "row",
+  "col": "main",
+  "id": "row-0",
+  "x0": 313,
+  "y0": 1170.5,
+  "x1": 1415,
+  "y1": 1235.8
+ },
+ {
+  "kind": "row",
+  "col": "main",
+  "id": "row-1",
+  "x0": 313,
+  "y0": 1235.8,
+  "x1": 1415,
+  "y1": 1301.1
+ },
+ {
+  "kind": "row",
+  "col": "main",
+  "id": "row-2",
+  "x0": 313,
+  "y0": 1301.1,
+  "x1": 1415,
+  "y1": 1366.4
+ },
+ {
+  "kind": "row",
+  "col": "main",
+  "id": "btn-more",
+  "x0": 313,
+  "y0": 1366.9,
+  "x1": 1415,
+  "y1": 1403.9
+ }
+]

@@ -142,6 +142,12 @@
   // ---------------- callouts ----------------
   function callout(id, g, hold) {
     var el = "#" + id;
+    // v4: hide the parts BEFORE the wrapper becomes visible. With immediateRender:false the child tweens only apply
+    // their "from" state when they start (dot at g, line at g+0.08, box at g+0.18), so the box and line used to show at
+    // full opacity for 3-5 frames, vanish, then fade in: the blink. Same-time sets render in insertion order.
+    tl.set(el + " .ic-call-dot", { scale: 0 }, T(g));
+    tl.set(el + "-line", { scaleX: 0 }, T(g));
+    tl.set(el + "-box", { opacity: 0, filter: "blur(6px)" }, T(g));
     tl.set(el, { opacity: 1 }, T(g));
     fromTo(el + " .ic-call-dot", { scale: 0 }, { scale: 1, duration: 0.22, ease: "back.out(2)" }, T(g));
     fromTo(el + "-line", { scaleX: 0 }, { scaleX: 1, duration: 0.28, ease: "power3.out" }, T(g + 0.08));
@@ -249,7 +255,7 @@
   callout("call-d", 33.75, 1.8);
 
   // =============== 3. scenario (sheet covers 36.4-38.8) ===============
-  camSet(37.0, 436, 640, 2.2);
+  camSet(37.0, 436, 650, 2.2); // v4: was cy 640 (bottom edge cut the draft counter the sliders update); edges now in gutters 398-414 / 893-897
   var SV = D.geom.sev, FQ = D.geom.freq;
   function thumbX(v, min, max) { return ((v - min) / (max - min)) * 231; }
   function drag(name, track, v0, v1, min, max, g, d, valId) {
@@ -294,7 +300,7 @@
   tl.to(CUR, { opacity: 0, duration: 0.2 }, T(45.4));
 
   // pull back over charts + table; the scenario notice opens above (scroll compensates the push-down)
-  cam(45.15, 720, 600, 4 / 3, 1.05);
+  cam(45.15, 720, 652, 4 / 3, 1.05); // v4: was cy 600 (bottom edge cut the Oct 2026 row while it counts); now the whole table + button
   scrollTo(45.15, 349, 1.05);
   tl.to("#sum-notice-wrap", { height: D.noticeH, duration: 0.3, ease: "power2.out" }, T(46.2));
   tl.to("#ic-scroll", { y: -(349 + D.noticeH), duration: 0.3, ease: "power2.out" }, T(46.2));

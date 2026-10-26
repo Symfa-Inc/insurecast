@@ -1,0 +1,120 @@
+[
+ {
+  "name": "establish (app reveal)",
+  "scale": 1.035,
+  "cx": 720.0,
+  "cy": 521.7,
+  "scroll": 0,
+  "frame": [
+   -207.5,
+   0.0,
+   1647.5,
+   1043.5
+  ],
+  "rel": [
+   0,
+   0,
+   1440.0,
+   1042
+  ]
+ },
+ {
+  "name": "segment: selects + menus + draft + charts",
+  "scale": 1.12,
+  "cx": 720.0,
+  "cy": 561.1,
+  "scroll": 0,
+  "frame": [
+   -137.1,
+   79.0,
+   1577.1,
+   1043.3
+  ],
+  "rel": [
+   20,
+   80,
+   1416,
+   1042
+  ]
+ },
+ {
+  "name": "read conclusion + claims chart",
+  "scale": 1.735,
+  "cx": 864.3,
+  "cy": 331.2,
+  "scroll": 0,
+  "frame": [
+   311.0,
+   20.0,
+   1417.6,
+   642.5
+  ],
+  "rel": [
+   312,
+   80.0,
+   1416,
+   632.0
+  ]
+ },
+ {
+  "name": "cost chart + tooltip",
+  "scale": 1.655,
+  "cx": 859.1,
+  "cy": 753.3,
+  "scroll": 221.0,
+  "frame": [
+   279.0,
+   427.0,
+   1439.1,
+   1079.6
+  ],
+  "rel": [
+   312,
+   427.0,
+   1416,
+   821.0
+  ]
+ },
+ {
+  "name": "scenario: sliders + draft + update",
+  "scale": 1.12,
+  "cx": 720.0,
+  "cy": 562.6,
+  "scroll": 0,
+  "frame": [
+   -137.1,
+   80.5,
+   1577.1,
+   1044.8
+  ],
+  "rel": [
+   20,
+   521,
+   267,
+   1032
+  ]
+ },
+ {
+  "name": "scenario result: cost chart + first rows",
+  "scale": null
+ },
+ {
+  "name": "table expanded",
+  "scale": 1.71,
+  "cx": 864.4,
+  "cy": 762.3,
+  "scroll": 634.0,
+  "frame": [
+   303.0,
+   446.5,
+   1425.8,
+   1078.1
+  ],
+  "rel": [
+   312,
+   447.5,
+   1416,
+   1077.4
+  ]
+ }
+]

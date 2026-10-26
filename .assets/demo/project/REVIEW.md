@@ -59,3 +59,91 @@ the app scene so every transform stays 2D and the DOM/SVG is painted at its fina
 - Shake: 30 consecutive frames from 26.9 s, label region mean abs diff v1 alternated 0.00 / 6.73 every frame; v2 is 0.00 after
   the fade-in. 10-frame holds checked for every other label (callouts a, c, d, e, tooltip, headline sheets, end card): all 0.00.
 - Audio and timing unchanged: 62.5 s, -15.8 LUFS, true peak -1.6 dBTP.
+
+## v3 (owner fixes: centred headline cards, zoom framing) -> `../demo-insurecast-v3.mp4` (`demo-insurecast.mp4` kept)
+
+Intro 0-4 s, the end card, music, sounds and all timings are unchanged; only headline positions and camera framings moved.
+
+**1. Headline cards centred.** "Pick the segment you cover", "Read the forecast and its range", "What if costs rise 10%?" are
+now full-width centred lines (`text-align`/flex `center`), with the -0.035em trailing letter-spacing compensated (-2 to -4.5 px).
+Measured on the v3 render (ink of the glyphs on the #fafafa sheet, 1920x1080):
+
+| Card | left / right margin | cap-top / baseline | optical centre (cap-to-baseline) |
+| --- | --- | --- | --- |
+| Pick the segment you cover (5.6 s) | 273 / 273 px | 499 / 579 | 539.0 (frame 539.5) |
+| Read the forecast and its range (23.4 s) | 185 / 186 px | 499 / 579 | 539.0 |
+| What if costs rise 10%? (38.0 s) | 371 / 372 px | 498 / 579 | 538.5 |
+
+Optical centre = the box from cap height to baseline (descenders of g/y hang below it, as they should).
+
+**2. Framing computed, not picked.** `tools/measure-blocks.mjs` measures every block of the rebuilt DOM (text lines, controls,
+cards, chart cards, table rows); `tools/frame_solver.py` takes each beat's relevant box, adds 6% padding (or the adjacent gutter
+when the gutter is narrower), fits 16:9, and keeps the largest scale whose four edges cut nothing, with the main column's scroll
+as a free variable. The app's layout (a 288 px sidebar beside full-width cards stacked with 16-20 px gaps) means any frame that
+shows the sidebar must show the full app width, so sidebar beats use one gentle frame of the controls *and* everything they update,
+instead of the old 2.2x crops that sliced the cards. Main-column beats get tight frames whose edges sit in the sidebar gutter, the
+app edge, and a card or row boundary. Every frame was re-checked against the blocks: 0 cuts.
+
+| Time | Beat | Relevant box | Frame [x0, y0, x1, y1] app px | Scale | Main scroll |
+| --- | --- | --- | --- | --- | --- |
+| 6.0-6.55 | app reveal | whole working area | [-177, 46, 1617, 1055] | 1.07 | 0 |
+| 6.55-17.6 | State / Industry / Claim type menus, Update, charts re-fit | sidebar + menus + draft + conclusion + both charts | [-153, 70, 1593, 1052] | 1.10 | 0 |
+| 17.6-30.15 | conclusion streams; claims chart + callouts a/b/c | conclusion card + claims chart | [302, 0, 1440, 640] | 1.6875 | 0 |
+| 30.15-36.4 | cost chart, Jul 2026 tooltip, callout d | cost chart (+ first two table rows, whole) | [267, 420, 1440, 1080] | 1.637 | 221.1 |
+| 37.0-45.15 | sliders 10% / 15%, draft count, Update | scenario panel + draft + buttons (+ charts they update) | [-153, 70, 1593, 1052] | 1.10 | 0 |
+| 45.15-49.75 | charts lift, rows count, callout e | cost chart + Dec/Nov 2026 rows | [267, 420, 1440, 1080] | 1.637 | 240.6 |
+| 49.75-51.1 | Show 45 more rows | table + button | [-240, 0, 1680, 1080] | 1.00 | 367.5 |
+| 52.8-55.0 | expanded table, context | whole dashboard | [-240, 0, 1680, 1080] | 1.00 | 1024.2 |
+
+Scrolls are chosen so a row boundary lands exactly on the app's bottom edge and, for the last frame, the table title sits just
+under the header. At 49.75-51.1 the claims chart is partly scrolled under the app's sticky header (the app's own scroll, not
+a frame edge; the button cannot be shown otherwise). Callouts are re-sized for their frame (30 px on screen) and re-anchored
+after the scroll. The cursor is now 44 app px (44-74 px on screen) so it reads in the gentler frames. Easing (power2.inOut),
+2D transforms and no `will-change` are kept.
+
+**Verified.**
+- Full-resolution frames at every framing peak (6.5, 12.0, 20.5, 27.4, 33.0, 41.0, 44.7, 48.8, 50.85, 54.5 s) inspected: no card,
+  chart, label, row or text line cut; solver re-check reports 0 edge cuts for all 8 framings.
+- Intro 0-4.0 s: 120/120 decoded frames bit-identical to `demo-insurecast.mp4`.
+- End card 55.5-62.5 s: the outro composition, music and audio are byte-identical sources; the decoded frames differ only by
+  H.264 re-encoding (max 11/255 on a few pixels, PSNR 69 dB, SSIM 0.99997), because the encoder's inter-frame state follows the
+  changed shots before it. A bit-exact end card would need a stream-copy splice at the old file's keyframe (52.03 s), which would
+  bring back 3 s of the old, too-tight framing, so it was not done.
+- 55.0-55.45 s differs by design: the sheet wipes over the new framing.
+- Audio: -15.8 LUFS, true peak -1.6 dBTP, 62.5 s (unchanged).
+
+## v4 -> `../demo-insurecast-v4.mp4` (v2 zooms back; centred cards kept; label blink fixed)
+
+v3's computed wide framings were rejected (too wide). v4 restores every v2 framing and the v2 cursor (24 px: the 44 px v3
+cursor would be ~97 px on screen at 2.2x), keeps the centred headline cards, and moves only the two framings where v2 cut a
+block the beat is about. Irrelevant neighbours clipped at the frame edge are accepted.
+
+| Time | Beat | Focus | v2 scale / centre | v4 scale / centre | Change |
+| --- | --- | --- | --- | --- | --- |
+| 5.9 | app reveal | dashboard | 1.333 (720, 405) | same | - |
+| 6.55 | State / Industry / Claim type | selects + menus | 2.2 (436, 300) | same | - |
+| 13.55 | Update Forecast | draft count + button | 2.2 (436, 835) | same | - |
+| 15.3 | results re-fit | conclusion + claims chart | 1.6 (840, 400) | same | - |
+| 17.6 | conclusion streams | conclusion card | 1.72 (864, 314) | same | - |
+| 22.6 | claims chart, callouts a/b/c | claims chart | 1.68 (864, 435) | same | - |
+| 30.15 | cost chart, tooltip, callout d | cost chart | 1.68 (864, 845) | same | - |
+| 37.0 | severity / frequency drags | sliders + draft count they update | 2.2 (436, 640) | 2.2 (436, 650) | bottom edge cut the "1/2 unapplied changes" line; +10 px puts both edges in gutters (398-414 / 893-897) |
+| 43.6 | Update Forecast | draft count + button | 2.2 (436, 835) | same | - |
+| 45.15 | charts lift, rows count, callout e | cost chart + counting rows | 1.333 (720, 600) | 1.333 (720, 652) | bottom edge cut the Oct 2026 row while it counted; +52 px shows the whole table and the button clicked next |
+| 49.75 | Show 45 more rows | table + button | 1.6 (840, 743) | same | - |
+| 53.0 | pull back | dashboard | 1.333 (720, 540) | same | - |
+
+**Label blink, root cause.** `callout()` made the wrapper visible at `g` (`tl.set(el, {opacity:1})`) while its parts were
+`fromTo` tweens with `immediateRender:false` starting later (dot `g`, leader line `g+0.08`, box `g+0.18`). Until each tween
+started, its "from" state was not applied, so the box and line rendered at full opacity for 3-5 frames, dropped to 0 when
+their tweens began, then faded in: a visible blink on every pinned note (a-e). Fix: the dot, line and box are set to their
+hidden "from" states at `g`, before the wrapper is shown (same-time sets render in insertion order), so each label fades in
+once.
+
+**Verified (consecutive frames, -0.1 s to +0.6 s around each entrance, label-region presence normalised to the settled frame).**
+- v2: every callout dips after appearing (a 1.00 -> 0.28, b 1.00 -> 0.38, c 1.00 -> 0.55, d 0.99 -> 0.10, e 1.00 -> 0.07).
+- v4: monotonic, 0 dips, for callouts a-e, the Jul 2026 tooltip and the three dropdown menus (the other entrances already had
+  their hidden state in CSS). Callout b stays steady once landed (the v2 crispness fix is kept: no `will-change`, 2D transforms).
+- Intro 0-4.0 s and end card 55.5-62.5 s: 120/120 and 210/210 decoded frames bit-identical to `demo-insurecast.mp4`.
+- Headline cards: margins 273/273, 185/186, 371/372 px; cap-to-baseline centre 538.5-539.0 (frame 539.5).
+- Audio -15.8 LUFS, true peak -1.6 dBTP, 62.5 s.
