@@ -59,3 +59,174 @@ the app scene so every transform stays 2D and the DOM/SVG is painted at its fina
 - Shake: 30 consecutive frames from 26.9 s, label region mean abs diff v1 alternated 0.00 / 6.73 every frame; v2 is 0.00 after
   the fade-in. 10-frame holds checked for every other label (callouts a, c, d, e, tooltip, headline sheets, end card): all 0.00.
 - Audio and timing unchanged: 62.5 s, -15.8 LUFS, true peak -1.6 dBTP.
+
+## v3 (owner fixes: centred headline cards, zoom framing) -> `../demo-insurecast-v3.mp4` (`demo-insurecast.mp4` kept)
+
+Intro 0-4 s, the end card, music, sounds and all timings are unchanged; only headline positions and camera framings moved.
+
+**1. Headline cards centred.** "Pick the segment you cover", "Read the forecast and its range", "What if costs rise 10%?" are
+now full-width centred lines (`text-align`/flex `center`), with the -0.035em trailing letter-spacing compensated (-2 to -4.5 px).
+Measured on the v3 render (ink of the glyphs on the #fafafa sheet, 1920x1080):
+
+| Card | left / right margin | cap-top / baseline | optical centre (cap-to-baseline) |
+| --- | --- | --- | --- |
+| Pick the segment you cover (5.6 s) | 273 / 273 px | 499 / 579 | 539.0 (frame 539.5) |
+| Read the forecast and its range (23.4 s) | 185 / 186 px | 499 / 579 | 539.0 |
+| What if costs rise 10%? (38.0 s) | 371 / 372 px | 498 / 579 | 538.5 |
+
+Optical centre = the box from cap height to baseline (descenders of g/y hang below it, as they should).
+
+**2. Framing computed, not picked.** `tools/measure-blocks.mjs` measures every block of the rebuilt DOM (text lines, controls,
+cards, chart cards, table rows); `tools/frame_solver.py` takes each beat's relevant box, adds 6% padding (or the adjacent gutter
+when the gutter is narrower), fits 16:9, and keeps the largest scale whose four edges cut nothing, with the main column's scroll
+as a free variable. The app's layout (a 288 px sidebar beside full-width cards stacked with 16-20 px gaps) means any frame that
+shows the sidebar must show the full app width, so sidebar beats use one gentle frame of the controls *and* everything they update,
+instead of the old 2.2x crops that sliced the cards. Main-column beats get tight frames whose edges sit in the sidebar gutter, the
+app edge, and a card or row boundary. Every frame was re-checked against the blocks: 0 cuts.
+
+| Time | Beat | Relevant box | Frame [x0, y0, x1, y1] app px | Scale | Main scroll |
+| --- | --- | --- | --- | --- | --- |
+| 6.0-6.55 | app reveal | whole working area | [-177, 46, 1617, 1055] | 1.07 | 0 |
+| 6.55-17.6 | State / Industry / Claim type menus, Update, charts re-fit | sidebar + menus + draft + conclusion + both charts | [-153, 70, 1593, 1052] | 1.10 | 0 |
+| 17.6-30.15 | conclusion streams; claims chart + callouts a/b/c | conclusion card + claims chart | [302, 0, 1440, 640] | 1.6875 | 0 |
+| 30.15-36.4 | cost chart, Jul 2026 tooltip, callout d | cost chart (+ first two table rows, whole) | [267, 420, 1440, 1080] | 1.637 | 221.1 |
+| 37.0-45.15 | sliders 10% / 15%, draft count, Update | scenario panel + draft + buttons (+ charts they update) | [-153, 70, 1593, 1052] | 1.10 | 0 |
+| 45.15-49.75 | charts lift, rows count, callout e | cost chart + Dec/Nov 2026 rows | [267, 420, 1440, 1080] | 1.637 | 240.6 |
+| 49.75-51.1 | Show 45 more rows | table + button | [-240, 0, 1680, 1080] | 1.00 | 367.5 |
+| 52.8-55.0 | expanded table, context | whole dashboard | [-240, 0, 1680, 1080] | 1.00 | 1024.2 |
+
+Scrolls are chosen so a row boundary lands exactly on the app's bottom edge and, for the last frame, the table title sits just
+under the header. At 49.75-51.1 the claims chart is partly scrolled under the app's sticky header (the app's own scroll, not
+a frame edge; the button cannot be shown otherwise). Callouts are re-sized for their frame (30 px on screen) and re-anchored
+after the scroll. The cursor is now 44 app px (44-74 px on screen) so it reads in the gentler frames. Easing (power2.inOut),
+2D transforms and no `will-change` are kept.
+
+**Verified.**
+- Full-resolution frames at every framing peak (6.5, 12.0, 20.5, 27.4, 33.0, 41.0, 44.7, 48.8, 50.85, 54.5 s) inspected: no card,
+  chart, label, row or text line cut; solver re-check reports 0 edge cuts for all 8 framings.
+- Intro 0-4.0 s: 120/120 decoded frames bit-identical to `demo-insurecast.mp4`.
+- End card 55.5-62.5 s: the outro composition, music and audio are byte-identical sources; the decoded frames differ only by
+  H.264 re-encoding (max 11/255 on a few pixels, PSNR 69 dB, SSIM 0.99997), because the encoder's inter-frame state follows the
+  changed shots before it. A bit-exact end card would need a stream-copy splice at the old file's keyframe (52.03 s), which would
+  bring back 3 s of the old, too-tight framing, so it was not done.
+- 55.0-55.45 s differs by design: the sheet wipes over the new framing.
+- Audio: -15.8 LUFS, true peak -1.6 dBTP, 62.5 s (unchanged).
+
+## v4 -> `../demo-insurecast-v4.mp4` (v2 zooms back; centred cards kept; label blink fixed)
+
+v3's computed wide framings were rejected (too wide). v4 restores every v2 framing and the v2 cursor (24 px: the 44 px v3
+cursor would be ~97 px on screen at 2.2x), keeps the centred headline cards, and moves only the two framings where v2 cut a
+block the beat is about. Irrelevant neighbours clipped at the frame edge are accepted.
+
+| Time | Beat | Focus | v2 scale / centre | v4 scale / centre | Change |
+| --- | --- | --- | --- | --- | --- |
+| 5.9 | app reveal | dashboard | 1.333 (720, 405) | same | - |
+| 6.55 | State / Industry / Claim type | selects + menus | 2.2 (436, 300) | same | - |
+| 13.55 | Update Forecast | draft count + button | 2.2 (436, 835) | same | - |
+| 15.3 | results re-fit | conclusion + claims chart | 1.6 (840, 400) | same | - |
+| 17.6 | conclusion streams | conclusion card | 1.72 (864, 314) | same | - |
+| 22.6 | claims chart, callouts a/b/c | claims chart | 1.68 (864, 435) | same | - |
+| 30.15 | cost chart, tooltip, callout d | cost chart | 1.68 (864, 845) | same | - |
+| 37.0 | severity / frequency drags | sliders + draft count they update | 2.2 (436, 640) | 2.2 (436, 650) | bottom edge cut the "1/2 unapplied changes" line; +10 px puts both edges in gutters (398-414 / 893-897) |
+| 43.6 | Update Forecast | draft count + button | 2.2 (436, 835) | same | - |
+| 45.15 | charts lift, rows count, callout e | cost chart + counting rows | 1.333 (720, 600) | 1.333 (720, 652) | bottom edge cut the Oct 2026 row while it counted; +52 px shows the whole table and the button clicked next |
+| 49.75 | Show 45 more rows | table + button | 1.6 (840, 743) | same | - |
+| 53.0 | pull back | dashboard | 1.333 (720, 540) | same | - |
+
+**Label blink, root cause.** `callout()` made the wrapper visible at `g` (`tl.set(el, {opacity:1})`) while its parts were
+`fromTo` tweens with `immediateRender:false` starting later (dot `g`, leader line `g+0.08`, box `g+0.18`). Until each tween
+started, its "from" state was not applied, so the box and line rendered at full opacity for 3-5 frames, dropped to 0 when
+their tweens began, then faded in: a visible blink on every pinned note (a-e). Fix: the dot, line and box are set to their
+hidden "from" states at `g`, before the wrapper is shown (same-time sets render in insertion order), so each label fades in
+once.
+
+**Verified (consecutive frames, -0.1 s to +0.6 s around each entrance, label-region presence normalised to the settled frame).**
+- v2: every callout dips after appearing (a 1.00 -> 0.28, b 1.00 -> 0.38, c 1.00 -> 0.55, d 0.99 -> 0.10, e 1.00 -> 0.07).
+- v4: monotonic, 0 dips, for callouts a-e, the Jul 2026 tooltip and the three dropdown menus (the other entrances already had
+  their hidden state in CSS). Callout b stays steady once landed (the v2 crispness fix is kept: no `will-change`, 2D transforms).
+- Intro 0-4.0 s and end card 55.5-62.5 s: 120/120 and 210/210 decoded frames bit-identical to `demo-insurecast.mp4`.
+- Headline cards: margins 273/273, 185/186, 371/372 px; cap-to-baseline centre 538.5-539.0 (frame 539.5).
+- Audio -15.8 LUFS, true peak -1.6 dBTP, 62.5 s.
+
+## House style alignment (2026-10-27)
+
+Applied the shared demo-video house style (InsureCast is its reference) and the InsureCast fix list from the cross-repo
+audit. The intro (0-6.45 s), the end-card concept, the v4 zooms, the centred cards and the label-blink fix are unchanged.
+
+**Changes.**
+- Render pipeline (P1): 2x supersampled capture (`render --format png-sequence --resolution landscape-4k`, lossless
+  3840x2160 PNG), lanczos downscale to 1920x1080, H.264 High CRF 14 preset slow, yuv420p, 30 fps, AAC 192k, +faststart,
+  no tune or sharpening. Replaces the old 1x JPEG capture at CRF 15 with `bframes=0`.
+  One addition: `-force_key_frames 57.0`. The default 250-frame GOP put an I-frame at 61.87 s, inside the still end card,
+  which gave a visible quantisation step (mean frame delta 0.049). The forced keyframe falls while the tagline is still
+  blurring in, so the last 166 frames share one GOP.
+- Poster (P1): `poster.png` is frame 106 (t = 3.5 s) of the 4K capture, 3840x2160 RGB. It was a decoded 1080p H.264 frame.
+- End card centring (P2): `#ou-lock` gets a static `translateX(-7px)` (the mark's box padding and the trailing -0.04em
+  tracking pushed the ink right). Lockup, tagline and URL move up 12 px (top 318 / 628 / 716). Sizes, gaps and timing are
+  unchanged.
+- "What if costs rise 10%?" card (P3): the slot opens at +0.64 s, the reel rolls at +0.76 / +0.90 s and the "?" lands at
+  +0.96 s (was 0.72 / 0.86 / 1.06 / 1.2). The words still start at +0.40 s, so the line is fully inked at +1.10 s and holds
+  0.85 s before the exit. The reel spans are left-aligned, so the gap after "rise" stays constant while 2% and 5% roll by.
+  (The audit's note said right-align, but that moves the gap in front of the number, the opposite of its own check.)
+- Loading badge (P3): opaque white background (was 95 % white, so the conclusion text showed through it), and
+  "Writing conclusion..." starts at 17.28 s, after "Updating forecast..." has faded out at 17.27 s. They overlapped from
+  17.22 s.
+
+**Verified** (on the delivered mp4 unless noted).
+- `ffprobe`: h264 High 1920x1080 30/1 yuv420p, 1131 kb/s; aac LC 48000 Hz 2 ch, 193 kb/s; 62.500 s, 1875 frames,
+  10,409,205 bytes. `moov` before `mdat` (faststart).
+- x264 SEI (core 165): crf=14.0 ref=5 subme=8 trellis=2 rc_lookahead=50 bframes=3 b_adapt=1 direct=3 me=hex. This is what
+  this x264 build's `-preset slow` produces. The spec's example lists b_adapt=2.
+- Poster: `file` reports 3840 x 2160, 8-bit RGB (273,548 bytes). Its half-scale copy against video t = 3.5 s: mean abs
+  diff 1.16 (target < 1.5).
+- Interstitials, glyph ink, cap/ascender top to baseline:
+
+  | Card | L / R | h-centre | top / baseline | v-centre |
+  | --- | --- | --- | --- | --- |
+  | Pick the segment you cover (5.6 s) | 273 / 273 | 959.5 | 499 / 580 | 539.5 |
+  | Read the forecast and its range (23.4 s) | 185 / 186 | 959.0 | 499 / 580 | 539.5 |
+  | What if costs rise 10%? (38.0 s) | 372 / 372 | 959.5 | 498 / 580 | 539.0 |
+
+- End card (62.3 s, `endcard.py`): mark 208x222, wordmark ink 113 px, mark->wordmark 60 px, lockup L/R 462/460
+  (dH +1.0, was +7.0), tagline dH +1.0, URL dH 0.0; gaps 97 / 51 px; group 322-757, centre 539.5 (was 551.5).
+- End-card stillness: max mean frame delta over 57.4-62.4 s is 0.000 (the I-frame step was 0.049).
+- Audio: -15.8 LUFS integrated, true peak -1.7 dBTP, LRA 1.4 LU; digital silence (peak < -60 dBFS) from 61.8 s, so the
+  last 0.71 s are silent.
+- Opacity dips (`tiles.py` + `blink.py`, threshold 5): 4 hits, none a fade-in dip. 17.20 s is the badge text changing
+  (fade out, then in, now in sequence); 37.20 s is the % reel rolling; 40.63 s and 42.93 s are the slider value labels
+  counting (a narrow "1" digit lowers the tile's ink for one frame).
+- Zoom peaks: the Laplacian variance at 6.5, 12.0, 20.5, 27.4, 33.0, 41.0, 44.7, 48.8, 50.85 and 54.5 s is 0.94-1.05x the
+  previous render. 100 % crops at the 2.2x slider push show no softening.
+- Frames 37.0-37.4 s: constant gap before the number while 2%/5%/10% roll. Frames 16.0, 17.17 and 17.23 s: no text shows
+  through the badge, and its two texts never stack.
+- `hyperframes check`: lint 0 errors; runtime and layout ok. The contrast findings are the app's own grey UI text
+  (unchanged).
+
+## Card word entrance: ghost to ink (2026-10-27)
+
+The "Pick" and "What if" cards now use the same ghost-to-ink entrance as the "Read" card (spec B1.7 (a)). The blur
+word entrance is gone from the film. Card timing, texts, centering, the whips, music, end card and poster are unchanged.
+
+- **Pick** (in the intro): the line has no frame 0 of its own, because it shares the intro with the poster. It fades in
+  whole as #e4e4e7 ghost type from 3.85 to 4.10 s while the poster blurs out (opacity only, on the `h2`). The words then
+  ink from 4.25 s, 0.2 s each, 0.09 s apart. "segment" lands in #2563eb. Before 3.85 s nothing changed, so the poster frame is
+  the same.
+- **What if**: "What if costs rise 2%?" is all ghost type from clip frame 0. The words ink from +0.40 s, 0.09 s apart.
+  The reel turns accent blue with "rise" (+0.67 s). It then rolls 2% -> 5% -> 10% exactly as before (+0.76 s / +0.90 s,
+  same eases). The "?" inks at +0.85 s. The reel box is sized for "10%", so in the ghost state the "?" sits 65 px in (one
+  tabular digit, measured on the frame). It slides out with the last roll (+0.90 s, 0.2 s `power3.out`, 2D), so the line
+  never shows a hole before the "?". Fully inked and landed by +1.10 s, then holds 0.85 s.
+
+**Verified** (on the delivered mp4).
+- Ink order, measured as the 50 % ink crossing per word: Pick +0.48 / +0.58 / +0.65 / +0.75 / +0.85 s, counted from
+  3.85 s. What if +0.47 / +0.57 / +0.67 / +0.73 / +0.83 s ("10%?" measured as one block). Strictly in order.
+- Ghost: the full line is present as ghost type, about 22 levels below the ground, from 4.17 s on Pick and from the
+  moment the sheet arrives on What if. No word's ink drops once the line is on a still sheet: max frame-to-frame drop
+  -0.01 on Pick, and -0.1 on What if, which is the reel rolling.
+- Centering, glyph ink: Pick L/R 273/272, What if 371/371; both identical to the previous render's landed frames.
+- Outside the two cards, decoded frames match the previous render to a mean abs diff of at most 0.11 (encode noise).
+  The 4K capture at t = 3.5 s matches `poster.png` within 1 level, so the poster is kept as it is.
+- `ffprobe`: h264 High 1920x1080 30/1 yuv420p; aac 48 kHz 2 ch 193 kb/s; 62.500 s, 1875 frames, 10,427,934 bytes;
+  moov before mdat. x264 SEI crf=14.0 ref=5 subme=8 trellis=2 bframes=3 rc_lookahead=50.
+- Audio: -15.8 LUFS, peak -1.7 dBFS; digital silence from 61.8 s (last 0.71 s).
+- `hyperframes check`: lint 0 errors; the contrast findings are the app's own grey UI text (unchanged).

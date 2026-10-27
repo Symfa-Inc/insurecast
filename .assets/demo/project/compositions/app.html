@@ -415,7 +415,7 @@ html, body { background-color: var(--color-background); height: 100%; color: var
 /* summary */
 #sum-notice-wrap { height: 0; overflow: hidden; }
 #narr-b .w { opacity: 0; }
-.ic-badge { position: absolute; right: 20px; top: 16px; z-index: 10; max-width: 220px; display: flex; align-items: flex-start; gap: 8px; border-radius: 6px; border: 1px solid #e4e4e7; background: rgba(255,255,255,0.95); padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); opacity: 0; }
+.ic-badge { position: absolute; right: 20px; top: 16px; z-index: 10; max-width: 220px; display: flex; align-items: flex-start; gap: 8px; border-radius: 6px; border: 1px solid #e4e4e7; background: #ffffff; padding: 8px 12px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); opacity: 0; }
 .ic-spinner { margin-top: 2px; width: 16px; height: 16px; flex-shrink: 0; border-radius: 9999px; border: 2px solid #e4e4e7; border-top-color: #2563eb; }
 
 /* charts */
@@ -906,6 +906,12 @@ window.__IC_DATA = {"geom":{"aside":{"x":0,"y":56,"w":288,"h":1024},"main":{"x":
   // ---------------- callouts ----------------
   function callout(id, g, hold) {
     var el = "#" + id;
+    // v4: hide the parts BEFORE the wrapper becomes visible. With immediateRender:false the child tweens only apply
+    // their "from" state when they start (dot at g, line at g+0.08, box at g+0.18), so the box and line used to show at
+    // full opacity for 3-5 frames, vanish, then fade in: the blink. Same-time sets render in insertion order.
+    tl.set(el + " .ic-call-dot", { scale: 0 }, T(g));
+    tl.set(el + "-line", { scaleX: 0 }, T(g));
+    tl.set(el + "-box", { opacity: 0, filter: "blur(6px)" }, T(g));
     tl.set(el, { opacity: 1 }, T(g));
     fromTo(el + " .ic-call-dot", { scale: 0 }, { scale: 1, duration: 0.22, ease: "back.out(2)" }, T(g));
     fromTo(el + "-line", { scaleX: 0 }, { scaleX: 1, duration: 0.28, ease: "power3.out" }, T(g + 0.08));
@@ -977,7 +983,7 @@ window.__IC_DATA = {"geom":{"aside":{"x":0,"y":56,"w":288,"h":1024},"main":{"x":
   // results
   busy(15.1, 17.9);
   fromTo("#badge-a", { opacity: 1 }, { opacity: 0, duration: 0.12 }, T(17.15));
-  fromTo("#badge-b", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T(17.22));
+  fromTo("#badge-b", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T(17.28)); // starts after badge-a has gone: no stacked texts
   cam(15.3, 840, 400, 1.6, 1.0);
   morph("s0", "s1", 16.35);
   btnIdle(17.4);
@@ -1013,7 +1019,7 @@ window.__IC_DATA = {"geom":{"aside":{"x":0,"y":56,"w":288,"h":1024},"main":{"x":
   callout("call-d", 33.75, 1.8);
 
   // =============== 3. scenario (sheet covers 36.4-38.8) ===============
-  camSet(37.0, 436, 640, 2.2);
+  camSet(37.0, 436, 650, 2.2); // v4: was cy 640 (bottom edge cut the draft counter the sliders update); edges now in gutters 398-414 / 893-897
   var SV = D.geom.sev, FQ = D.geom.freq;
   function thumbX(v, min, max) { return ((v - min) / (max - min)) * 231; }
   function drag(name, track, v0, v1, min, max, g, d, valId) {
@@ -1058,7 +1064,7 @@ window.__IC_DATA = {"geom":{"aside":{"x":0,"y":56,"w":288,"h":1024},"main":{"x":
   tl.to(CUR, { opacity: 0, duration: 0.2 }, T(45.4));
 
   // pull back over charts + table; the scenario notice opens above (scroll compensates the push-down)
-  cam(45.15, 720, 600, 4 / 3, 1.05);
+  cam(45.15, 720, 652, 4 / 3, 1.05); // v4: was cy 600 (bottom edge cut the Oct 2026 row while it counts); now the whole table + button
   scrollTo(45.15, 349, 1.05);
   tl.to("#sum-notice-wrap", { height: D.noticeH, duration: 0.3, ease: "power2.out" }, T(46.2));
   tl.to("#ic-scroll", { y: -(349 + D.noticeH), duration: 0.3, ease: "power2.out" }, T(46.2));

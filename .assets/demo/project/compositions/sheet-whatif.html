@@ -4,12 +4,12 @@
     #root { position: absolute; inset: 0; overflow: hidden; font-family: "Geist", sans-serif; -webkit-font-smoothing: antialiased; }
     #root h1, #root h2, #root p { margin: 0; padding: 0; }
     #sw-sheet { position: absolute; inset: 0; background: #fafafa; }
-    #sw-line { position: absolute; left: 152px; top: 470px; font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; white-space: nowrap; display: flex; align-items: baseline; }
-    .sw-w { display: inline-block; opacity: 0; margin-right: 0.24em; }
-    #sw-slot { position: relative; display: inline-block; height: 1.02em; overflow: hidden; color: #2563eb; opacity: 0; font-variant-numeric: tabular-nums; }
+    #sw-line { position: absolute; left: -2px; width: 1920px; top: 483px; text-align: center; /* centred: ink box measured in REVIEW.md */ font-size: 112px; line-height: 1.02; font-weight: 600; letter-spacing: -0.035em; color: #18181b; white-space: nowrap; display: flex; align-items: baseline; justify-content: center; }
+    .sw-w { display: inline-block; color: #e4e4e7; margin-right: 0.24em; }
+    #sw-slot { position: relative; display: inline-block; height: 1.02em; overflow: hidden; color: #e4e4e7; font-variant-numeric: tabular-nums; }
     #sw-reel { display: flex; flex-direction: column; }
-    #sw-reel span { height: 1.02em; display: block; }
-    #sw-q { display: inline-block; opacity: 0; }
+    #sw-reel span { height: 1.02em; display: block; text-align: left; /* keep the gap after "rise" constant while the reel rolls */ }
+    #sw-q { display: inline-block; color: #e4e4e7; }
   </style>
   <div id="root" data-composition-id="sheet-whatif" data-width="1920" data-height="1080">
     <div id="sw-sheet">
@@ -21,14 +21,20 @@
       var tl = gsap.timeline({ paused: true });
       tl.fromTo("#sw-sheet", { x: 2050, filter: "blur(10px)" }, { x: 0, duration: 0.45, ease: "power3.inOut" }, 0);
       tl.to("#sw-sheet", { filter: "blur(0px)", duration: 0.2, ease: "power2.out" }, 0.25);
+      // ghost -> ink, as the Read card; the whole line, reel included, is ghost type from frame 0
       var w = document.querySelectorAll("#sw-line .sw-w");
       for (var i = 0; i < w.length; i++) {
-        tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power2.out" }, 0.4 + i * 0.08);
+        tl.fromTo(w[i], { color: "#e4e4e7" }, { color: "#18181b", duration: 0.2, ease: "power1.out" }, 0.4 + i * 0.09);
       }
-      tl.fromTo("#sw-slot", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.72);
-      tl.fromTo("#sw-reel", { yPercent: 0 }, { yPercent: -33.333, duration: 0.14, ease: "power2.inOut" }, 0.86);
-      tl.to("#sw-reel", { yPercent: -66.667, duration: 0.2, ease: "power3.out" }, 1.06);
-      tl.fromTo("#sw-q", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 1.2);
+      // the reel inks to the accent with "rise", then rolls 2% -> 5% -> 10% exactly as before
+      tl.fromTo("#sw-slot", { color: "#e4e4e7" }, { color: "#2563eb", duration: 0.2, ease: "power1.out" }, 0.4 + 3 * 0.09);
+      tl.fromTo("#sw-reel", { yPercent: 0 }, { yPercent: -33.333, duration: 0.14, ease: "power2.inOut" }, 0.76);
+      tl.to("#sw-reel", { yPercent: -66.667, duration: 0.2, ease: "power3.out" }, 0.9);
+      tl.fromTo("#sw-q", { color: "#e4e4e7" }, { color: "#18181b", duration: 0.2, ease: "power1.out" }, 0.4 + 5 * 0.09);
+      // the reel box is sized for "10%": while it shows 2% / 5% the "?" sits 65 px in (one tabular digit, measured on
+      // the rendered frame), then rides out with the last roll so the ghost line never shows a hole before the "?"
+      gsap.set("#sw-q", { x: -65, force3D: false });
+      tl.fromTo("#sw-q", { x: -65 }, { x: 0, duration: 0.2, ease: "power3.out", force3D: false }, 0.9);
       tl.to("#sw-sheet", { x: -2050, duration: 0.45, ease: "power3.inOut" }, 1.95);
       tl.to("#sw-sheet", { filter: "blur(10px)", duration: 0.22, ease: "power2.in" }, 1.95);
       window.__timelines["sheet-whatif"] = tl;
