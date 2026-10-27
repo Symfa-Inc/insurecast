@@ -147,3 +147,57 @@ once.
 - Intro 0-4.0 s and end card 55.5-62.5 s: 120/120 and 210/210 decoded frames bit-identical to `demo-insurecast.mp4`.
 - Headline cards: margins 273/273, 185/186, 371/372 px; cap-to-baseline centre 538.5-539.0 (frame 539.5).
 - Audio -15.8 LUFS, true peak -1.6 dBTP, 62.5 s.
+
+## House style alignment (2026-10-27)
+
+Applied the shared demo-video house style (InsureCast is its reference) and the InsureCast fix list from the cross-repo
+audit. The intro (0-6.45 s), the end-card concept, the v4 zooms, the centred cards and the label-blink fix are unchanged.
+
+**Changes.**
+- Render pipeline (P1): 2x supersampled capture (`render --format png-sequence --resolution landscape-4k`, lossless
+  3840x2160 PNG), lanczos downscale to 1920x1080, H.264 High CRF 14 preset slow, yuv420p, 30 fps, AAC 192k, +faststart,
+  no tune or sharpening. Replaces the old 1x JPEG capture at CRF 15 with `bframes=0`.
+  One addition: `-force_key_frames 57.0`. The default 250-frame GOP put an I-frame at 61.87 s, inside the still end card,
+  which gave a visible quantisation step (mean frame delta 0.049). The forced keyframe falls while the tagline is still
+  blurring in, so the last 166 frames share one GOP.
+- Poster (P1): `poster.png` is frame 106 (t = 3.5 s) of the 4K capture, 3840x2160 RGB. It was a decoded 1080p H.264 frame.
+- End card centring (P2): `#ou-lock` gets a static `translateX(-7px)` (the mark's box padding and the trailing -0.04em
+  tracking pushed the ink right). Lockup, tagline and URL move up 12 px (top 318 / 628 / 716). Sizes, gaps and timing are
+  unchanged.
+- "What if costs rise 10%?" card (P3): the slot opens at +0.64 s, the reel rolls at +0.76 / +0.90 s and the "?" lands at
+  +0.96 s (was 0.72 / 0.86 / 1.06 / 1.2). The words still start at +0.40 s, so the line is fully inked at +1.10 s and holds
+  0.85 s before the exit. The reel spans are left-aligned, so the gap after "rise" stays constant while 2% and 5% roll by.
+  (The audit's note said right-align, but that moves the gap in front of the number, the opposite of its own check.)
+- Loading badge (P3): opaque white background (was 95 % white, so the conclusion text showed through it), and
+  "Writing conclusion..." starts at 17.28 s, after "Updating forecast..." has faded out at 17.27 s. They overlapped from
+  17.22 s.
+
+**Verified** (on the delivered mp4 unless noted).
+- `ffprobe`: h264 High 1920x1080 30/1 yuv420p, 1131 kb/s; aac LC 48000 Hz 2 ch, 193 kb/s; 62.500 s, 1875 frames,
+  10,409,205 bytes. `moov` before `mdat` (faststart).
+- x264 SEI (core 165): crf=14.0 ref=5 subme=8 trellis=2 rc_lookahead=50 bframes=3 b_adapt=1 direct=3 me=hex. This is what
+  this x264 build's `-preset slow` produces. The spec's example lists b_adapt=2.
+- Poster: `file` reports 3840 x 2160, 8-bit RGB (273,548 bytes). Its half-scale copy against video t = 3.5 s: mean abs
+  diff 1.16 (target < 1.5).
+- Interstitials, glyph ink, cap/ascender top to baseline:
+
+  | Card | L / R | h-centre | top / baseline | v-centre |
+  | --- | --- | --- | --- | --- |
+  | Pick the segment you cover (5.6 s) | 273 / 273 | 959.5 | 499 / 580 | 539.5 |
+  | Read the forecast and its range (23.4 s) | 185 / 186 | 959.0 | 499 / 580 | 539.5 |
+  | What if costs rise 10%? (38.0 s) | 372 / 372 | 959.5 | 498 / 580 | 539.0 |
+
+- End card (62.3 s, `endcard.py`): mark 208x222, wordmark ink 113 px, mark->wordmark 60 px, lockup L/R 462/460
+  (dH +1.0, was +7.0), tagline dH +1.0, URL dH 0.0; gaps 97 / 51 px; group 322-757, centre 539.5 (was 551.5).
+- End-card stillness: max mean frame delta over 57.4-62.4 s is 0.000 (the I-frame step was 0.049).
+- Audio: -15.8 LUFS integrated, true peak -1.7 dBTP, LRA 1.4 LU; digital silence (peak < -60 dBFS) from 61.8 s, so the
+  last 0.71 s are silent.
+- Opacity dips (`tiles.py` + `blink.py`, threshold 5): 4 hits, none a fade-in dip. 17.20 s is the badge text changing
+  (fade out, then in, now in sequence); 37.20 s is the % reel rolling; 40.63 s and 42.93 s are the slider value labels
+  counting (a narrow "1" digit lowers the tile's ink for one frame).
+- Zoom peaks: the Laplacian variance at 6.5, 12.0, 20.5, 27.4, 33.0, 41.0, 44.7, 48.8, 50.85 and 54.5 s is 0.94-1.05x the
+  previous render. 100 % crops at the 2.2x slider push show no softening.
+- Frames 37.0-37.4 s: constant gap before the number while 2%/5%/10% roll. Frames 16.0, 17.17 and 17.23 s: no text shows
+  through the badge, and its two texts never stack.
+- `hyperframes check`: lint 0 errors; runtime and layout ok. The contrast findings are the app's own grey UI text
+  (unchanged).
