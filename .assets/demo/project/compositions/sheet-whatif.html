@@ -8,7 +8,7 @@
     .sw-w { display: inline-block; opacity: 0; margin-right: 0.24em; }
     #sw-slot { position: relative; display: inline-block; height: 1.02em; overflow: hidden; color: #2563eb; opacity: 0; font-variant-numeric: tabular-nums; }
     #sw-reel { display: flex; flex-direction: column; }
-    #sw-reel span { height: 1.02em; display: block; }
+    #sw-reel span { height: 1.02em; display: block; text-align: left; /* keep the gap after "rise" constant while the reel rolls */ }
     #sw-q { display: inline-block; opacity: 0; }
   </style>
   <div id="root" data-composition-id="sheet-whatif" data-width="1920" data-height="1080">
@@ -25,10 +25,10 @@
       for (var i = 0; i < w.length; i++) {
         tl.fromTo(w[i], { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.16, ease: "power2.out" }, 0.4 + i * 0.08);
       }
-      tl.fromTo("#sw-slot", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.72);
-      tl.fromTo("#sw-reel", { yPercent: 0 }, { yPercent: -33.333, duration: 0.14, ease: "power2.inOut" }, 0.86);
-      tl.to("#sw-reel", { yPercent: -66.667, duration: 0.2, ease: "power3.out" }, 1.06);
-      tl.fromTo("#sw-q", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 1.2);
+      tl.fromTo("#sw-slot", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.64);
+      tl.fromTo("#sw-reel", { yPercent: 0 }, { yPercent: -33.333, duration: 0.14, ease: "power2.inOut" }, 0.76);
+      tl.to("#sw-reel", { yPercent: -66.667, duration: 0.2, ease: "power3.out" }, 0.9);
+      tl.fromTo("#sw-q", { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.96);
       tl.to("#sw-sheet", { x: -2050, duration: 0.45, ease: "power3.inOut" }, 1.95);
       tl.to("#sw-sheet", { filter: "blur(10px)", duration: 0.22, ease: "power2.in" }, 1.95);
       window.__timelines["sheet-whatif"] = tl;

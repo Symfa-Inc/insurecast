@@ -219,7 +219,7 @@
   // results
   busy(15.1, 17.9);
   fromTo("#badge-a", { opacity: 1 }, { opacity: 0, duration: 0.12 }, T(17.15));
-  fromTo("#badge-b", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T(17.22));
+  fromTo("#badge-b", { opacity: 0 }, { opacity: 1, duration: 0.15 }, T(17.28)); // starts after badge-a has gone: no stacked texts
   cam(15.3, 840, 400, 1.6, 1.0);
   morph("s0", "s1", 16.35);
   btnIdle(17.4);
