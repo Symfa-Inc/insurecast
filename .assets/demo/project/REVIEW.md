@@ -201,3 +201,32 @@ audit. The intro (0-6.45 s), the end-card concept, the v4 zooms, the centred car
   through the badge, and its two texts never stack.
 - `hyperframes check`: lint 0 errors; runtime and layout ok. The contrast findings are the app's own grey UI text
   (unchanged).
+
+## Card word entrance: ghost to ink (2026-10-27)
+
+The "Pick" and "What if" cards now use the same ghost-to-ink entrance as the "Read" card (spec B1.7 (a)). The blur
+word entrance is gone from the film. Card timing, texts, centering, the whips, music, end card and poster are unchanged.
+
+- **Pick** (in the intro): the line has no frame 0 of its own, because it shares the intro with the poster. It fades in
+  whole as #e4e4e7 ghost type from 3.85 to 4.10 s while the poster blurs out (opacity only, on the `h2`). The words then
+  ink from 4.25 s, 0.2 s each, 0.09 s apart. "segment" lands in #2563eb. Before 3.85 s nothing changed, so the poster frame is
+  the same.
+- **What if**: "What if costs rise 2%?" is all ghost type from clip frame 0. The words ink from +0.40 s, 0.09 s apart.
+  The reel turns accent blue with "rise" (+0.67 s). It then rolls 2% -> 5% -> 10% exactly as before (+0.76 s / +0.90 s,
+  same eases). The "?" inks at +0.85 s. The reel box is sized for "10%", so in the ghost state the "?" sits 65 px in (one
+  tabular digit, measured on the frame). It slides out with the last roll (+0.90 s, 0.2 s `power3.out`, 2D), so the line
+  never shows a hole before the "?". Fully inked and landed by +1.10 s, then holds 0.85 s.
+
+**Verified** (on the delivered mp4).
+- Ink order, measured as the 50 % ink crossing per word: Pick +0.48 / +0.58 / +0.65 / +0.75 / +0.85 s, counted from
+  3.85 s. What if +0.47 / +0.57 / +0.67 / +0.73 / +0.83 s ("10%?" measured as one block). Strictly in order.
+- Ghost: the full line is present as ghost type, about 22 levels below the ground, from 4.17 s on Pick and from the
+  moment the sheet arrives on What if. No word's ink drops once the line is on a still sheet: max frame-to-frame drop
+  -0.01 on Pick, and -0.1 on What if, which is the reel rolling.
+- Centering, glyph ink: Pick L/R 273/272, What if 371/371; both identical to the previous render's landed frames.
+- Outside the two cards, decoded frames match the previous render to a mean abs diff of at most 0.11 (encode noise).
+  The 4K capture at t = 3.5 s matches `poster.png` within 1 level, so the poster is kept as it is.
+- `ffprobe`: h264 High 1920x1080 30/1 yuv420p; aac 48 kHz 2 ch 193 kb/s; 62.500 s, 1875 frames, 10,427,934 bytes;
+  moov before mdat. x264 SEI crf=14.0 ref=5 subme=8 trellis=2 bframes=3 rc_lookahead=50.
+- Audio: -15.8 LUFS, peak -1.7 dBFS; digital silence from 61.8 s (last 0.71 s).
+- `hyperframes check`: lint 0 errors; the contrast findings are the app's own grey UI text (unchanged).
