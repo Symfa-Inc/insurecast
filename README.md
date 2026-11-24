@@ -19,7 +19,7 @@ Time-series forecasting dashboard for monthly claims and paid amounts using SARI
 
 </div>
 
-https://github.com/user-attachments/assets/7ed80129-5a62-46c5-bbe1-73ab9f04178a
+https://github.com/user-attachments/assets/659af6b1-d26f-4fc6-8494-e3d33616702c
 
 ## Features
 
